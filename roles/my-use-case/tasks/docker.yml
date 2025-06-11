@@ -1,5 +1,11 @@
 ---
 # Install required packages for Docker
+
+- name: update apt list
+  become: yes
+  apt:
+    update_cache: yes
+
 - name: Install required packages
   become: yes
   apt:
@@ -11,7 +17,6 @@
       - lsb-release
       - git
     state: present
-    update_cache: yes
     force_apt_get: yes
 
 - name: Add Docker GPG key
