@@ -1,6 +1,7 @@
 ---
 # Install required packages for Docker
 - name: Install required packages
+  become: yes
   apt:
     name:
       - apt-transport-https
