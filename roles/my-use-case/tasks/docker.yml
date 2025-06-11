@@ -1,32 +1,6 @@
 ---
 # Install required packages for Docker
 
-# Clean apt lock files and ensure proper permissions
-# - name: Fix apt permissions and clear locks
-#   become: yes
-#   shell: |
-#     # Remove lock files
-#     rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/lock*
-#     # Ensure proper permissions on apt directories
-#     chown -R root:root /var/lib/apt/lists/
-#     chmod -R 755 /var/lib/apt/lists/
-#     mkdir -p /var/lib/apt/lists/partial
-#     chmod 755 /var/lib/apt/lists/partial
-#   args:
-#     warn: no
-#   changed_when: false
-#   ignore_errors: yes
-
-# Update apt cache separately
-- name: Update apt cache
-  become: yes
-  shell: apt-get update
-  args:
-    warn: no
-  changed_when: false
-  ignore_errors: no
-  register: apt_update
-
 - name: Install required packages
   become: yes
   shell: apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release git
