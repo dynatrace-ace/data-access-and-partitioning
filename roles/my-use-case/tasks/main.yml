@@ -1,3 +1,9 @@
 ---
 - debug:
     msg: "Hello from your external use case!"
+
+- include_role:
+    name: dt-oneagent-classic
+
+- include_tasks:
+    file: easy-trade-docker.yml

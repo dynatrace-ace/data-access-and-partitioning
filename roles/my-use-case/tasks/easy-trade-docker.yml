@@ -1,0 +1,111 @@
+---
+# Install required packages for Docker
+- name: Install required packages
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+      - git
+    state: present
+    update_cache: yes
+
+# Add Docker's official GPG key
+- name: Add Docker GPG key
+  apt_key:
+    url: https://download.docker.com/linux/ubuntu/gpg
+    state: present
+
+# Add Docker repository
+- name: Add Docker repository
+  apt_repository:
+    repo: "deb [arch=amd64] https://download.docker.com/linux/ubuntu {{ ansible_distribution_release }} stable"
+    state: present
+    update_cache: yes
+
+# Install Docker Engine
+- name: Install Docker
+  apt:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+    update_cache: yes
+
+# Make sure Docker service is running
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+# Install Docker Compose
+- name: Install Docker Compose
+  get_url:
+    url: https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: "0755"
+
+# Verify Docker installation
+- name: Check Docker version
+  command: docker --version
+  register: docker_version
+  changed_when: false
+
+# Verify Docker Compose installation
+- name: Check Docker Compose version
+  command: docker-compose --version
+  register: docker_compose_version
+  changed_when: false
+
+# Print Docker versions
+- name: Print Docker versions
+  debug:
+    msg:
+      - "Docker version: {{ docker_version.stdout }}"
+      - "Docker Compose version: {{ docker_compose_version.stdout }}"
+
+# Add current user to docker group to avoid using sudo
+- name: Add user to docker group
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: docker
+    append: yes
+  become: yes
+
+# Create a directory for the easytrade repository
+- name: Create directory for easytrade
+  file:
+    path: /opt/easytrade
+    state: directory
+    mode: "0755"
+
+# Clone the Dynatrace easytrade repository
+- name: Clone easytrade repository
+  git:
+    repo: git@github.com:Dynatrace/easytrade.git
+    dest: /opt/easytrade
+    accept_hostkey: yes
+  register: git_clone_result
+
+# Display git clone result
+- name: Display git clone result
+  debug:
+    msg: "Repository cloned successfully to /opt/easytrade"
+  when: git_clone_result.changed
+
+# Change directory to the easytrade repository and run docker compose up
+- name: Run docker compose up for easytrade
+  shell: cd /opt/easytrade && docker-compose up -d
+  args:
+    chdir: /opt/easytrade
+  register: docker_compose_result
+
+# Display docker compose result
+- name: Display docker compose result
+  debug:
+    msg: "Docker Compose started successfully"
+  when: docker_compose_result.changed
