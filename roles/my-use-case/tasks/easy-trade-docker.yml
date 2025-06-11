@@ -1,4 +1,24 @@
 ---
+# Clean apt lock files to avoid permission issues
+- name: Clean apt lock files
+  become: yes
+  shell: rm -f /var/lib/apt/lists/lock /var/cache/apt/archives/lock /var/lib/dpkg/lock* || true
+  args:
+    warn: no
+  changed_when: false
+  ignore_errors: yes
+
+# Update apt cache
+- name: Update apt cache
+  become: yes
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  register: apt_update_result
+  retries: 5
+  delay: 5
+  until: apt_update_result is success
+
 # Install required packages for Docker
 - name: Install required packages
   become: yes
@@ -122,9 +142,20 @@
 # Change directory to the easytrade repository and run docker compose up
 - name: Run docker compose up for easytrade
   become: yes
-  shell: cd /opt/easytrade && docker-compose up -d
+  shell: |
+    cd /opt/easytrade
+    # Try with docker compose (newer) first, fall back to docker-compose
+    if command -v docker &> /dev/null && docker compose version &> /dev/null; then
+      docker compose up -d
+    elif command -v docker-compose &> /dev/null; then
+      docker-compose up -d
+    else
+      echo "Neither docker compose nor docker-compose is available"
+      exit 1
+    fi
   args:
     chdir: /opt/easytrade
+    executable: /bin/bash
   register: docker_compose_result
 
 # Display docker compose result
