@@ -2,6 +2,9 @@
 - debug:
     msg: "Hello from your external use case!"
 
+- include_tasks:
+    file: docker.yml
+
 - include_role:
     name: dt-oneagent-classic
 
