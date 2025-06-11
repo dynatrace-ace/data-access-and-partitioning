@@ -12,7 +12,6 @@
       - lsb-release
       - git
     state: present
-    force_apt_get: yes
 
 - name: Add Docker GPG key
   become: yes
