@@ -45,13 +45,6 @@
     dest: /usr/local/bin/docker-compose
     mode: "0755"
 
-# Print Docker versions
-- name: Print Docker versions
-  debug:
-    msg:
-      - "Docker version: {{ docker_version.stdout }}"
-      - "Docker Compose version: {{ docker_compose_version.stdout }}"
-
 # Add current user to docker group to avoid using sudo
 - name: Add user to docker group
   become_user: root
