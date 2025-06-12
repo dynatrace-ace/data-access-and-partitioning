@@ -3,17 +3,15 @@
 
 - name: Install required packages
   become: yes
-  shell: apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release git
-  args:
-    warn: no
+  shell:
+    cmd: apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release git
+
   register: pkg_install
 
 - name: Add Docker GPG key
   become: yes
-  shell: |
-    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-  args:
-    warn: no
+  shell:
+    cmd: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
   register: gpg_result
 
 # Add Docker repository
@@ -22,16 +20,13 @@
   shell: |
     echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
     apt-get update
-  args:
-    warn: no
   register: repo_result
 
 # Install Docker Engine
 - name: Install Docker
   become: yes
-  shell: apt-get install -y docker-ce docker-ce-cli containerd.io
-  args:
-    warn: no
+  shell:
+    cmd: apt-get install -y docker-ce docker-ce-cli containerd.io
   register: docker_result
 
 # Make sure Docker service is running
@@ -49,18 +44,6 @@
     url: https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64
     dest: /usr/local/bin/docker-compose
     mode: "0755"
-
-# Verify Docker installation
-- name: Check Docker version
-  command: docker --version
-  register: docker_version
-  changed_when: false
-
-# Verify Docker Compose installation
-- name: Check Docker Compose version
-  command: docker-compose --version
-  register: docker_compose_version
-  changed_when: false
 
 # Print Docker versions
 - name: Print Docker versions
