@@ -1,7 +1,7 @@
 ---
 # Create a directory for the easytrade repository
 - name: Create directory for easytrade
-  become: yes
+  become_user: root
   file:
     path: /opt/easytrade
     state: directory
@@ -9,7 +9,7 @@
 
 # Clone the Dynatrace easytrade repository
 - name: Clone easytrade repository
-  become: yes
+  become_user: root
   git:
     repo: git@github.com:Dynatrace/easytrade.git
     dest: /opt/easytrade
@@ -24,7 +24,7 @@
 
 # Change directory to the easytrade repository and run docker compose up
 - name: Run docker compose up for easytrade
-  become: yes
+  become_user: root
   shell: cd /opt/easytrade && docker-compose up -d
   args:
     chdir: /opt/easytrade
