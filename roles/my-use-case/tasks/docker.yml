@@ -1,0 +1,54 @@
+---
+# Install required packages for Docker
+
+- name: Install required packages
+  become_user: root
+  shell:
+    cmd: sudo apt-get install apt-transport-https ca-certificates curl gnupg lsb-release git -y
+
+  register: pkg_install
+
+- name: Add Docker GPG key
+  become_user: root
+  shell:
+    cmd: curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+  register: gpg_result
+
+# Add Docker repository
+- name: Add Docker repository
+  become_user: root
+  shell: |
+    echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list
+    apt-get update
+  register: repo_result
+
+# Install Docker Engine
+- name: Install Docker
+  become_user: root
+  shell:
+    cmd: apt-get install -y docker-ce docker-ce-cli containerd.io
+  register: docker_result
+
+# Make sure Docker service is running
+- name: Start Docker service
+  become_user: root
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+# Install Docker Compose
+- name: Install Docker Compose
+  become_user: root
+  get_url:
+    url: https://github.com/docker/compose/releases/download/v2.20.3/docker-compose-linux-x86_64
+    dest: /usr/local/bin/docker-compose
+    mode: "0755"
+
+# Add current user to docker group to avoid using sudo
+- name: Add user to docker group
+  become_user: root
+  user:
+    name: "ace"
+    groups: docker
+    append: yes
