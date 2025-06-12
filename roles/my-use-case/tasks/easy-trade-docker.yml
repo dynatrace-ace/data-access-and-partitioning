@@ -11,7 +11,7 @@
 - name: Clone easytrade repository
   become_user: root
   git:
-    repo: git@github.com:Dynatrace/easytrade.git
+    repo: https://github.com/Dynatrace/easytrade.git
     dest: /opt/easytrade
     accept_hostkey: yes
   register: git_clone_result
