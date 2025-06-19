@@ -11,7 +11,7 @@
 - name: Clone easytravel repository
   become_user: root
   git:
-    repo: https://github.com/Dynatrace/easytravel.git
+    repo: https://github.com/Dynatrace/easyTravel-Docker.git
     dest: /opt/easytravel
     accept_hostkey: yes
   register: git_clone_result
