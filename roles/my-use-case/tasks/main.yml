@@ -8,5 +8,7 @@
 - include_role:
     name: dt-oneagent-classic
 
+#- include_tasks:
+#    file: easy-trade-docker.yml
 - include_tasks:
-    file: easy-trade-docker.yml
+    file: easy-travel-docker.yml

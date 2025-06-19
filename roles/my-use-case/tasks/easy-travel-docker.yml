@@ -1,0 +1,31 @@
+---
+# Create a directory for the easytravel repository
+- name: Create directory for easytravel
+  become_user: root
+  file:
+    path: /opt/easytravel
+    state: directory
+    mode: "0755"
+
+# Clone the Dynatrace easytravel repository
+- name: Clone easytravel repository
+  become_user: root
+  git:
+    repo: https://github.com/Dynatrace/easytravel.git
+    dest: /opt/easytravel
+    accept_hostkey: yes
+  register: git_clone_result
+
+# Display git clone result
+- name: Display git clone result
+  debug:
+    msg: "Repository cloned successfully to /opt/easytravel"
+  when: git_clone_result.changed
+
+# Change directory to the easytrade repository and run docker compose up
+- name: Run docker compose up for easytrade
+  become_user: root
+  shell: cd /opt/easytravel && docker-compose up -d
+  args:
+    chdir: /opt/easytravel
+  register: docker_compose_result
