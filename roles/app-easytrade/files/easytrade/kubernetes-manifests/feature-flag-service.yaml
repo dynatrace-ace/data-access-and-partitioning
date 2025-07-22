@@ -16,6 +16,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: feature-flag-service
+  labels:
+    app: feature-flag-service
 spec:
   selector:
     matchLabels:

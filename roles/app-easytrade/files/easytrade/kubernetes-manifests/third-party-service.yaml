@@ -16,6 +16,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: third-party-service
+  labels:
+    app: third-party-service
 spec:
   selector:
     matchLabels:

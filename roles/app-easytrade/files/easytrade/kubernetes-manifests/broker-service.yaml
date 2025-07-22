@@ -16,6 +16,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: broker-service-envs
+  labels:
+    app: broker-service
 data:
   ACCOUNTSERVICE_HOSTANDPORT: "accountservice:8080"
   PRICINGSERVICE_HOSTANDPORT: "pricing-service:8080"

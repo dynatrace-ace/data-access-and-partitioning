@@ -31,6 +31,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: problem-operator
+  labels:
+    app: problem-operator
 spec:
   selector:
     matchLabels:

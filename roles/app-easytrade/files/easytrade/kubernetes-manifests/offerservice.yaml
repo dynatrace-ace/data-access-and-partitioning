@@ -16,6 +16,8 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: offerservice-envs
+  labels:
+    app: offerservice
 data:
   LOGIN_SERVICE_PORT: "8080"
   LOGIN_SERVICE_BASE_URL: loginservice
