@@ -12,12 +12,20 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Ensure the easytrade namespace exists
+- name: Ensure the 'easytrade' namespace exists with labels
   kubernetes.core.k8s:
-    kind: Namespace
-    api_version: v1
-    name: "{{ easytrade_namespace }}"
     state: present
+    definition:
+      apiVersion: v1
+      kind: Namespace
+      metadata:
+        name: "{{easytrade_namespace}}"
+        labels:
+          team: alpha
+          stage: prod
+          app.kubernetes.io/part-of: easytrade
+          app.kubernetes.io/version: "1.0.0"
+
 
 - name: Apply Kubernetes manifests using kubectl and Kustomize
   ansible.builtin.shell:
