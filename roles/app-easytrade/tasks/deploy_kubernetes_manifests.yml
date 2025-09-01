@@ -23,7 +23,7 @@
         labels:
           team: alpha
           stage: prod
-          app.kubernetes.io/part-of: easytrade
+          app.kubernetes.io/part-of: ecommerce-apps
           app.kubernetes.io/version: "1.0.0"
 
 
