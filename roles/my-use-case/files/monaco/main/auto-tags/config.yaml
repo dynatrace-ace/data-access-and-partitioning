@@ -1,0 +1,9 @@
+configs:
+  - id: easytrade_tag
+    config:
+      template: easytrade_tag.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:tags.auto-tagging
+        scope: environment
