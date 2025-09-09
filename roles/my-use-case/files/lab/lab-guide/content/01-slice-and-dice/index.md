@@ -59,9 +59,9 @@ Instructions:
 
 Write down the dimensions you discover:
 
-- platform: ______________________
-- environment: ___________________
-- app: ___________________________
+- ______________________
+- ______________________
+- ______________________
 
 
 ### 🖥️ Technologies

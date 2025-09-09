@@ -1,5 +1,4 @@
 {
-  "value": {
     "name": "platform",
     "rules": [
       {
@@ -21,4 +20,4 @@
       }
     ]
   }
-}
+

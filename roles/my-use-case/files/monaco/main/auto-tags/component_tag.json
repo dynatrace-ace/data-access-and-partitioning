@@ -1,5 +1,4 @@
 {
-  "value": {
     "name": "component",
     "rules": [
       {
@@ -564,4 +563,4 @@
       }
     ]
   }
-}
+
