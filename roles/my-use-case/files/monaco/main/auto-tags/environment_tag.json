@@ -1,5 +1,4 @@
 {
-  "value": {
     "name": "environment",
     "rules": [
       {
@@ -21,4 +20,4 @@
       }
     ]
   }
-}
+

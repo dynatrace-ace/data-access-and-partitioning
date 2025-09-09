@@ -1,21 +1,40 @@
-# ---
-- include_role:
-    name: k3s
+# # ---
+# - include_role:
+#     name: k3s
+
+# - include_role:
+#     name: dt-operator
+#   vars:
+#     operator_mode: "cloudNativeFullStack"
+#     dt_operator_release: "v1.6.2"
+#     host_group: k8s_multi_prod
+
+# - include_role:
+#     name: app-easytrade
+
+# - include_role:
+#     name: app-hipstershop
 
 - include_role:
-    name: dt-operator
+    name: dt-access-token
   vars:
-    operator_mode: "cloudNativeFullStack"
-    dt_operator_release: "v1.6.2"
-    host_group: k8s_multi_prod
+    access_token_var_name: "DT_TOKEN"
+    access_token_scope: ["DataExport", "InstallerDownload", "activeGateTokenManagement.create", "entities.read", "settings.read", "settings.write", "ReadConfig", "WriteConfig"]
 
 - include_role:
-    name: app-easytrade
-
-- include_role:
-    name: app-hipstershop
-
-- include_role:
-    name: monaco
+    name: monaco-v2
   vars:
     monaco_version: "v2.25.1"
+
+- name: Monaco - Deploy configuration
+  include_role:
+    name: monaco-v2
+    tasks_from: apply-monaco
+  vars:
+    monaco_manifest_path: " /home/ace/repos/data-access-and-partitioning/roles/my-use-case/files/monaco/main/manifest.yaml"
+    monaco_environment:
+      DT_PLATFORM_TENANT_URL: "{{ extra_vars.dt_environment_url_gen3.rstrip('/') }}"
+      DT_OAUTH_CLIENT_ID: "{{ extra_vars.dt_oauth_client_id }}"
+      DT_OAUTH_CLIENT_SECRET: "{{ extra_vars.dt_oauth_client_secret }}"
+      DT_OAUTH_SSO_ENDPOINT: "{{ extra_vars.dt_oauth_sso_endpoint.rstrip('/') }}"
+      DT_TOKEN: "{{ DT_TOKEN }}"
