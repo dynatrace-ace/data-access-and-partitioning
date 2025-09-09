@@ -10,18 +10,18 @@ environmentGroups:
       - name: dev
         url:
           type: environment
-          value: TENANT_URL
+          value: DT_PLATFORM_TENANT_URL
         auth:
           token:
             type: environment
-            name: TENANT_TOKEN
+            name: DT_TOKEN
           oAuth:
             clientId:
               type: environment
-              name: CLIENT_ID
+              name: DT_OAUTH_CLIENT_ID
             clientSecret:
               type: environment
-              name: CLIENT_SECRET
+              name: DT_OAUTH_CLIENT_SECRET
             tokenEndpoint:
               type: environment
-              value: SSO_ENDPOINT
+              value: DT_OAUTH_SSO_ENDPOINT
