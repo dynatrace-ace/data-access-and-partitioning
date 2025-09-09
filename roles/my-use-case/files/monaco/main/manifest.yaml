@@ -1,0 +1,27 @@
+manifestVersion: 1.0
+projects:
+  - name: auto-tags
+  - name: bucket
+  - name: builtinopenpipeline.spans.pipelines
+  - name: management-zone
+environmentGroups:
+  - name: development
+    environments:
+      - name: dev
+        url:
+          type: environment
+          value: TENANT_URL
+        auth:
+          token:
+            type: environment
+            name: TENANT_TOKEN
+          oAuth:
+            clientId:
+              type: environment
+              name: CLIENT_ID
+            clientSecret:
+              type: environment
+              name: CLIENT_SECRET
+            tokenEndpoint:
+              type: environment
+              value: SSO_ENDPOINT

@@ -14,3 +14,8 @@
 
 - include_role:
     name: app-hipstershop
+
+- include_role:
+    name: monaco
+  vars:
+    monaco_version: "v2.25.1"
