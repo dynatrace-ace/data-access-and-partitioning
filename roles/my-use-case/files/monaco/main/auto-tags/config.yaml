@@ -7,3 +7,28 @@ configs:
       settings:
         schema: builtin:tags.auto-tagging
         scope: environment
+  - id: component_tag
+    config:
+      template: component_tag.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:tags.auto-tagging
+        scope: environment
+  - id: environment_tag
+    config:
+      template: environment_tag.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:tags.auto-tagging
+        scope: environment
+  - id: platform_tag
+    config:
+      template: platform_tag.json
+      skip: false
+    type:
+      settings:
+        schema: builtin:tags.auto-tagging
+        scope: environment
+
