@@ -90,15 +90,42 @@ Use When:
 
 #### 🧩 Step 3: Try It Out
 
-Complete enrichment using one or more strategies.
+Complete enrichment using all strategies.
 
-Tasks:
-Choose one enrichment strategy. General approach should be **Option 2**. Apply it to a sample namespace or pod.
-Enrich with:
+**Task 1: Automatic Enrichment via Kubernetes Metadata**
+Dynatrace automatically enriches telemetry data with Kubernetes metadata such as:
+- `k8s.cluster.name`
+- `k8s.namespace.name`
+
+**Instructions:**
+1. Open Dynatrace and navigate to Segments.
+2. Create a new segment based on k8s.namespace.name.
+3. Use this segment to filter the two applications deployed in separate namespaces.
+4. Observe how Dynatrace uses this metadata to group and contextualize your services.
+
+> 💡 Tip: This is useful for OOTB IAM and Segment configurations.
+
+If this is not enough and you'd like to go further and you require more configuration possibilities. Let's explore the enrichment strategy at source. You can enrich data by adding custom labels and annotations to your Kubernetes manifests. Dynatrace will pick these up and use them for tagging and filtering.
+
+**Task 2: Automatic Enrichment via Kubernetes Metadata at Source**
+You should ultimately enrich your deployment with:
 - `dt.security_context`
 - `dt.cost.costcenter`
 - `dt.cost.product`
-  
+
+
+How to do that you might ask? Well... Let's look at how customers manage modern cloud environments. In modern cloud-native environments, cloud tags, Kubernetes labels and namespaces classify systems using various aspects, like cost allocation, access control, application, and owner. In such environments, configuration-as-code principles are well established, including defining such tags as part of the system configuration.
+
+In K8s, annotations and labels are both key-value pairs used to attach metadata to objects like Pods, Services, and Deployments. Customers following cloud-native tagging best practices will define their partitioning with labels & annotations, as follows:
+
+PICTURE FOR CLOUD ENRICHMENT
+
+You can use the K8s Enrichment settings to transform labels & annotations into dt.security_context, dt.cost.costcenter, dt.cost.product
+
+> 💡 How it works? The Dynatrace Operator will take care of the enrichment when mutating the pod definition
+
+PICTURE FOR ANNOTATION
+
 🧾 Example
 - **Namespace**:easytrade
 - **Pod**:accountservice
@@ -108,8 +135,8 @@ Enrichment via Pod Annotation:
 metadata:
   annotations:
     dt.security_context: "easytrade"
-    dt.cost.costcenter: "easytrade"
-    dt.cost.product: "easytrade"
+    dt.cost.costcenter: "platform"
+    dt.cost.product: "accountservice"
 
 ```
 
@@ -117,6 +144,34 @@ Apply with:
 ```
 kubectl apply -f accountservice.yaml -n easytrade
 ```
+
+**Task 3: Manual Pod Annotation for Granularity**
+If you need workload-level granularity, manual annotations are required.
+
+PICTURE FOR EXAMPLE
+
+Update your deployment manifest:
+
+```
+metadata:
+  annotations:
+    metadata-enrichment.dynatrace.com/inject: "true"
+    metadata.dynatrace.com/dt.security_context: "easytrade"
+    metadata.dynatrace.com/dt.cost.costcenter: "platform"
+    metadata.dynatrace.com/dt.cost.product: "accountservice"
+
+```
+
+Apply with:
+
+```
+kubectl apply -f /path/to/accountservice.yaml -n easytrade
+```
+
+> ⚠️ Notes
+> - Namespace-level enrichment is easier but less granular.
+> - Workload-level enrichment gives full control but requires manual effort.
+> - Without proper annotations, filtering and cost allocation may be limited.
 
 > NEED TO ADD SCREENSHOTS AND UI STEPS THAT PARTICIPANTS WILL NEED TO COMPLETE TO HAVE THESE ATTRIBUTES PROPAGATED PROPERLY
 
