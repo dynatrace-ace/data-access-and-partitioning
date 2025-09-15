@@ -1,5 +1,16 @@
 ## Data Access
 
+#### The Easytrade scenario
+
+Easytrade, a fast-growing fintech platform, has just expanded its operations across multiple regions and teams. With 13 microservices powering everything from login to trading, the platform is now managed by several specialized teams: infrastructure, observability, and application owners.
+
+As the company scales, so does the complexity of managing access to observability data. The infrastructure team needs full control over configurations, while application teams only need read access to their own services. Meanwhile, everyone should be able to view SLOs and dashboards.
+
+To avoid chaos and manual permission management, Easytrade decides to implement a scalable IAM strategy in Dynatrace — one that uses custom roles, policy boundaries, and group-based access control.
+
+Your mission in this lab is to help Easytrade build this strategy from the ground up.
+
+
 ### 🎯 Objectives
 
 - Understand how Dynatrace IAM works.
@@ -15,7 +26,10 @@ Default users get access to Dynatrace apps and basic usage features, but no data
 
 **Tasks**
 
-1. Create Policy: Default users – App access permissions – Apps Access
+1. Create Policy: Default users
+
+<details>
+  <summary>App access permissions – Apps Access</summary>
 ```
 ALLOW app-engine:apps:run WHERE shared:app-id IN (
   "dynatrace.appshell",
@@ -75,8 +89,11 @@ ALLOW app-engine:apps:run WHERE shared:app-id IN (
   "dynatrace.learndql"
 );
 ```
-2. Add to Policy: Default users – Standard permissions – Basic Usage
+</details>
+2. Add to Policy: Default users
 
+<details>
+  <summary>Standard permissions – Basic Usage</summary>
 ```
 ALLOW
   state:app-states:delete,
@@ -116,28 +133,37 @@ ALLOW
   slo:slos:read,
   slo:objective-templates:read;
 ```
+</details>
+3. Add to Policy: Default users 
 
-3. Add to Policy: Default users – Workaround Infra&Ops apps issues – Default Metrics Access
+<details>
+  <summary>Workaround Infra&Ops apps issues – Default Metrics Access</summary>
 ```
 ALLOW storage:metrics:read WHERE storage:metric.key IN (
   "dt.host.availability",
   "dt.host.uptime"
 );
 ```
+</details>
 
-4. Add to Policy: Default users – Network Devices in Infra&Ops App – Extensions Access
+4. Add to Policy: Default users
+
+<details>
+  <summary>Network Devices in Infra&Ops App – Extensions Access</summary>
 ```
 ALLOW extensions:definitions:read, extensions:configurations:read
 WHERE extensions:extension-name IN (
   "com.dynatrace.extension.snmp-auto-discovery"
 );
 ```
-
+</details>
 
 #### Exercise 2: Create Reader Role & Policy
 
-Policy: Readers – Read permissions – Basic Data
+Policy: Readers
 
+<details>
+  <summary>Read permissions – Basic Data</summary>
 ```
 ALLOW
   storage:buckets:read,
@@ -158,34 +184,44 @@ ALLOW
   extensions:definitions:read,
   extensions:configurations:read;
 ```
+</details>
 
 #### Exercise 3: Create Writer Role & Policies
 
-Policy 1: Writers – Write permissions on settings – Settings
+Policy 1: Writers
 
+<details>
+  <summary>Write permissions on settings – Settings</summary>
 ```
 ALLOW settings:objects:write, environment:roles:manage-settings;
 ```
+</details>
+Policy 2: Writers
 
-Policy 2: Writers – Write permissions on extensions – Extensions
-
+<details>
+  <summary>Write permissions on extensions – Extensions</summary>
 ```
 ALLOW settings:objects:write, environment:roles:manage-settings;
 ```
-
+</details>
 #### Exercise 4: Create Boundaries
 
-Boundary 1: Boundary – dt.security_context = easytrade
+Boundary 1
 
+<details>
+  <summary>dt.security_context = easytrade</summary>
 ```
 storage:dt.security_context IN ("easytrade")
 ```
+</details>
+Boundary 2
 
-Boundary 2 – management-zone = easytrade
-
+<details>
+  <summary>management-zone = easytrade</summary>
 ```
 environment:management-zone IN ("easytrade")
 ```
+</details>
 
 #### Exercise 5: Create Groups & Assign Policies
 
