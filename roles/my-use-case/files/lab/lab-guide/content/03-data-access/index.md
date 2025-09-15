@@ -30,7 +30,8 @@ Default users get access to Dynatrace apps and basic usage features, but no data
 
 <details>
   <summary>App access permissions – Apps Access</summary>
-```
+
+```sql
 ALLOW app-engine:apps:run WHERE shared:app-id IN (
   "dynatrace.appshell",
   "dynatrace.launcher",
@@ -90,11 +91,13 @@ ALLOW app-engine:apps:run WHERE shared:app-id IN (
 );
 ```
 </details>
+
 2. Add to Policy: Default users
 
 <details>
   <summary>Standard permissions – Basic Usage</summary>
-```
+
+```sql
 ALLOW
   state:app-states:delete,
   state:app-states:read,
@@ -134,11 +137,13 @@ ALLOW
   slo:objective-templates:read;
 ```
 </details>
+
 3. Add to Policy: Default users 
 
 <details>
   <summary>Workaround Infra&Ops apps issues – Default Metrics Access</summary>
-```
+
+```sql
 ALLOW storage:metrics:read WHERE storage:metric.key IN (
   "dt.host.availability",
   "dt.host.uptime"
@@ -150,7 +155,8 @@ ALLOW storage:metrics:read WHERE storage:metric.key IN (
 
 <details>
   <summary>Network Devices in Infra&Ops App – Extensions Access</summary>
-```
+
+```sql
 ALLOW extensions:definitions:read, extensions:configurations:read
 WHERE extensions:extension-name IN (
   "com.dynatrace.extension.snmp-auto-discovery"
@@ -164,7 +170,8 @@ Policy: Readers
 
 <details>
   <summary>Read permissions – Basic Data</summary>
-```
+
+```sql
 ALLOW
   storage:buckets:read,
   storage:entities:read,
@@ -192,33 +199,40 @@ Policy 1: Writers
 
 <details>
   <summary>Write permissions on settings – Settings</summary>
-```
+
+```sql
 ALLOW settings:objects:write, environment:roles:manage-settings;
 ```
 </details>
+
 Policy 2: Writers
 
 <details>
   <summary>Write permissions on extensions – Extensions</summary>
-```
+
+```sql
 ALLOW settings:objects:write, environment:roles:manage-settings;
 ```
 </details>
+
 #### Exercise 4: Create Boundaries
 
 Boundary 1
 
 <details>
   <summary>dt.security_context = easytrade</summary>
-```
+
+```sql
 storage:dt.security_context IN ("easytrade")
 ```
 </details>
+
 Boundary 2
 
 <details>
   <summary>management-zone = easytrade</summary>
-```
+
+```sql
 environment:management-zone IN ("easytrade")
 ```
 </details>
