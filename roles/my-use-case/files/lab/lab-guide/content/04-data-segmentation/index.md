@@ -28,9 +28,8 @@ This encodes:
 - app → multi
 - stage → prod
 
-📷 Insert Image Placeholder
-Image: Host Group definition example
-(image-20250807-102938.png)
+![](../../assets/images/host-group-definition.png)
+> Host Group definition
 
 #### Exercise 2: Compare Management Zones with Segments
 
