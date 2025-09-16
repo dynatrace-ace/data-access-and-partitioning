@@ -32,7 +32,7 @@ Key Enrichment Targets:
 Fields:
 - `k8s.namespace.name`
 - `k8s.cluster.name`
-  
+
 Pros:
 - Out-of-the-box (OOTB)
 - No configuration needed
@@ -97,6 +97,9 @@ Dynatrace automatically enriches telemetry data with Kubernetes metadata such as
 - `k8s.cluster.name`
 - `k8s.namespace.name`
 
+![](../../assets/images/k8s-namespaces.png)
+> Kubernetes Cluster namespaces
+
 **Instructions:**
 1. Open Dynatrace and navigate to Segments.
 2. Create a new segment based on k8s.namespace.name.
@@ -104,6 +107,9 @@ Dynatrace automatically enriches telemetry data with Kubernetes metadata such as
 4. Observe how Dynatrace uses this metadata to group and contextualize your services.
 
 > 💡 Tip: This is useful for OOTB IAM and Segment configurations.
+
+![](../../assets/images/k8s-namespace-segment.png)
+> Kubernetes Namespace-based segment
 
 If this is not enough and you'd like to go further and you require more configuration possibilities. Let's explore the enrichment strategy at source. You can enrich data by adding custom labels and annotations to your Kubernetes manifests. Dynatrace will pick these up and use them for tagging and filtering.
 
@@ -118,15 +124,18 @@ How to do that you might ask? Well... Let's look at how customers manage modern 
 
 In K8s, annotations and labels are both key-value pairs used to attach metadata to objects like Pods, Services, and Deployments. Customers following cloud-native tagging best practices will define their partitioning with labels & annotations, as follows:
 
-PICTURE FOR CLOUD ENRICHMENT
+![](../../assets/images/labels-annotations.png)
 
 You can use the K8s Enrichment settings to transform labels & annotations into dt.security_context, dt.cost.costcenter, dt.cost.product
 
+![](../../assets/images/labels-annotations-settings.png)
+
 > 💡 How it works? The Dynatrace Operator will take care of the enrichment when mutating the pod definition
 
-PICTURE FOR ANNOTATION
+![](../../assets/images/labels-annotations-in-action.png)
 
-🧾 Example
+**Example**
+
 - **Namespace**:easytrade
 - **Pod**:accountservice
 
@@ -146,9 +155,9 @@ kubectl apply -f accountservice.yaml -n easytrade
 ```
 
 **Task 3: Manual Pod Annotation for Granularity**
-If you need workload-level granularity, manual annotations are required.
+If you need workload-level granularity, manual annotations are required. Check the picture below where our accountservice doesn't have the proper enrichment.
 
-PICTURE FOR EXAMPLE
+![](../../assets/images/before-manual-pod-enrichment.png)
 
 Update your deployment manifest:
 
@@ -167,15 +176,13 @@ Apply with:
 ```
 kubectl apply -f /path/to/accountservice.yaml -n easytrade
 ```
+![](../../assets/images/after-manual-pod-enrichment.png)
+> Result
 
 > ⚠️ Notes
 > - Namespace-level enrichment is easier but less granular.
 > - Workload-level enrichment gives full control but requires manual effort.
 > - Without proper annotations, filtering and cost allocation may be limited.
-
-> NEED TO ADD SCREENSHOTS AND UI STEPS THAT PARTICIPANTS WILL NEED TO COMPLETE TO HAVE THESE ATTRIBUTES PROPAGATED PROPERLY
-
-
 
 
 OLD STRUCTURE - keeping it for now
