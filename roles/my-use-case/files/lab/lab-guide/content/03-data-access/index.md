@@ -6,16 +6,16 @@ Easytrade, a fast-growing fintech platform, has just expanded its operations acr
 
 As the company scales, so does the complexity of managing access to observability data. The infrastructure team needs full control over configurations, while application teams only need read access to their own services. Meanwhile, everyone should be able to view SLOs and dashboards.
 
-To avoid chaos and manual permission management, Easytrade decides to implement a scalable IAM strategy in Dynatrace — one that uses custom roles, policy boundaries, and group-based access control.
+To avoid chaos and manual permission management, Easytrade decides to implement a scalable IAM strategy in Dynatrace, one that uses custom roles, policy boundaries, and group-based access control.
 
-Your mission in this lab is to help Easytrade build this strategy from the ground up.
+Your main goal in this lab is to help Easytrade build this strategy from the ground up.
 
 
 ### 🎯 Objectives
 
 - Understand how Dynatrace IAM works.
 - Learn how to create and manage roles, policies, boundaries, and groups.
-- Apply scoped access using dt.security_context and management-zone.
+- Apply scoped access using `dt.security_context` and a management zone.
 - Minimize maintenance effort by decoupling permissions from scopes.
 
 
@@ -92,10 +92,10 @@ ALLOW app-engine:apps:run WHERE shared:app-id IN (
 ```
 </details>
 
-2. Add to Policy: Default users
+2. Create Policy: Basic Usage
 
 <details>
-  <summary>Standard permissions – Basic Usage</summary>
+  <summary>Standard permissions</summary>
 
 ```sql
 ALLOW
@@ -138,7 +138,7 @@ ALLOW
 ```
 </details>
 
-3. Add to Policy: Default users 
+3. Create Policy: Default Metrics Access 
 
 <details>
   <summary>Workaround Infra&Ops apps issues – Default Metrics Access</summary>
@@ -151,10 +151,10 @@ ALLOW storage:metrics:read WHERE storage:metric.key IN (
 ```
 </details>
 
-4. Add to Policy: Default users
+4. Create Policy: Extensions Access
 
 <details>
-  <summary>Network Devices in Infra&Ops App – Extensions Access</summary>
+  <summary>Network Devices in Infra&Ops App</summary>
 
 ```sql
 ALLOW extensions:definitions:read, extensions:configurations:read
@@ -211,7 +211,7 @@ Policy 2: Writers
   <summary>Write permissions on extensions – Extensions</summary>
 
 ```sql
-ALLOW settings:objects:write, environment:roles:manage-settings;
+ALLOW extensions:configurations:write, extensions:configuration.actions:write;
 ```
 </details>
 
