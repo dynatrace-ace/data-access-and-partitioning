@@ -141,7 +141,12 @@ If you need workload-level granularity, manual annotations are required. Check t
 
 ![](../../assets/images/before-manual-pod-enrichment.png)
 
-Update your deployment manifest:
+Update your deployment manifest by following instructions below:
+- SSH into your VM
+- Run `kubectl describe pod <accountservicepodname> -n easytrade` and explore the annotations
+- Export the pod manifest with the following command `kubectl get pod <accountservicepodname> -n easytrade -o yaml > <path>/accountservice-pod.yaml`
+- Use vi or nano to edit the file and add the metadata enrichment from below - then save.
+- Run `kubectl apply -f <path>/accountservice-pod.yaml` to apply the manifest and look for the updates in your accountservice workload.
 
 ```
 metadata:
@@ -153,12 +158,8 @@ metadata:
 
 ```
 
-Apply with:
 
-```
-kubectl apply -f /path/to/accountservice.yaml -n easytrade
-```
-![](../../assets/images/after-manual-pod-enrichment.png)
+![](../../assets/images/after-manual-pod-enrichment-1.png)
 > Result
 
 > ⚠️ Notes

@@ -61,6 +61,9 @@ Extract platform from Host Group names and use it to filter all data.
 ![](../../assets/images/segment-preview.png)
 > Variable preview (filter)
 
+![](../../assets/images/entity-segment.png)
+> Easytrade (security context based) segment for entities
+
 #### Exercise 4: Create App & Stage Segments
 
 Repeat the process for app and stage.
