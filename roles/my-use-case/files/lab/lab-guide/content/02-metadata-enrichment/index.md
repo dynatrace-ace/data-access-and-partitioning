@@ -143,10 +143,7 @@ If you need workload-level granularity, manual annotations are required. Check t
 
 Update your deployment manifest by following instructions below:
 - SSH into your VM
-- Run `kubectl describe pod <accountservicepodname> -n easytrade` and explore the annotations
-- Export the pod manifest with the following command `kubectl get pod <accountservicepodname> -n easytrade -o yaml > <path>/accountservice-pod.yaml`
-- Use vi or nano to edit the file and add the metadata enrichment from below - then save.
-- Run `kubectl apply -f <path>/accountservice-pod.yaml` to apply the manifest and look for the updates in your accountservice workload.
+- Run `kubectl edit deployment <deploymentname> -n easytrade` and add the annotations under spec > template > metadata. The pod will be automatically restarted and after a few minutes you will see a new one appear in your cluster as well as in Dynatrace UI.
 
 ```
 metadata:
