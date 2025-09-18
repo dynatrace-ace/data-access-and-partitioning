@@ -127,8 +127,7 @@ All of these steps are required in order to add additional topology enrichment f
 - New rules may take up to 45 minutes to become effective.
 - After the rules are applied, pod restarts are required to ensure the changes take effect.
 
-You can use this command - `kubectl rollout restart deployment -n easytrade`
-
+Please SSH into your VM and restart all pods. You can use this command - `kubectl rollout restart deployment -n easytrade`
 
 ![](../../assets/images/labels-annotations-settings.png)
 
@@ -136,25 +135,6 @@ You can use this command - `kubectl rollout restart deployment -n easytrade`
 
 ![](../../assets/images/labels-annotations-in-action.png)
 
-**Example**
-
-- **Namespace**:easytrade
-- **Pod**:accountservice
-
-Enrichment via Pod Annotation:
-```
-metadata:
-  annotations:
-    dt.security_context: "easytrade"
-    dt.cost.costcenter: "platform"
-    dt.cost.product: "accountservice"
-
-```
-
-Apply with:
-```
-kubectl apply -f accountservice.yaml -n easytrade
-```
 
 **Task 3: Manual Pod Annotation for Granularity**
 If you need workload-level granularity, manual annotations are required. Check the picture below where our accountservice doesn't have the proper enrichment.

@@ -52,10 +52,9 @@ Instructions:
 1. Copy the notebook: https://guu84124.apps.dynatrace.com/ui/document/v0/#share=06f00290-72b6-4a03-930d-5a7bf17de35e
 2. Explore metadata sources:
     - Host Groups
-      Example: k8s_multi_prod →
-      platform: k8s, app: multi, environment: prod
+    - MZ rules
     - Tag Rules
-      Look for tags that reveal dimensions like app, stage, team, etc.
+      Look for tags that reveal dimensions like platform, app, stage, team, etc.
 
 Write down the dimensions you discover:
 
