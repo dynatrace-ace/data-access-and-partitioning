@@ -29,10 +29,13 @@ Review the customer’s log ingestion volume per app. You can do that by fetchin
 
 Choose the right dimension to partition logs - in this case, we can go with the namespace name.
 
-1. Go to Settings > Process and Contextualize > Logs 
-2. Add a new dynamic routing rule with a route = `k8s.namespace.name == "easytrade"`
-3. Add a new pipeline and in the last stage of the pipeline, add the bucket asignment rule.
-4. Fetch the logs again and check that your rule works.
+1. Go to Settings > Storage Management 
+2. Click on "+Bucket"
+3. Create a new custom bucket for easytrade logs and choose your retention
+4. Go to Settings > Process and Contextualize > Logs 
+5. Add a new dynamic routing rule with a route = `k8s.namespace.name == "easytrade"`
+6. Add a new pipeline and in the last stage of the pipeline, add the bucket asignment rule.
+7. Fetch the logs again and check that your rule works.
 
 
 # -TO-DO
