@@ -33,6 +33,7 @@
   vars:
     monaco_manifest_path: " /home/ace/repos/data-access-and-partitioning/roles/my-use-case/files/monaco/main/manifest.yaml"
     monaco_environment:
+      DT_CLASSIC_TENANT_URL: "{{ extra_vars.dt_environment_url_classic.rstrip('/') }}"
       DT_PLATFORM_TENANT_URL: "{{ extra_vars.dt_environment_url_gen3.rstrip('/') }}"
       DT_OAUTH_CLIENT_ID: "{{ extra_vars.dt_oauth_client_id }}"
       DT_OAUTH_CLIENT_SECRET: "{{ extra_vars.dt_oauth_client_secret }}"
