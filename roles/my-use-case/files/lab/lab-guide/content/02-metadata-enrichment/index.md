@@ -140,9 +140,11 @@ Please SSH into your VM and restart all pods. You can use this command - `kubect
 ***
 
 **Task 3: Manual Pod Annotation for Granularity**
-If you need workload-level granularity, manual annotations are required. Check the picture below where our accountservice doesn't have the proper enrichment.
+If you need workload-level granularity, manual annotations are required. For example, you want to be more specific on the product and cost center for the loginservice.<!--Check the picture below where our accountservice doesn't have the proper enrichment.-->
+Note that:
+- Manually set metadata.dynatrace.com pod annotations take precedence over metadata enrichment configurations
 
-![](../../assets/images/before-manual-pod-enrichment.png)
+<!--![](../../assets/images/before-manual-pod-enrichment.png)-->
 
 Update your deployment manifest by following instructions below:
 - SSH into your VM
@@ -154,13 +156,13 @@ metadata:
     metadata-enrichment.dynatrace.com/inject: "true"
     metadata.dynatrace.com/dt.security_context: "easytrade"
     metadata.dynatrace.com/dt.cost.costcenter: "platform"
-    metadata.dynatrace.com/dt.cost.product: "accountservice"
+    metadata.dynatrace.com/dt.cost.product: "loginservice"
 
 ```
-
-
+<!--![](../../assets/images/after-manual-pod-enrichment-1.png)-->
+> Results:
+![](../../assets/images/after-manual-pod-enrichment.png)
 ![](../../assets/images/after-manual-pod-enrichment-1.png)
-> Result
 
 > ⚠️ Notes
 > - Namespace-level enrichment is easier but less granular.
