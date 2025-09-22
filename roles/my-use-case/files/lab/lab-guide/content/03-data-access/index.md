@@ -68,6 +68,7 @@ Now that any Dynatrace User can access the default features, we want to allow us
 3. Fill the form:
 - Boundary name: "Easytrade"
 - Boundary query:
+
 <details>
   <summary>Boundary query:</summary>
 ```sql
