@@ -161,6 +161,7 @@ metadata:
 ```
 <!--![](../../assets/images/after-manual-pod-enrichment-1.png)-->
 > Results:
+
 ![](../../assets/images/after-manual-pod-enrichment.png)
 ![](../../assets/images/after-manual-pod-enrichment-1.png)
 
