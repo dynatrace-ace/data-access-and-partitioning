@@ -1,6 +1,6 @@
 ## Data Partitioning and Cost Allocation
 
-Since easytrade is frowing fast and multiple teams are accessing logs and metrics across environments, performance and cost are becoming critical concerns.
+Since easytrade is growing fast and multiple teams are accessing logs and metrics across environments, performance and cost are becoming critical concerns.
 To stay ahead, Easytrade engineers need to implement a bucket strategy to optimize log storage and query performance. At the same time, they’re introducing cost allocation tagging to track usage across teams and applications.
 This lab will guide you through designing a log bucket strategy and applying cost allocation metadata to a VM — helping Easytrade scale smart, not just fast.
 
@@ -18,6 +18,38 @@ Why do buckets matter?
 - Data Retention: Controls how long logs are stored - main use!
 - Query Performance: Targeted buckets reduce scan time.
 - Cost Efficiency: Less scan = lower DQL costs.
+
+You could technically rely on the default buckets, without creating custom ones. The advantage would be a reduced configuration management, but the drawback would be a decreased performance & costs. That’s the trade-off when desiging your bucket strategy.
+
+Keep that in mind especially for small accounts, you don’t want to overcomplicate the solution. But for Enterprise accounts, a bucket strategy is required.
+
+![](../../assets/images/ingest-volume-buckets.png)
+
+#### Examples
+
+**Small scale customer ( < 2GB/day )**
+
+If your customer has a low ingestion volume (e.g., less than 2 GB/day), they’ll likely operate within the default limit of 80 buckets per environment. In this case:
+- Avoid creating too many buckets — especially at the team level.
+- Instead, consider using record-level permissions within a few shared buckets.
+- Focus on functional separation — split logs based on their purpose (e.g., infrastructure vs. application logs), rather than ownership.
+
+This approach keeps configuration simple and avoids unnecessary overhead.
+
+**Large scale customer (500-1000 buckets)**
+
+For enterprise customers with higher ingestion volumes and extended bucket limits:
+
+- A multi-bucket strategy becomes essential.
+- Buckets should be designed to support:
+    - Data retention policies
+    - Query performance optimization
+    - Cost control
+    - Access control per team or business unit
+
+Use meaningful dimensions like `app`, `business_unit`, or `stage` to partition logs. The goal is to stay under 5 TB/day per bucket, while keeping the configuration scalable and maintainable.
+
+> 💡 Remember: Custom buckets are primarily designed for data retention, but they also play a key role in access control and cost efficiency.
 
 #### Exercise 1: Analyze Ingestion Volume
 
@@ -47,5 +79,4 @@ Use IAM to restrict log access by bucket.
 
 
 #### Exercise 4: Cost Allocation – Tagging a VM
-
 
