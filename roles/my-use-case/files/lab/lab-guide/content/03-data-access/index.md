@@ -86,7 +86,7 @@ environment:management-zone IN ("easytrade");
 
 ***
 
-#### Exercice 3: Create permissions for "Readers"
+#### Exercice 3: Create Access for Easytrade "Readers"
 
 We now want to grant specific users with "Readers" access to Dynatrace. Allowing them to see data in the different apps.
 
