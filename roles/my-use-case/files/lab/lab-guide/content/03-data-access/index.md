@@ -79,6 +79,10 @@ environment:management-zone IN ("easytrade");
 
 </details>
 
+- Click on "Save"
+
+![](../../assets/images/lab3-ex2-task1-create-boundary.png)
+
 ***
 
 #### Exercice 3: Create permissions for "Readers"
