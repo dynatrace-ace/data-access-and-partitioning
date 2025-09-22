@@ -28,8 +28,7 @@ Key Enrichment Targets:
 #### 🛠️ Step 2: Explore Enrichment Strategies
 🧪 Use the guide: [Enrichment Kubernetes](https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1229849653/Enrichment+Kubernetes)
 
-✅ **Option 1**: Rely on Primary Grail Fields
-Fields:
+✅ **Option 1**: Rely on Primary Grail Fields:
 - `k8s.namespace.name`
 - `k8s.cluster.name`
 
@@ -38,7 +37,7 @@ Fields:
 | Out-of-the-box (OOTB)|	Limited granularity | Quick setup is needed	| 
 | No configuration needed |	 Only namespace-level |	Simple IAM and segmentation	|
 
----
+***
 
 🟡 **Option 2**: Use [Namespace Annotations & Labels](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/guides/metadata-automation/k8s-metadata-telemetry-enrichment)
 
@@ -50,7 +49,7 @@ How it works? Dynatrace Operator converts namespace-level metadata into enrichme
 | Moderate effort |	 Requires Dynatrace configuration |	Needs more flexibility than OOTB fields	|
 | Supports custom Primary Grail Tags |  | |
 
----
+***
 
 🔴 **Option 3**: Set Manual Pod Annotations
 
@@ -61,7 +60,7 @@ How it works? Manually add annotations to pod definitions (e.g., in deployment Y
 | Maximum granularity (workload-level) |	Requires code changes | Need to segregate access or cost at workload level	| 
 | Full control over enrichment |	 Higher effort |	Namespace-level granularity is not enough	|
 
----
+***
 
 #### Summary Table
 
@@ -71,6 +70,7 @@ How it works? Manually add annotations to pod definitions (e.g., in deployment Y
 | Namespace Annotations/Labels |	🟡 Medium |	Namespace	| 🟡 Moderate	| Declarative tagging, cloud-native orgs |
 | Manual Pod Annotations	| 🔴 High	| Workload | 🟢 Maximum	| Fine-grained control, cost partitioning|
 
+___
 
 #### 🧩 Step 3: Try It Out
 
@@ -96,6 +96,8 @@ Dynatrace automatically enriches telemetry data with Kubernetes metadata such as
 > Kubernetes Namespace-based segment
 
 If this is not enough and you'd like to go further and you require more configuration possibilities. Let's explore the enrichment strategy at source. You can enrich data by adding custom labels and annotations to your Kubernetes manifests. Dynatrace will pick these up and use them for tagging and filtering.
+
+***
 
 **Task 2: Automatic Enrichment via Kubernetes Metadata at Source**
 
@@ -123,9 +125,9 @@ You can use the K8s Enrichment settings to transform labels & annotations into `
   - Primary grail tag = false
   - Target = `dt.security_context`
 
-All of these steps are required in order to add additional topology enrichment for K8s. In order for the rule to work, we need to keep in mind 3 things:
-- New rules may take up to 45 minutes to become effective.
-- After the rules are applied, pod restarts are required to ensure the changes take effect.
+All of these steps are required in order to add additional topology enrichment for K8s. In order for the rule to work, we need to keep in mind 2 things:
+- After creating or modifying rules, allow up to 45 minutes for the changes to take effect
+- Once this time has passed, restart your pods
 
 Please SSH into your VM and restart all pods. You can use this command - `kubectl rollout restart deployment -n easytrade`
 
@@ -135,6 +137,7 @@ Please SSH into your VM and restart all pods. You can use this command - `kubect
 
 ![](../../assets/images/labels-annotations-in-action.png)
 
+***
 
 **Task 3: Manual Pod Annotation for Granularity**
 If you need workload-level granularity, manual annotations are required. Check the picture below where our accountservice doesn't have the proper enrichment.
