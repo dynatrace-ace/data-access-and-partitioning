@@ -123,6 +123,14 @@ We now want to grant specific users with "Readers" access to Dynatrace. Allowing
 
 ***
 
+#### Exercice 4: Create Access for Easytrade "Writers"
+
+***
+
+#### Exercice 5: Assign users to groups
+
+
+
 ---
 ### Approach 2 - Using Custom Policies
 
