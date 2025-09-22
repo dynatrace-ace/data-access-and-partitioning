@@ -18,48 +18,6 @@ Your main goal in this lab is to help Easytrade build this strategy from the gro
 - Apply scoped access using `dt.security_context` and a management zone.
 - Minimize maintenance effort by decoupling permissions from scopes.
 
-#### Approches:
-
-| Approach	| Effort |	Flexibility | Comments | Best For
-| ------ | ------ | ------ | ------ | ------| ------|
-| Default Dynatrace Policies |	🟢 Low	| 🔴 Limited | Policies are automatically updated by Dynatrace, with new statements on new features | New customers or new to policies, fine with "roles" being automatically updated |
-| Custom Policies |	🔴 High	| 🟢 Maximum	| Customers are maintaining custom policies, adding or removing statements on new/changing features | Customers that are familiar with policies and want to keep full control on which permissions to grant or not |
-
----
-### Approach 1 - Using Default Dynatrace Policies
-
-#### Exercice 1:
-
-We want to grant all users with "default" access to Dynatrace. Granting them the ability to use the Platform:
-- Basic usage
-- Basic apps and features
-
->💡This is just about allowing usage, and not granting access to data.
-
-**Task 1: Explore the default Dynatrace Policies**
-
-1. Navigate to the Account Management Portal > Identity & access management > Policies
-2. Explore the different policies of category "Dynatrace access"
-3. Understand which policy is a good fit for all Dynatrace Users
-
-**Task 2: Assign the policy to the Default group with all users**
-
-1. Navigate to the Account Management Portal > Identity & access management > Groups
-2. Edit "Default group with all users"
-3. Add a new permission and select:
-- Permission name: "Standard User"
-- Scope: tick the "Account (all environments)" box
-- Boundaries: leave empty
-4. Click on "save"
-
-![](../../assets/images/lab3-ex1-task2-attach-policy.png)
-
-***
-
-***
-
----
-### Approach 2 - Using Custom Policies
 
 #### Exercise 1: Create Default User Policies
 
