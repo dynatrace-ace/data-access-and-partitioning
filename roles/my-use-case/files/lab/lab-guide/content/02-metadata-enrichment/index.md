@@ -77,6 +77,7 @@ ___
 Complete enrichment using all strategies.
 
 **Task 1: Automatic Enrichment via Kubernetes Metadata**
+
 Dynatrace automatically enriches telemetry data with Kubernetes metadata such as:
 - `k8s.cluster.name`
 - `k8s.namespace.name`
