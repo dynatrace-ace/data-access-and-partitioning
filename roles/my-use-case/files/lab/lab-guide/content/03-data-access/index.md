@@ -28,7 +28,7 @@ Your main goal in this lab is to help Easytrade build this strategy from the gro
 ---
 ### Approach 1 - Using Default Dynatrace Policies
 
-#### Exercice 1:
+#### Exercice 1: Create permissions for default users
 
 We want to grant all users with "default" access to Dynatrace. Granting them the ability to use the Platform:
 - Basic usage
@@ -55,7 +55,49 @@ We want to grant all users with "default" access to Dynatrace. Granting them the
 ![](../../assets/images/lab3-ex1-task2-attach-policy.png)
 
 ***
+#### Exercice 2: Create a boundary for "Easytrade"
 
+Now that any Dynatrace User can access the default features, we want to allow users to access specific observability data.
+
+>💡We want to create a boundary for the 'Easytrade' app that will be attachable to any permission.
+
+**Task 1: Create the boundary**
+
+1. Navigate to the Account Management Portal > Identity & access management > Policies, and to the "Boundaries" tab
+2. Click on the "+ Create boundary" button
+3. Fill the form:
+- Boundary name: "Easytrade"
+- <details>
+  <summary>Boundary query:</summary>
+```sql
+storage:dt.security_context IN ("easytrade");
+environment:management-zone IN ("easytrade");
+```
+</details>
+
+***
+
+#### Exercice 3: Create permissions for "Readers"
+
+We now want to grant specific users with "Readers" access to Dynatrace. Allowing them to see data in the different apps.
+
+>💡We want to create a group for the 'Easytrade' app with read permissions.
+
+**Task 1: Explore the default Dynatrace Policies**
+
+1. Navigate to the Account Management Portal > Identity & access management > Policies
+2. Explore the different policies of category "Data access"
+3. Understand which policy is a good fit for Dynatrace "Readers"
+
+**Task 2: Assign the policy to the Default group with all users**
+
+1. Navigate to the Account Management Portal > Identity & access management > Groups
+2. Edit "Default group with all users"
+3. Add a new permission and select:
+- Permission name: "Standard User"
+- Scope: tick the "Account (all environments)" box
+- Boundaries: leave empty
+4. Click on "save"
 ***
 
 ---
