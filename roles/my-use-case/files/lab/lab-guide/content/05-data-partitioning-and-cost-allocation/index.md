@@ -80,3 +80,8 @@ Use IAM to restrict log access by bucket.
 
 #### Exercise 4: Cost Allocation – Tagging a VM
 
+- Step 1 Cost center allow list - https://docs.dynatrace.com/docs/license/cost-allocation#cost-allocation-allowlist
+- Step 2 configure host properties with remote connection - https://docs.dynatrace.com/docs/license/cost-allocation#big-steps--auto--1--Configure-Cost-Allocation-on-the-host
+- explain that for k8s we have already done it with taks 2 and 3 in lab 2
+- Download a dashboard - https://guu84124.apps.dynatrace.com/ui/document/v0/#share=96fef674-3349-470b-80a0-80d98765864d
+- Upload it to their personal tenant
