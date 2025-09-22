@@ -46,11 +46,12 @@ We want to grant all users with "default" access to Dynatrace. Granting them the
 
 1. Navigate to the Account Management Portal > Identity & access management > Groups
 2. Edit "Default group with all users"
-3. Add a new permission and select:
+3. Click on the "+ Permission" button
+4. Fill the form:
 - Permission name: "Standard User"
 - Scope: tick the "Account (all environments)" box
 - Boundaries: leave empty
-4. Click on "save"
+5. Click on "save"
 
 ![](../../assets/images/lab3-ex1-task2-attach-policy.png)
 
@@ -93,19 +94,33 @@ We now want to grant specific users with "Readers" access to Dynatrace. Allowing
 
 **Task 1: Explore the default Dynatrace Policies**
 
-1. Navigate to the Account Management Portal > Identity & access management > Policies
+1. Navigate to the Account Management Portal > Identity & access management 
 2. Explore the different policies of category "Data access"
 3. Understand which policy is a good fit for Dynatrace "Readers"
 
-**Task 2: Assign the policy to the Default group with all users**
+**Task 2: Create a group for the Easytrade Readers**
 
-1. Navigate to the Account Management Portal > Identity & access management > Groups
-2. Edit "Default group with all users"
-3. Add a new permission and select:
-- Permission name: "Standard User"
+1. Navigate to the Account Management Portal > Identity & access management > Group management
+2. Click on the "+ Create group" button
+3. Fill the form
+- Name: "[Readers] Easytrade"
+- Description: "Grants reading permissions to observability data for the Easytrade team"
+4. Click on "Create"
+
+![](../../assets/images/lab3-ex3-task2-create-group.png)
+
+**Task 3: Assign the policy and boundary to the [Readers] Easytrade group**
+
+1. On the newly created group edition page
+2. Click on the "+ Permission" button
+3. Fill the form:
+- Permission name: "All Grail data read access"
 - Scope: tick the "Account (all environments)" box
-- Boundaries: leave empty
+- Boundaries: "Easytrade"
 4. Click on "save"
+
+![](../../assets/images/lab3-ex3-task3-assign-policy-boundary.png)
+
 ***
 
 ---
