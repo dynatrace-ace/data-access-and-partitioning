@@ -84,22 +84,27 @@ fetch dt.entity.host_group
 DQL for Stage
 
 ```sql
-fetch dt.entity.host_group
-| parse entity.name, """LD:platform '_' LD:app '_' LD:stage"""
-| dedup stage
-| fields stage
+fetch dt.entity.cloud_application_namespace
+| fieldsAdd cloudApplicationLabels
+| fields stage = cloudApplicationLabels[stage]
 ```
 
 Segment Filters
 
-App: `dt.host_group.id = *$app*`
-Stage: `dt.host_group.id = $stage*`
+App: `k8s.namespace.name = $application_name OR tag = $tag`
+Stage: `dt.host_group.id = *"$stage" `
 
-![](../../assets/images/app-segment-configuration.png)
+![](../../assets/images/lab4-app-segment-variable.png)
+>Variable configuration for App segment
+
+![](../../assets/images/lab4-app-segment-configuration.png)
 > App Segment configuration
 
-![](../../assets/images/stage-segment-configuration.png)
-> Stage Segment configuration
+![](../../assets/images/lab4-stage-segment-variable.png)
+>Variable configuration for Stage segment
+
+![](../../assets/images/lab4-stage-segment-configuration.png)
+> Full Stage segment configuration
 
 #### Exercise 5: Validate Segments with Logs
 
