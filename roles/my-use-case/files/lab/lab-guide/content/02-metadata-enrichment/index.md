@@ -7,10 +7,10 @@ All participants will enrich observability data (entities, metrics, events, logs
 - `dt.cost.product`
 > The idea is to explore different enrichment strategies using Kubernetes and understand trade offs between approaches.
 
-#### 📋 Step 1: Understand Why Metadata Enrichment Matters
+#### Step 1: Understand Why Metadata Enrichment Matters
 💡 Enrichment helps with access control, cost allocation, segmentation, and governance. We are trying to make sure that observability data is tagged with meaningful context.
 
-Key Enrichment Targets:
+**Key Enrichment Targets**:
 - Entities (e.g., services, workloads)
 - Metrics
 - Events
@@ -18,15 +18,15 @@ Key Enrichment Targets:
 - Traces
 
   
-🧠 Questions to consider:
+**Questions to consider**:
 - What metadata do you need to enrich your data with?
 - What level of granularity is required—namespace or workload?
 - Do you want enrichment to be automatic, declarative, or manual?
 - How will this metadata be used for IAM, cost control, and segmentation?
 
 
-#### 🛠️ Step 2: Explore Enrichment Strategies
-🧪 Use the guide: [Enrichment Kubernetes](https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1229849653/Enrichment+Kubernetes)
+#### Step 2: Explore Enrichment Strategies
+Use the guide: [Enrichment Kubernetes](https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1229849653/Enrichment+Kubernetes)
 
 ✅ **Option 1**: Rely on Primary Grail Fields:
 - `k8s.namespace.name`
@@ -53,7 +53,7 @@ How it works? Dynatrace Operator converts namespace-level metadata into enrichme
 
 🔴 **Option 3**: Set Manual Pod Annotations
 
-How it works? Manually add annotations to pod definitions (e.g., in deployment YAML)
+**How it works?** Manually add annotations to pod definitions (e.g., in deployment YAML)
 
 | Pros	| Cons	| Use when |
 | ------ | ------ | ------ |
@@ -72,7 +72,7 @@ How it works? Manually add annotations to pod definitions (e.g., in deployment Y
 
 ___
 
-#### 🧩 Step 3: Try It Out
+#### Step 3: Try It Out
 
 Complete enrichment using all strategies.
 
@@ -87,7 +87,7 @@ Dynatrace automatically enriches telemetry data with Kubernetes metadata such as
 
 **Instructions:**
 1. Open Dynatrace and navigate to Segments.
-2. Create a new segment based on k8s.namespace.name.
+2. Create a new segment based on `k8s.namespace.name`.
 3. Use this segment to filter the two applications deployed in separate namespaces.
 4. Observe how Dynatrace uses this metadata to group and contextualize your services.
 

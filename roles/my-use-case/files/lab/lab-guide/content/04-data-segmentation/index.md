@@ -61,8 +61,12 @@ Extract platform from Host Group names and use it to filter all data.
 ![](../../assets/images/segment-preview.png)
 > Variable preview (filter)
 
-![](../../assets/images/entity-segment.png)
-> Easytrade (security context based) segment for entities
+
+Please note that filters such as `dt.host_group.id = $platform*` do not work for classic entities YET. You might get the following error if you try to apply the same filter to a `dt.entity.host` entity type - **"Wildcard "*" resulting in a "startsWith" operator not allowed, please change it in "dt.host_group.id" filter value definition.**". Please see below.
+
+![](../../assets/images/classic-entity-segment-error.png)
+
+Nevertheless, this should work for smartscape 2.0 entities. Therefore, hosts should automatically be visible under the entities preview for "All Data" if the variable is set correctly(assuming it's enabled on the tenant). More information on how different classic and smartscape on grail entities are can be found [here](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail/smartscape-on-grail#differences-between-classic-entities-and-smartscape-on-grail).
 
 #### Exercise 4: Create App & Stage Segments
 
