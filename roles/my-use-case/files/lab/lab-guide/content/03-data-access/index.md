@@ -21,7 +21,7 @@ Your main goal in this lab is to help Easytrade build this strategy from the gro
 #### Approches:
 
 | Approach	| Effort |	Flexibility | Comments | Best For
-| ------ | ------ | ------ | ------ | ------| ------|
+| ------ | ------ | ------ | ------ | ------|
 | Default Dynatrace Policies |	🟢 Low	| 🔴 Limited | Policies are automatically updated by Dynatrace, with new statements on new features | New customers or new to policies, fine with "roles" being automatically updated |
 | Custom Policies |	🔴 High	| 🟢 Maximum	| Customers are maintaining custom policies, adding or removing statements on new/changing features | Customers that are familiar with policies and want to keep full control on which permissions to grant or not |
 
