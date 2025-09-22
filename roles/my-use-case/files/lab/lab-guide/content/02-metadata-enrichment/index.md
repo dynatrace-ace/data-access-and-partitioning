@@ -144,7 +144,7 @@ Please SSH into your VM and restart all pods. You can use this command - `kubect
 If you need workload-level granularity, manual annotations are required. For example, you want to be more specific on the product and cost center for the loginservice.<!--Check the picture below where our accountservice doesn't have the proper enrichment.-->
 
 > Note that:
-- Manually set metadata.dynatrace.com pod annotations take precedence over metadata enrichment configurations
+>- Manually set metadata.dynatrace.com pod annotations take precedence over metadata enrichment configurations
 
 <!--![](../../assets/images/before-manual-pod-enrichment.png)-->
 
