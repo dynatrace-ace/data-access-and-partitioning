@@ -67,7 +67,8 @@ Now that any Dynatrace User can access the default features, we want to allow us
 2. Click on the "+ Create boundary" button
 3. Fill the form:
 - Boundary name: "Easytrade"
-- <details>
+- Boundary query:
+<details>
   <summary>Boundary query:</summary>
 ```sql
 storage:dt.security_context IN ("easytrade");
