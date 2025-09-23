@@ -27,16 +27,16 @@ Keep that in mind especially for small accounts, you don’t want to overcomplic
 
 #### Examples
 
-**Small scale customer ( < 2GB/day )**
+**Small scale customer ( < 2TB/day )**
 
-If your customer has a low ingestion volume (e.g., less than 2 GB/day), they’ll likely operate within the default limit of 80 buckets per environment. In this case:
+If your customer has a low ingestion volume (e.g., less than 2 TB/day), they’ll likely operate within the default limit of 80 buckets per environment. In this case:
 - Avoid creating too many buckets — especially at the team level.
 - Instead, consider using record-level permissions within a few shared buckets.
 - Focus on functional separation — split logs based on their purpose (e.g., infrastructure vs. application logs), rather than ownership.
 
 This approach keeps configuration simple and avoids unnecessary overhead.
 
-**Large scale customer (500-1000 buckets)**
+**Large scale customer (250-1000 buckets)**
 
 For enterprise customers with higher ingestion volumes and extended bucket limits:
 
@@ -47,7 +47,7 @@ For enterprise customers with higher ingestion volumes and extended bucket limit
     - Cost control
     - Access control per team or business unit
 
-Use meaningful dimensions like `app`, `business_unit`, or `stage` to partition logs. The goal is to stay under 5 TB/day per bucket, while keeping the configuration scalable and maintainable.
+Use meaningful dimensions like `app`, `business_unit`, or `stage` to partition logs. 
 
 > 💡 Remember: Custom buckets are primarily designed for data retention, but they also play a key role in access control and cost efficiency.
 
