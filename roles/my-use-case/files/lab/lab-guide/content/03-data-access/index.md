@@ -28,7 +28,7 @@ Your main goal in this lab is to help Easytrade build this strategy from the gro
 ---
 ### Approach 1 - Using Default Dynatrace Policies
 
-#### Exercice 1: Create permissions for default users
+<!--#### Exercice 1: Create permissions for default users
 
 We want to grant all users with "default" access to Dynatrace. Granting them the ability to use the Platform:
 - Basic usage
@@ -55,8 +55,8 @@ We want to grant all users with "default" access to Dynatrace. Granting them the
 
 ![](../../assets/images/lab3-ex1-task2-attach-policy.png)
 
-***
-#### Exercice 2: Create a boundary for "Easytrade"
+***-->
+#### Exercice 1: Create a boundary for "Easytrade"
 
 Now that any Dynatrace User can access the default features, we want to allow users to access specific observability data.
 
@@ -75,7 +75,7 @@ Now that any Dynatrace User can access the default features, we want to allow us
 
 ```sql
 storage:dt.security_context IN ("easytrade");
-environment:management-zone IN ("easytrade");
+environment:management-zone IN ("EasyTrade");
 ```
 
 </details>
@@ -86,7 +86,7 @@ environment:management-zone IN ("easytrade");
 
 ***
 
-#### Exercice 3: Create Access for Easytrade "Readers"
+#### Exercice 2: Create Access for Easytrade "Readers"
 
 We now want to grant specific users with "Readers" access to Dynatrace. Allowing them to see data in the different apps.
 
@@ -95,7 +95,7 @@ We now want to grant specific users with "Readers" access to Dynatrace. Allowing
 **Task 1: Explore the default Dynatrace Policies**
 
 1. Navigate to the Account Management Portal > Identity & access management > Policy management
-2. Explore the different policies of category "Data access"
+2. Explore the different policies of category "Data access" and "Dynatrace access"
 3. Understand which policy is a good fit for Dynatrace "Readers"
 
 **Task 2: Create a group for the Easytrade Readers**
@@ -113,17 +113,23 @@ We now want to grant specific users with "Readers" access to Dynatrace. Allowing
 
 1. On the newly created group edition page
 2. Click on the "+ Permission" button
-3. Fill the form:
+3. Fill the form to grant access to Dynatrace:
+- Permission name: "Standard user"
+- Scope: tick the "Account (all environments)" box
+- Boundaries: "Easytrade"
+4. Click on "Save"
+3. Add another permission to grant access data, click on "+ Permission" and fill the form:
 - Permission name: "All Grail data read access"
 - Scope: tick the "Account (all environments)" box
 - Boundaries: "Easytrade"
-4. Click on "save"
+4. Click on "Save"
 
 ![](../../assets/images/lab3-ex3-task3-assign-policy-boundary.png)
+![](../../assets/images/lab3-ex3-task3-assign-policy-boundary-2.png)
 
 ***
 
-#### Exercice 4: Create Access for Easytrade "Writers"
+#### Exercice 3: Create Access for Easytrade "Writers"
 
 We now want to grant specific users with "Writers" access to Dynatrace. Allowing them to edit monitoring configurations in the different apps.
 
@@ -149,6 +155,10 @@ ALLOW environment:roles:manage-settings;
 
 </details>
 
+4. Click on "Save"
+
+![](../../assets/images/lab3-ex4-task1-create-policy.png)
+
 **Task 2: Create a group for the Easytrade Writers**
 
 1. Navigate to the Account Management Portal > Identity & access management > Group management
@@ -168,14 +178,37 @@ ALLOW environment:roles:manage-settings;
 - Permission name: "[Lab] Writers"
 - Scope: tick the "Account (all environments)" box
 - Boundaries: "Easytrade"
-4. Click on "save"
+4. Click on "Save"
 
 ![](../../assets/images/lab3-ex4-task3-assign-policy-boundary.png)
+
 ***
 
-#### Exercice 5: Assign users to groups
+#### Exercice 4: Assign users to groups
 
+We now want to test the permissions we created in previous lab exercises.
 
+>💡We will invite a separate email address and verify its access according to the assigned groups.
+
+**Task 1: Create a test user email address**
+
+1. Create or use another email address (such as a gmail address)
+
+**Task 2: Verify the Readers permissions**
+
+1. Navigate to the Account Management Portal > Identity & access management > User management
+2. Click on the "Invite users" button
+3. Fill in the email address and assign the "[Readers] Easytrade" group
+4. Click on "Invite" 
+5. Authenticate with this new user in a private window, and verify the permissions
+
+![](../../assets/images/lab3-ex5-task2-reader-user.png)
+
+>💡You can also navitage to Account Management Portal > Identity & access management > Effective policies, to verify the policies and boundaries for your user.
+
+![](../../assets/images/lab3-ex5-task2-effective-permissions.png)
+
+**Task 3: Verify the Writers permissions**
 
 ---
 ### Approach 2 - Using Custom Policies
