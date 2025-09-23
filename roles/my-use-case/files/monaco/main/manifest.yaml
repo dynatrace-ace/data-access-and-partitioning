@@ -4,6 +4,7 @@ projects:
   # - name: bucket
   # - name: builtinopenpipeline.spans.pipelines
   - name: management-zone
+  - name: k8s-telemetry-enrichment
 environmentGroups:
   - name: development
     environments:
