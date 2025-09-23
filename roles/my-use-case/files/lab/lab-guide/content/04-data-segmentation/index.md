@@ -108,7 +108,7 @@ Use Segments to reduce noise in log queries.
 Filter Distributed Traces using Segments.
 
 1. Open Distributed Traces and filter for failed requests.
-2. Apply Stage Segment (prod).
+2. Apply App segment (easytrade).
 3. Observe filtered trace results.
 
 ![](../../assets/images/lab4-ex6-failed-requests.png)
@@ -121,8 +121,8 @@ Filter Distributed Traces using Segments.
 
 Use Segments to scope dashboard tiles.
 
-1. Use CoPilot to create a tile for CPU usage across hosts.
-2. Apply Platform Segment (k8s) to the tile.
+1. Create a tile for k8s container CPU usage across workloads.
+2. Apply App segment (easytrade) to the tile.
 3. Observe scoped metric results.
 
 
