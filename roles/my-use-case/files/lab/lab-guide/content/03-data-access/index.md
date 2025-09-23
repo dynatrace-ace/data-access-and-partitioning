@@ -38,7 +38,7 @@ We want to grant all users with "default" access to Dynatrace. Granting them the
 
 **Task 1: Explore the default Dynatrace Policies**
 
-1. Navigate to the Account Management Portal > Identity & access management > Policies
+1. Navigate to the Account Management Portal > Identity & access management > Policy management
 2. Explore the different policies of category "Dynatrace access"
 3. Understand which policy is a good fit for all Dynatrace Users
 
@@ -64,7 +64,7 @@ Now that any Dynatrace User can access the default features, we want to allow us
 
 **Task 1: Create the boundary**
 
-1. Navigate to the Account Management Portal > Identity & access management > Policies, and to the "Boundaries" tab
+1. Navigate to the Account Management Portal > Identity & access management > Policy management, and to the "Boundaries" tab
 2. Click on the "+ Create boundary" button
 3. Fill the form:
 - Boundary name: "Easytrade"
@@ -94,7 +94,7 @@ We now want to grant specific users with "Readers" access to Dynatrace. Allowing
 
 **Task 1: Explore the default Dynatrace Policies**
 
-1. Navigate to the Account Management Portal > Identity & access management 
+1. Navigate to the Account Management Portal > Identity & access management > Policy management
 2. Explore the different policies of category "Data access"
 3. Understand which policy is a good fit for Dynatrace "Readers"
 
@@ -129,11 +129,25 @@ We now want to grant specific users with "Writers" access to Dynatrace. Allowing
 
 >💡We want to create a group for the 'Easytrade' app with writers permissions.
 
-**Task 1: Explore the default Dynatrace Policies**
+**Task 1: Create a custom policy for the Writers**
 
-1. Navigate to the Account Management Portal > Identity & access management 
-2. Explore the different policies of category "Legacy"
-3. Understand which policy is a good fit for Dynatrace "Writers"
+1. Navigate to the Account Management Portal > Identity & access management > Policy management
+2. Click on "+ Create policy"
+3. Fill the form
+- Name: "[Lab] Writers"
+- Policy description: "Statements granting write permissions"
+- Policy statement:
+
+<details>
+  <summary>Write permissions on settings – Settings</summary>
+
+```sql
+ALLOW settings:schemas:read;
+ALLOW settings:objects:read, settings:objects:write;
+ALLOW environment:roles:manage-settings;
+```
+
+</details>
 
 **Task 2: Create a group for the Easytrade Writers**
 
@@ -151,7 +165,7 @@ We now want to grant specific users with "Writers" access to Dynatrace. Allowing
 1. On the newly created group edition page
 2. Click on the "+ Permission" button
 3. Fill the form:
-- Permission name: "All Grail data read access"
+- Permission name: "[Lab] Writers"
 - Scope: tick the "Account (all environments)" box
 - Boundaries: "Easytrade"
 4. Click on "save"
