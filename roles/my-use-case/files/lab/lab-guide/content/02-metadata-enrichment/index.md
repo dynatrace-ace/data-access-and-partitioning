@@ -119,7 +119,10 @@ You can use the K8s Enrichment settings to transform labels & annotations into `
 1. Go to Settings > Topology Model > Grail security context for monitored entities 
 2. Filter by `dt.entity.cloud_application_namespace`
 3. Change destination property from Management Zone to `dt.security_context`
-4. Go to your Kubernetes cluster > Settings > Telemetry Enrichment 
+
+> This is needed in order for the enrichment to work. If you're wondering how come we already have the labels extracted, you can go to Settings > Cloud and Virtualization > Kubernetes telemetry enrichment and check the rule there. That rule is allowing us to propagate the label to security context, however, Grail doesn't know about it until we point the topology rule to it.
+
+<!-- 4. Go to your Kubernetes cluster > Settings > Telemetry Enrichment 
 5. Add a rule:
   - Metatadata type = Label
   - Source = kubernetes.io/metadata.name
@@ -130,7 +133,7 @@ All of these steps are required in order to add additional topology enrichment f
 - After creating or modifying rules, allow up to 45 minutes for the changes to take effect
 - Once this time has passed, restart your pods
 
-Please SSH into your VM and restart all pods. You can use this command - `kubectl rollout restart deployment -n easytrade`
+Please SSH into your VM and restart all pods. You can use this command - `kubectl rollout restart deployment -n easytrade` -->
 
 ![](../../assets/images/labels-annotations-settings.png)
 
