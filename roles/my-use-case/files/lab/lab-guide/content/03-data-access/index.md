@@ -210,6 +210,18 @@ We now want to test the permissions we created in previous lab exercises.
 
 **Task 3: Verify the Writers permissions**
 
+1. Navigate to the Account Management Portal > Identity & access management > User management
+2. Edit your test user
+3. Add both [Readers] Easytrade and [Writers] Easytrade
+4. Click on "Save" 
+5. Authenticate with this new user in a private window, and verify the permissions
+
+![](../../assets/images/lab3-ex5-task3-writer-user.png)
+
+>💡You can also navitage to Account Management Portal > Identity & access management > Effective policies, to verify the policies and boundaries for your user.
+
+![](../../assets/images/lab3-ex5-task3-effective-permissions.png)
+
 ---
 ### Approach 2 - Using Custom Policies
 
