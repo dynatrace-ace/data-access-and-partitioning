@@ -62,66 +62,46 @@ Extract platform from Host Group names and use it to filter all data.
 > Variable preview (filter)
 
 
-Please note that filters such as `dt.host_group.id = $platform*` do not work for classic entities YET. You might get the following error if you try to apply the same filter to a `dt.entity.host` entity type - **"Wildcard "*" resulting in a "startsWith" operator not allowed, please change it in "dt.host_group.id" filter value definition.**". Please see below.
+Please note that filters such as `dt.host_group.id = $platform*` do not work for classic entities. You might get the following error if you try to apply the same filter to a `dt.entity.host` entity type - **"Wildcard "*" resulting in a "startsWith" operator not allowed, please change it in "dt.host_group.id" filter value definition.**". Please see below.
 
 ![](../../assets/images/classic-entity-segment-error.png)
 
 Nevertheless, this should work for smartscape 2.0 entities. Therefore, hosts should automatically be visible under the entities preview for "All Data" if the variable is set correctly(assuming it's enabled on the tenant). More information on how different classic and smartscape on grail entities are can be found [here](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail/smartscape-on-grail#differences-between-classic-entities-and-smartscape-on-grail).
 
-#### Exercise 4: Create App & Stage Segments
+#### Exercise 4: Create App Segment
 
 Repeat the process for app and stage.
 
-DQL for App
-
-```sql
-fetch dt.entity.host_group
-| parse entity.name, """LD:platform '_' LD:app '_' LD:stage"""
-| dedup app
-| fields app
-```
-
-DQL for Stage
+Variable DQL query for App
 
 ```sql
 fetch dt.entity.cloud_application_namespace
-| fieldsAdd cloudApplicationLabels
-| fields stage = cloudApplicationLabels[stage]
+| fields application_name = entity.name, tag = concat("app:", entity.name)
 ```
 
 Segment Filters
 
 App: `k8s.namespace.name = $application_name OR tag = $tag`
-Stage: `dt.host_group.id = *"$stage" `
 
-![](../../assets/images/lab4-app-segment-variable.png)
+![](../../assets/images/lab4-ex4-app-segment-variable.png)
 >Variable configuration for App segment
 
-![](../../assets/images/lab4-app-segment-configuration.png)
+![](../../assets/images/lab4-ex4-app-segment-configuration.png)
 > App Segment configuration
-
-![](../../assets/images/lab4-stage-segment-variable.png)
->Variable configuration for Stage segment
-
-![](../../assets/images/lab4-stage-segment-configuration.png)
-> Full Stage segment configuration
 
 #### Exercise 5: Validate Segments with Logs
 
 Use Segments to reduce noise in log queries.
 
-1. Query logs without any Segment = more than 1000+ records.
+1. Query logs without any Segment = more than 10k+ records.
 2. Apply App Segment for easytrade.
 3. Observe reduction in results.
 
-![](../../assets/images/log-without-segment.png)
+![](../../assets/images/lab4-ex5-log-without-segment.png)
 > Logs without Segment
 
-![](../../assets/images/log-with-app-segment.png)
+![](../../assets/images/lab4-ex5-log-with-app-segment.png)
 > Logs with App Segment
-
-![](../../assets/images/reduced-log-count.png)
-> Reduction in log records due to applied segment
 
 #### Exercise 6: Validate Segments with Traces
 
@@ -131,10 +111,10 @@ Filter Distributed Traces using Segments.
 2. Apply Stage Segment (prod).
 3. Observe filtered trace results.
 
-![](../../assets/images/failed-requests.png)
+![](../../assets/images/lab4-ex6-failed-requests.png)
 > Failed requests
 
-![](../../assets/images/filtered-traces.png)
+![](../../assets/images/lab4-ex6-filtered-traces.png)
 > Filtered traces
 
 #### Exercise 7: Validate Segments with Metrics
@@ -145,18 +125,9 @@ Use Segments to scope dashboard tiles.
 2. Apply Platform Segment (k8s) to the tile.
 3. Observe scoped metric results.
 
-![](../../assets/images/copilot-tile.png)
-> Copilot tile
 
-![](../../assets/images/dashboard-segment.png)
-> Global dashboard segment applied
+![](../../assets/images/lab-4-ex7-notebook-segment.png)
+> Global notebook segment applied
 
-![](../../assets/images/final-dashboard-view.png)
+![](../../assets/images/lab4-ex7-final-notebook-view.png)
 > Final dashboard view
-
-
-OLD INSTRUCTIONS
-
-### Learning Objectives
-
-- Do segment based on host group, as explained here: https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1340474354/HG-based+Segments
