@@ -45,30 +45,8 @@ Management Zones filter entities. Segments filter everything. Let's have a look 
 ![](../../assets/images/management-zone-filter.png)
 > Filtered by Management Zone
 
-#### Exercise 3: Create a Platform Segment
 
-Extract platform from Host Group names and use it to filter all data.
-
-1. Go to Settings > Environment Segmentation > Segments
-2. Create a Platform Segment with provided instructions.
-    - Extract all possible values for Platform using the below DQL
-        - ```fetch dt.entity.host_group| parse `entity.name`, """LD:platform '_' LD:app '_' LD:stage"""| dedup platform| fields platform```
-    - Use `dt.host_group.id = $platform*` to filter all datapoints within the Host-Group
-
-![](../../assets/images/dql-platform-preview.png)
-> Variable configuration
-
-![](../../assets/images/segment-preview.png)
-> Variable preview (filter)
-
-
-Please note that filters such as `dt.host_group.id = $platform*` do not work for classic entities. You might get the following error if you try to apply the same filter to a `dt.entity.host` entity type - **"Wildcard "*" resulting in a "startsWith" operator not allowed, please change it in "dt.host_group.id" filter value definition.**". Please see below.
-
-![](../../assets/images/classic-entity-segment-error.png)
-
-Nevertheless, this should work for smartscape 2.0 entities. Therefore, hosts should automatically be visible under the entities preview for "All Data" if the variable is set correctly(assuming it's enabled on the tenant). More information on how different classic and smartscape on grail entities are can be found [here](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail/smartscape-on-grail#differences-between-classic-entities-and-smartscape-on-grail).
-
-#### Exercise 4: Create App Segment
+#### Exercise 3: Create an App Segment
 
 Repeat the process for app and stage.
 
@@ -83,13 +61,48 @@ Segment Filters
 
 App: `k8s.namespace.name = $application_name OR tag = $tag`
 
-![](../../assets/images/lab4-ex4-app-segment-variable.png)
+![](../../assets/images/lab4-ex3-app-segment-variable.png)
 >Variable configuration for App segment
 
-![](../../assets/images/lab4-ex4-app-segment-configuration.png)
-> App Segment configuration
+![](../../assets/images/lab4-ex3-app-segment-configuration.png)
+> App segment configuration preview
 
-#### Exercise 5: Validate Segments with Logs
+#### Exercise 4: Create a Stage Segment
+
+Extract stage from Host Group names and use it to filter all data.
+
+1. Go to Settings > Environment Segmentation > Segments
+2. Create a Platform Segment with provided instructions.
+    - Extract all possible values for Stage using the below DQL
+        - ```fetch dt.entity.host_group| parse `entity.name`, """LD:platform '_' LD:app '_' LD:stage"""| dedup platform| fields platform```
+    - Use `dt.host_group.id = $stage*` to filter all datapoints within the Host-Group
+
+![](../../assets/images/lab4-ex4-stage-segment-variable.png)
+> Variable configuration for Stage segment
+
+![](../../assets/images/lab4-ex4-stage-segment-configuration.png)
+> Stage segment configuration preview
+
+
+Please note that filters such as `dt.host_group.id = *$stage` do not work for classic entities. You might get the following error if you try to apply the same filter to a `dt.entity.host` entity type - **"Wildcard "*" resulting in a "startsWith" operator not allowed, please change it in "dt.host_group.id" filter value definition.**". Please see below.
+
+![](../../assets/images/lab4-ex4-classic-entity-segment-error.png)
+
+Nevertheless, this should work for smartscape 2.0 entities in their respective screens. Segments preview doesn't work at the moment for any entity but k8s entities should automatically be visible within the Kubernetes app. More information on how different classic and smartscape on grail entities are can be found [here](https://docs.dynatrace.com/docs/discover-dynatrace/platform/grail/smartscape-on-grail#differences-between-classic-entities-and-smartscape-on-grail).
+
+
+#### Exercise 5: Validate Segments with Smartscape entities
+
+Use the K8s app to prove that App segment works with K8s entities.
+
+1. Opent the Kubernetes App
+2. Go to the Namespaces tab
+3. Apply the Application segment
+
+![](../../assets/images/lab4-ex5-smartscape-k8s-entity-filter.png)
+> Kubernetes entities in Grail
+
+#### Exercise 6: Validate Segments with Logs
 
 Use Segments to reduce noise in log queries.
 
@@ -97,13 +110,13 @@ Use Segments to reduce noise in log queries.
 2. Apply App Segment for easytrade.
 3. Observe reduction in results.
 
-![](../../assets/images/lab4-ex5-log-without-segment.png)
+![](../../assets/images/lab4-ex6-log-without-segment.png)
 > Logs without Segment
 
-![](../../assets/images/lab4-ex5-log-with-app-segment.png)
+![](../../assets/images/lab4-ex6-log-with-app-segment.png)
 > Logs with App Segment
 
-#### Exercise 6: Validate Segments with Traces
+#### Exercise 7: Validate Segments with Traces
 
 Filter Distributed Traces using Segments.
 
@@ -111,13 +124,13 @@ Filter Distributed Traces using Segments.
 2. Apply App segment (easytrade).
 3. Observe filtered trace results.
 
-![](../../assets/images/lab4-ex6-failed-requests.png)
+![](../../assets/images/lab4-ex7-failed-requests.png)
 > Failed requests
 
-![](../../assets/images/lab4-ex6-filtered-traces.png)
+![](../../assets/images/lab4-ex7-filtered-traces.png)
 > Filtered traces
 
-#### Exercise 7: Validate Segments with Metrics
+#### Exercise 8: Validate Segments with Metrics
 
 Use Segments to scope dashboard tiles.
 
@@ -126,8 +139,8 @@ Use Segments to scope dashboard tiles.
 3. Observe scoped metric results.
 
 
-![](../../assets/images/lab-4-ex7-notebook-segment.png)
+![](../../assets/images/lab4-ex8-notebook-segment.png)
 > Global notebook segment applied
 
-![](../../assets/images/lab4-ex7-final-notebook-view.png)
+![](../../assets/images/lab4-ex8-final-notebook-view.png)
 > Final dashboard view

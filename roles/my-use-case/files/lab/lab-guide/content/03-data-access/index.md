@@ -223,7 +223,9 @@ We now want to test the permissions we created in previous lab exercises.
 ![](../../assets/images/lab3-ex5-task3-effective-permissions.png)
 
 ---
-### Approach 2 - Using Custom Policies
+
+<details>
+  <summary>Approach 2 - Using Custom Policies</summary>
 
 #### Exercise 1: Create Default User Policies
 
@@ -464,10 +466,9 @@ Group Membership Strategy
     - Default Users
     - Easytrade Readers
 
+</details>
 
- OLD INSTRUCTIONS
-### Learning Objectives
 
-- Configure IAM by following this guide: https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1356339039/4.+Data+Access
-- Create 4 different personas: Default, Readers, Writers
-- Use what we configured previously (dt.security_context=easytrade)
+### Resources
+
+- [IAM Guide](https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1356339039/4.+Data+Access)

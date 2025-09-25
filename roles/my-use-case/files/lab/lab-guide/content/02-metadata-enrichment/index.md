@@ -20,7 +20,7 @@ All participants will enrich observability data (entities, metrics, events, logs
   
 **Questions to consider**:
 - What metadata do you need to enrich your data with?
-- What level of granularity is required—namespace or workload?
+- What level of granularity is required - namespace or workload?
 - Do you want enrichment to be automatic, declarative, or manual?
 - How will this metadata be used for IAM, cost control, and segmentation?
 
@@ -76,25 +76,30 @@ ___
 
 Complete enrichment using all strategies.
 
+In Dynatrace, you can set up policy boundaries for fine-grained restrictions on the data level with the help of **Primary Fields**. By default, you can use `k8s.namespace.name` and `k8s.cluster.name`, but sometimes this is not enough and you need a more fine grained way to set up your boundaries. **Primari Grail Tags** will help you with this.
+
+**Primary Grail tags are a small set of important, customer-selected tags—such as Kubernetes labels, AWS/Azure tags, or key organizational attributes—that Dynatrace automatically attaches to all raw telemetry data at ingest, using the primary_tags.* prefix. This enrichment enables fast, consistent filtering, grouping, and permission management across all data, without complex joins or proprietary tagging rules. Primary Grail tags are centrally configured and ensure that cloud-native and business-relevant metadata is always available for queries, dashboards, and access control.**
+
+| | Primary Grail Field  | Primary Grail Tag |
+| -------- | ------- |
+| What are they?   | Well defined OOTB fields for specific technologies | A new tag on all telemetry data  |
+| Purpose  | Data level access, here to auto enrich all signals and entities OOTB | Enrichment of all signals including smartscape Nodes |
+
 **Task 1: Automatic Enrichment via Kubernetes Metadata**
 
-Dynatrace automatically enriches telemetry data with Kubernetes metadata such as:
+So, as we said, Dynatrace automatically enriches telemetry data as well as entities with Kubernetes metadata such as:
 - `k8s.cluster.name`
 - `k8s.namespace.name`
 
-![](../../assets/images/k8s-namespaces.png)
-> Kubernetes Cluster namespaces
+**Explore your customer's tenant to see how this works. Write down your analysis.**
 
-**Instructions:**
-1. Open Dynatrace and navigate to Segments.
-2. Create a new segment based on `k8s.namespace.name`.
-3. Use this segment to filter the two applications deployed in separate namespaces.
-4. Observe how Dynatrace uses this metadata to group and contextualize your services.
+Can you fetch entities and filter them by their `k8s.cluster.name` or `k8s.namespace.name`? ______________________
+
+Can you fetch all logs and filter them by their `k8s.cluster.name` or `k8s.namespace.name`? ______________________
 
 > 💡 Tip: This is useful for OOTB IAM and Segment configurations.
 
-![](../../assets/images/k8s-namespace-segment.png)
-> Kubernetes Namespace-based segment
+Now, think about a use case where a customer doesn't want to use these default primary grail fields for whatever reason - they might not be granular or flexible enough. **What would you do?**
 
 If this is not enough and you'd like to go further and you require more configuration possibilities. Let's explore the enrichment strategy at source. You can enrich data by adding custom labels and annotations to your Kubernetes manifests. Dynatrace will pick these up and use them for tagging and filtering.
 
@@ -114,13 +119,15 @@ In K8s, annotations and labels are both key-value pairs used to attach metadata 
 
 ![](../../assets/images/labels-annotations.png)
 
+> Note that this is still very basic and limited. We'll add more as we go through this lab.
+
 You can use the K8s Enrichment settings to transform labels & annotations into `dt.security_context`, `dt.cost.costcenter`, `dt.cost.product`.
 
 1. Go to Settings > Topology Model > Grail security context for monitored entities 
 2. Filter by `dt.entity.cloud_application_namespace`
 3. Change destination property from Management Zone to `dt.security_context`
 
-> This is needed in order for the enrichment to work. If you're wondering how come we already have the labels extracted, you can go to Settings > Cloud and Virtualization > Kubernetes telemetry enrichment and check the rule there. That rule is allowing us to propagate the label to security context, however, Grail doesn't know about it until we point the topology rule to it.
+> This is needed in order for the enrichment to work. If you're wondering how come we already have the labels extracted, you can go to `Settings > Cloud and Virtualization > Kubernetes telemetry enrichment` and check the rule there. That rule is allowing us to propagate the label to `dt.security_context`, however, Grail doesn't know about it until we point the topology rule to it.
 
 <!-- 4. Go to your Kubernetes cluster > Settings > Telemetry Enrichment 
 5. Add a rule:
@@ -141,6 +148,19 @@ Please SSH into your VM and restart all pods. You can use this command - `kubect
 
 ![](../../assets/images/labels-annotations-in-action.png)
 
+<details>
+  <summary>DQL...</summary>
+
+```
+fetch spans
+| filter k8s.workload.name == "loginservice"
+| fields start_time, span.id, k8s.workload.name, k8s.namespace.name, dt.security_context, dt.cost.costcenter, dt.cost.product
+| sort start_time DESC
+| limit 15
+```
+
+</details>
+
 ***
 
 **Task 3: Manual Pod Annotation for Granularity**
@@ -153,8 +173,8 @@ If you need workload-level granularity, manual annotations are required. For exa
 <!--![](../../assets/images/before-manual-pod-enrichment.png)-->
 
 Update your deployment manifest by following instructions below:
-- SSH into your VM
-- Run `kubectl edit deployment <deploymentname> -n easytrade` and add the annotations under spec > template > metadata. The pod will be automatically restarted and after a few minutes you will see a new one appear in your cluster as well as in Dynatrace UI.
+1. SSH into your VM
+2. Run `kubectl edit deployment <deploymentname> -n easytrade` and add the annotations under `spec > template > metadata`. The pod will automatically be restarted and after a few minutes you will see a new one appear in your cluster as well as in the Dynatrace UI.
 
 ```
 metadata:
@@ -177,12 +197,12 @@ metadata:
 > - Without proper annotations, filtering and cost allocation may be limited.
 
 
-OLD STRUCTURE - keeping it for now
-### Objectives
 
-1. Participants need to enrich with dt.security_context, cost center, cost product, following this guide: (Dedicated Infrastructure enrichment): https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1229849653/Enrichment+Kubernetes
+### Resources
 
-2. Learn the importance of Primary Grail Fields, in this case the host group. https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1246757730/2.+Metadata+Enrichment
-    - difference between host group with java.jar.file
+- [Metadata Enrichment](https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1246757730/2.+Metadata+Enrichment)
+  - Keep an eye on the part that talks about Primary Grail Fields and Primary Grail Tags 
+- [Metadata Enrichment - K8s](https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1229849653/Enrichment+Kubernetes)
 
-3. Talk about bare-metal, OTEL_RESOURCE_ATTRIBUTE
+
+

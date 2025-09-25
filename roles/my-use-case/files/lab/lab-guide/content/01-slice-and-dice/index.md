@@ -11,13 +11,17 @@
 ### Step 1: Understand the 📋 Requirements (Interactive Discovery) 
 
 The customer requirements are:
-- Teams should access only their own apps, those apps being easytrade and hipstershop. This includes ALL DATA.
+- Teams should only access their own apps, those apps being easytrade and hipstershop. This includes ALL DATA.
 - Both easytrade and hipstershop logs need a separate bucket. Think about routing rules for logs and their respective buckets considering that everything is deployed in a kubernetes environment.
-- Customers needs to be able to easily navigate through DT interface, and see their respective apps.
-- Costs split by apps, to understand how much each team is spending in Observability.
+- Customers needs to be able to easily navigate through Dynatrace interface and see their respective apps as well as app signals.
+- Costs need to be split by each application to understand how much each team is spending on Observability overall.
+
+### WHAT NOW?
+
+**What are some questions you would ask yourself before doing the hands on work?**
 
 <details>
-  <summary>How do you get there...</summary>
+  <summary>Here's how you get there...</summary>
 
 #### 🔐 Access Control
 Goal: Understand who should access what data. Think about all questions that you need to ask your customer to uncover this. For example:
@@ -27,7 +31,7 @@ Goal: Understand who should access what data. Think about all questions that you
 - Do you need to go more granular than just the application view?
 
 #### 🧱 Partitioning (Bucket Strategy)
-Goal: Identify how logs and spans should be stored and separated.
+Goal: Identify how different signals should be stored and if they should be separated.
 - Can you think of reasons why logs might need to be stored in separate buckets?
 - What about log retention: should all logs be kept for the same duration? Usually that's not the case.
 - Based on log volume, would query performance be affected?
@@ -71,7 +75,7 @@ Write down the dimensions you discover:
 
 ### 🖥️ Technologies
 
-Find out underlying technologies -> not K8s, but standard VM running in GCP with app deployed as processes
+Find out underlying technologies -> in this case, we have K8s.
 > 💡 Understand the infrastructure to enrich observability data.
 
 🔍 Questions to Ask
@@ -80,6 +84,7 @@ Find out underlying technologies -> not K8s, but standard VM running in GCP with
 - What tagging strategies exist across environments?
 - What Dynatrace metadata can be leveraged? (e.g., HOST_GROUPS)
 
+Different technologies require different set-ups and depending on whether something is on-prem or serverless, it will rqeuired a different kind of set up for each of these.
     
 ### Map requirements with dimensions
 
@@ -89,4 +94,10 @@ Find out underlying technologies -> not K8s, but standard VM running in GCP with
 | Partitioning  | k8s.namespace.name    |
 | Segmentation  | segment for easytrade and hipstershop  |
 | Cost Allocation  | dt.cost.costcenter = easytrade and dt.cost.product = easytrade (same for hipstershop)   |
+
+### Resources
+
+- [Slice and Dice](https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1247150978/1.+Slice+Dice)
+- [Slice and Dice - Existing Customer Scenario](https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1251903308/Slice+Dice+Existing+Customer)
+- [Slice and Dice - Example Scenario](https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1298433988/Slice+Dice+Example+Scenario)
 
