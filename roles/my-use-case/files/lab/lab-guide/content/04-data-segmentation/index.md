@@ -56,7 +56,7 @@ While management zones have been used widely in Dynatrace to define access to da
 In exercise 3 and all subsequent exercises, we will focus on exploring **Segments**.
 
 Let's start by creating a segment that will filter out all data connected to one of our applications - Easytrade.
-1. Navigate to Settings > Environment Segmentation > Segments
+1. Navigate to `Settings > Environment Segmentation > Segments`
 2. Create a new Segment
 3. Instructions are provided below
 
