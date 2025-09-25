@@ -76,9 +76,9 @@ ___
 
 Complete enrichment using all strategies.
 
-In Dynatrace, you can set up policy boundaries for fine-grained restrictions on the data level with the help of **Primary Fields**. By default, you can use `k8s.namespace.name` and `k8s.cluster.name`, but sometimes this is not enough and you need a more fine grained way to set up your boundaries. **Primari Grail Tags** will help you with this.
+In Dynatrace, you can set up policy boundaries for fine-grained restrictions on the data level with the help of **Primary Fields**. By default, you can use `k8s.namespace.name` and `k8s.cluster.name`, but sometimes this is not enough and you need a more fine grained way to set up your boundaries. **Primary Grail Tags** will help you with this.
 
-**Primary Grail tags are a small set of important, customer-selected tags—such as Kubernetes labels, AWS/Azure tags, or key organizational attributes—that Dynatrace automatically attaches to all raw telemetry data at ingest, using the primary_tags.* prefix. This enrichment enables fast, consistent filtering, grouping, and permission management across all data, without complex joins or proprietary tagging rules. Primary Grail tags are centrally configured and ensure that cloud-native and business-relevant metadata is always available for queries, dashboards, and access control.**
+**Primary Grail tags are a small set of important, customer selected tags such as Kubernetes labels, AWS/Azure tags, or key organizational attributes that Dynatrace automatically attaches to all raw telemetry data at ingest, using the `primary_tags.*` prefix. This enrichment enables fast, consistent filtering, grouping, and permission management across all data, without complex joins or proprietary tagging rules. Primary Grail tags are centrally configured and ensure that cloud-native and business-relevant metadata is always available for queries, dashboards, and access control.**
 
 |       | Primary Grail Field  | Primary Grail Tag |
 | -------- | ------- | ------- |
@@ -99,7 +99,7 @@ Can you fetch all logs and filter them by their `k8s.cluster.name` or `k8s.names
 
 > 💡 Tip: This is useful for OOTB IAM and Segment configurations.
 
-Now, think about a use case where a customer doesn't want to use these default primary grail fields for whatever reason - they might not be granular or flexible enough. **What would you do?**
+Now, think about a use case where a customer doesn't want to use these default **Primary Grail Fields** for whatever reason - they might not be granular or flexible enough. **What would you do?**
 
 If this is not enough and you'd like to go further and you require more configuration possibilities. Let's explore the enrichment strategy at source. You can enrich data by adding custom labels and annotations to your Kubernetes manifests. Dynatrace will pick these up and use them for tagging and filtering.
 
@@ -149,9 +149,9 @@ Please SSH into your VM and restart all pods. You can use this command - `kubect
 ![](../../assets/images/labels-annotations-in-action.png)
 
 <details>
-  <summary>DQL...</summary>
+  <summary>DQL</summary>
 
-```
+```sql
 fetch spans
 | filter k8s.workload.name == "loginservice"
 | fields start_time, span.id, k8s.workload.name, k8s.namespace.name, dt.security_context, dt.cost.costcenter, dt.cost.product
@@ -186,7 +186,7 @@ metadata:
 
 ```
 <!--![](../../assets/images/after-manual-pod-enrichment-1.png)-->
-> Results:
+> Result:
 
 ![](../../assets/images/after-manual-pod-enrichment.png)
 ![](../../assets/images/after-manual-pod-enrichment-1.png)

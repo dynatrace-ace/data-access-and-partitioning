@@ -48,7 +48,14 @@ Management Zones filter entities. Segments filter everything. Let's have a look 
 
 #### Exercise 3: Create an App Segment
 
-Repeat the process for app and stage.
+While management zones have been used widely in Dynatrace to define access to data and filter data on a global level, in the latest Dynatrace they have been replaced by three new concepts, each tailored to satisfy the respective requirements of Enterprise environments:
+- Data Partitioning(lab5): Organize data logically and address performance and retention requirements.
+- Data Access(lab3): Stay flexible and meet compliance and security demands by defining fine-grained access to data and Dynatrace platform capabilities based on a user's context.
+- Data Segmentation(lab4): Provide real-time filtering on huge data sets without the need to define thousands of individual rules.
+
+In exercise 3 and all subsequent exercises, we will focus on exploring **Segments**.
+
+Let's start by creating a segment that will filter out all data connected to one of our applications - Easytrade.
 
 Variable DQL query for App
 
