@@ -49,13 +49,16 @@ Management Zones filter entities. Segments filter everything. Let's have a look 
 #### Exercise 3: Create an App Segment
 
 While management zones have been used widely in Dynatrace to define access to data and filter data on a global level, in the latest Dynatrace they have been replaced by three new concepts, each tailored to satisfy the respective requirements of Enterprise environments:
-- Data Partitioning(lab5): Organize data logically and address performance and retention requirements.
-- Data Access(lab3): Stay flexible and meet compliance and security demands by defining fine-grained access to data and Dynatrace platform capabilities based on a user's context.
-- Data Segmentation(lab4): Provide real-time filtering on huge data sets without the need to define thousands of individual rules.
+- Data Partitioning (lab 5): Organize data logically and address performance and retention requirements.
+- Data Access (lab 3): Stay flexible and meet compliance and security demands by defining fine-grained access to data and Dynatrace platform capabilities based on a user's context.
+- Data Segmentation (lab 4): Provide real-time filtering on huge data sets without the need to define thousands of individual rules.
 
 In exercise 3 and all subsequent exercises, we will focus on exploring **Segments**.
 
 Let's start by creating a segment that will filter out all data connected to one of our applications - Easytrade.
+1. Navigate to Settings > Environment Segmentation > Segments
+2. Create a new Segment
+3. Instructions are provided below
 
 Variable DQL query for App
 
@@ -82,7 +85,7 @@ Extract stage from Host Group names and use it to filter all data.
 2. Create a Platform Segment with provided instructions.
     - Extract all possible values for Stage using the below DQL
         - ```fetch dt.entity.host_group| parse `entity.name`, """LD:platform '_' LD:app '_' LD:stage"""| dedup platform| fields platform```
-    - Use `dt.host_group.id = $stage*` to filter all datapoints within the Host-Group
+    - Use `dt.host_group.id = *$stage` to filter all datapoints within the Host-Group
 
 ![](../../assets/images/lab4-ex4-stage-segment-variable.png)
 > Variable configuration for Stage segment
