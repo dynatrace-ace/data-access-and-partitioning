@@ -80,8 +80,8 @@ In Dynatrace, you can set up policy boundaries for fine-grained restrictions on 
 
 **Primary Grail tags are a small set of important, customer-selected tags—such as Kubernetes labels, AWS/Azure tags, or key organizational attributes—that Dynatrace automatically attaches to all raw telemetry data at ingest, using the primary_tags.* prefix. This enrichment enables fast, consistent filtering, grouping, and permission management across all data, without complex joins or proprietary tagging rules. Primary Grail tags are centrally configured and ensure that cloud-native and business-relevant metadata is always available for queries, dashboards, and access control.**
 
-| | Primary Grail Field  | Primary Grail Tag |
-| -------- | ------- |
+|       | Primary Grail Field  | Primary Grail Tag |
+| -------- | ------- | ------- |
 | What are they?   | Well defined OOTB fields for specific technologies | A new tag on all telemetry data  |
 | Purpose  | Data level access, here to auto enrich all signals and entities OOTB | Enrichment of all signals including smartscape Nodes |
 
