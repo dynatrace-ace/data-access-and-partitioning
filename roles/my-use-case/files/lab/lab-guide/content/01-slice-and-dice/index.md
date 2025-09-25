@@ -2,14 +2,22 @@
 
 ### Objectives
 
-- Work with an existing customer scenario (we play the role of the customer).
+- Work with an existing customer scenario presented previously.
 - Learn how to extract and map:
     - 📋 Requirements
     - 📐 Dimensions
     - 🖥️ Technologies
 
 ### Step 1: Understand the 📋 Requirements (Interactive Discovery) 
-You are interviewing the customer currently working on 2nd gen (played by us). Use the questions below to uncover their needs. Write down your findings, you will need it later. Feel free to spend a few minutes and read through the best practice guide available [here](https://dt-rnd.atlassian.net/wiki/spaces/d1coe/pages/1247150978/1.+Slice+Dice).
+
+The customer requirements are:
+- Teams should access only their own apps, those apps being easytrade and hipstershop. This includes ALL DATA.
+- Both easytrade and hipstershop logs need a separate bucket. Think about routing rules for logs and their respective buckets considering that everything is deployed in a kubernetes environment.
+- Customers needs to be able to easily navigate through DT interface, and see their respective apps.
+- Costs split by apps, to understand how much each team is spending in Observability.
+
+<details>
+  <summary>How do you get there...</summary>
 
 #### 🔐 Access Control
 Goal: Understand who should access what data. Think about all questions that you need to ask your customer to uncover this. For example:
@@ -30,20 +38,18 @@ Goal: Determine how data should be filtered and grouped for visibility.
 - What would be the best way to split your customer's data for visibility?
 - Would you like to filter by app, environment, region, or business unit? What do you think is the best approach?
 - How would this affect your data access?
+
 > Think about the move from Management Zones to IAM + Segments. What can people have access to vs what can they only filter on?
+
 #### 💰 Cost Allocation
 Goal: Understand how observability costs should be tracked and distributed.
 - How would your customer like to allocate costs?
 - Should costs be split by application, team, or department?
 - Do you need a chargeback or showback model for budgeting?
 
-#### ✅ Provided Requirements (Simulated customer answers in this use case)
-Use these to validate your findings:
+</details>
 
-- Data Access → Teams should access only their own apps, those apps being easytrade and hipstershop. This includes ALL DATA.
-- Partitioning → Both easytrade and hipstershop logs need a separate bucket. Think about routing rules for logs and their respective buckets considering that everything is deployed in a kubernetes environment.
-- Segmentation → Global app filter needed for unified visibility for both easytrade and hipstershop.
-- Cost Control → Costs split by apps.
+
 
 ### Discover 📐 Dimensions
 > 💡 Dimensions = metadata used to tag and organize observability data.
