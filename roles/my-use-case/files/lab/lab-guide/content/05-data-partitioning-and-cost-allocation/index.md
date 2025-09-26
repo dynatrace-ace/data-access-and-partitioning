@@ -78,10 +78,21 @@ Choose the right dimension to partition logs - in this case, we can go with the 
 Use IAM to restrict log access by bucket.
 
 
-#### Exercise 4: Cost Allocation – Tagging a VM
+#### Exercise 4: Cost Allocation
 
-- Step 1 Cost center allow list - https://docs.dynatrace.com/docs/license/cost-allocation#cost-allocation-allowlist
-- Step 2 configure host properties with remote connection - https://docs.dynatrace.com/docs/license/cost-allocation#big-steps--auto--1--Configure-Cost-Allocation-on-the-host
-- explain that for k8s we have already done it with taks 2 and 3 in lab 2
-- Download a dashboard - https://guu84124.apps.dynatrace.com/ui/document/v0/#share=96fef674-3349-470b-80a0-80d98765864d
-- Upload it to their personal tenant
+Dynatrace provides full-stack observability, which means cost allocation must account for:
+- Host monitoring
+- Signals tied to the host (e.g., Kubernetes cluster metrics, Logs etc.)
+
+> This exercise focuses on configuring cost allocation for Full-Stack monitoring as well as for new Log Ingest & Process cost allocation feature introduced in Dynatrace SaaS 1.324.
+
+**Cost Allocation Overview**
+![](../../assets/images/lab5-ex4-cost-allocation.png)
+
+Step-by-Step Instructions:
+1. To ensure only relevant entities are included in cost allocation follow the [official documentation](https://docs.dynatrace.com/docs/license/cost-allocation#cost-allocation-allowlist) to configure the allow list.
+2. Tagging hosts is essential for accurate cost attribution. You’ll [configure host properties remotely on OneAgents](https://docs.dynatrace.com/docs/license/cost-allocation#big-steps--auto--1--Configure-Cost-Allocation-on-the-host).
+3. No manual configuration is needed for logs in this lab. Telemetry enrichment has already been set up and will automatically apply the necessary tagging for log ingest cost allocation for our `loginservice`.
+    - There is a difference between something that is possible to be cross-charged and something that is officially available within our Cost Allocation feature. `Log Management - Ingest & Process` is available as of `1.324` which means that the Cost Allocation attributes `dt.cost.costcenter` and `dt.cost.product` will be on all Log Ingest Billing Usage Events (fetch dt.system.events). Therefore, this is officially supported by our Cost Allocation feature and will show up in Account Management. 
+    - [](../../assets/images/lab5-ex4-cost-allocation-log-ingest.png)
+4. To verify your configuration - download the [dashboard 1](https://guu84124.apps.dynatrace.com/ui/document/v0/#share=96fef674-3349-470b-80a0-80d98765864d) or [dashboard 2](https://guu84124.apps.dynatrace.com/ui/document/v0/#share=e9dabcfd-6f29-455e-9b88-25fee84c9a4a). Upload it to your personal Dynatrace tenant. This dashboard will display cost allocation details based on your tagging and enrichment setup.
