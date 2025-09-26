@@ -74,7 +74,8 @@ Now that any Dynatrace User can access the default features, we want to allow us
   <summary>Boundary query:</summary>
 
 ```sql
-storage:dt.security_context IN ("easytrade");
+storage:dt.security_context IN ("easytrade", "EasyTrade"); 
+// "EasyTrade" format comes from MZ format (grail security context for monitored entities)
 environment:management-zone IN ("EasyTrade");
 ```
 
