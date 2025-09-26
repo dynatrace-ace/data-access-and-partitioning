@@ -70,8 +70,6 @@ Choose the right dimension to partition logs - in this case, we can go with the 
 7. Fetch the logs again and check that your rule works.
 
 
-# -TO-DO
-
 
 #### Exercise 3: Connect Buckets to Access Control
 
