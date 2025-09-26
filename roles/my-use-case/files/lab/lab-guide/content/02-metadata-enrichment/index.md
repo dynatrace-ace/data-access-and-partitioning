@@ -179,7 +179,6 @@ Update your deployment manifest by following instructions below:
 ```
 metadata:
   annotations:
-    metadata-enrichment.dynatrace.com/inject: "true"
     metadata.dynatrace.com/dt.security_context: "easytrade"
     metadata.dynatrace.com/dt.cost.costcenter: "platform"
     metadata.dynatrace.com/dt.cost.product: "loginservice"
