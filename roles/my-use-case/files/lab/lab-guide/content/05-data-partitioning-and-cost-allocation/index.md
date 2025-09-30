@@ -57,6 +57,8 @@ Use dimensions like app, stage, or team to estimate log volume.
 
 Review the customer’s log ingestion volume per app. You can do that by fetching all logs for your k8s cluster and then applying any of the created segments that will lower the result size as well as improve the performance.
 
+**Think about how you would approach a customer with this kind of scenario. How would you split the logs? Would your customer want a standardized bucket approach per team? Or do they work more in a "purpose" fashion where logs are stored in different buckets based on their use/purpose? Or even solely based on the amount of data stored?**
+
 #### Exercise 2: Design Bucket Strategy
 
 Choose the right dimension to partition logs - in this case, we can go with the namespace name.
@@ -69,12 +71,11 @@ Choose the right dimension to partition logs - in this case, we can go with the 
 6. Add a new pipeline and in the last stage of the pipeline, add the bucket asignment rule.
 7. Fetch the logs again and check that your rule works.
 
-
+> Please note - this is not an official recommendation for every customer scenario. Handling large buckets based on a namespace in a customer environment of many k8s clusters is most likely not a good idea if you're trying to accomplish a scalable approach. Think of using k8s cluster level if needed.
 
 #### Exercise 3: Connect Buckets to Access Control
 
 Use IAM to restrict log access by bucket.
-
 
 #### Exercise 4: Cost Allocation
 
