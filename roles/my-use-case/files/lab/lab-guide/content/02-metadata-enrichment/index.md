@@ -6,6 +6,7 @@ All participants will enrich observability data (entities, metrics, events, logs
 - `dt.cost.costcenter`
 - `dt.cost.product`
 > The idea is to explore different enrichment strategies using Kubernetes and understand trade offs between approaches.
+> If your cluster hasn't been activated yet for the new Kubernetes app, please do that manually. 
 
 #### Step 1: Understand Why Metadata Enrichment Matters
 💡 Enrichment helps with access control, cost allocation, segmentation, and governance. We are trying to make sure that observability data is tagged with meaningful context.
