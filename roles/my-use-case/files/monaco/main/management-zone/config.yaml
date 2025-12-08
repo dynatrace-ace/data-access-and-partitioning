@@ -2,7 +2,7 @@ configs:
   - id: app_easytrade
     config:
       template: app_easytrade.json
-      skip: false
+      skip: true
     type:
       settings:
         schema: builtin:management-zones
