@@ -1,4 +1,4 @@
-# # ---
+---
 - include_role:
     name: dt-access-token
   vars:
@@ -36,7 +36,3 @@
 
 - include_role:
     name: app-easytrade
-
-- include_role:
-    name: app-hipstershop
-
