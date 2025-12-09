@@ -1,12 +1,12 @@
 ## Metadata Enrichment - Labels & Annotations
 
-1. Check namespaces labels & annotation in dyantrace
+1. Open K8s app, go to Namespaces, and check the existing labels & annotations for easytrade
 
-SCREENSHOT
+![](../../assets/images/labels_of_easytrade.png)
 
 2. Configure enrichment based on them
 
-SCREENSHOT
+SCREENSH
 
 3. Check if enrichment worked, describe pod
 
