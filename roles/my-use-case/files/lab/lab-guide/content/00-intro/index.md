@@ -1,4 +1,4 @@
-## Intro & Warm Up
+## Intro & Warm Up (10min)
 
 ## Intro
 
@@ -14,6 +14,24 @@ You will complete a series of critical tasks:
 - Cost Allocation
 
 ## Warm Up
+
+1. Open your dt environment, go to Segments
+
+SCREENSHOT
+
+Pro Tip: we will not create a Segment, but we will use Segments to understand where the metadata gets propagated.
+
+2. Filter using span name SELECT TradeManagement
+
+SCREENSHOT
+
+See how the metadata is available just for spans, not quite a good fit for a tenant-wise configuration
+
+3. Filter using k8s.namespace.name
+
+SCREENSHOT
+
+See how the metadata is available in all signals, a good fit for a tenant-wise configuration
 
 
 
