@@ -1,0 +1,1724 @@
+{
+  "defaultSegments": [],
+  "defaultTimeframe": {
+    "from": "now()-1h",
+    "to": "now()"
+  },
+  "sections": [
+    {
+      "id": "{{ .extractedIDs.id_eadf7c9d_311f_4486_82f7_3dd5521044b4 }}",
+      "markdown": "**What it does?**\n- This notebook samples a **representative set of signals** and evaluates **metadata coverage**.\n- Selects one representative record per **host**, **process group instance (PGI)**, and **service/stream** (spans: `dt.smartscape.service`; logs: `log.iostream`) to avoid bias from bursty sources.\n- Computes the percentage of sampled signals that contain key metadata: `dt.security_context`, `dt.cost.costcenter`, `dt.cost.product`, `dt.host_group.id`\n\n**How to read it?**\n- `pct_with_*` columns show the **share of sampled records** with the field present.\n- Results reflect the deduped sample (representative), **not all raw events**.\n\n**Notes \u0026 tips**\n- Narrow the time range for speed; widen for stability.\n- Adjust the dedup key if you prefer per-**service** or per-**PGI** sampling.\n- Treats empty strings as missing (uses `!= \"\"`); use `trim(...)` if whitespace is possible.",
+      "type": "markdown"
+    },
+    {
+      "id": "{{ .extractedIDs.id_8420da63_8f76_4f3d_ac5f_6e9f7eaae5bf }}",
+      "markdown": "#### Spans",
+      "type": "markdown"
+    },
+    {
+      "drilldownPath": [],
+      "filterSegments": [],
+      "height": 111,
+      "id": "{{ .extractedIDs.id_855575c8_6526_4f93_bcf0_7b9b0130aa3b }}",
+      "previousFilterSegments": [],
+      "showInput": false,
+      "state": {
+        "davis": {
+          "davisVisualization": {
+            "isAvailable": true
+          },
+          "includeLogs": true
+        },
+        "input": {
+          "timeframe": {
+            "from": "now()-1m",
+            "to": "now()"
+          },
+          "value": "fetch spans\n\n// representative sample, one per host, PGI \u0026 Service\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n\n| summarize\n    total                        = count(),\n    with_dt.security_context     = countIf(isNotNull(dt.security_context)  and dt.security_context  != \"\"),\n    with_dt.cost.costcenter      = countIf(isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"),\n    with_dt.cost.product         = countIf(isNotNull(dt.cost.product)      and dt.cost.product      != \"\"),\n    with_dt.host_group.id        = countIf(isNotNull(dt.host_group.id)     and dt.host_group.id     != \"\"),\n    with_all                    = countIf(\n                                     isNotNull(dt.security_context)  and dt.security_context  != \"\" and\n                                     isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"\n                                   )\n| fields pct_with_dt.host_group.id      = round(100.0 * toDouble(with_dt.host_group.id)      / toDouble(total), decimals: 2),\n         pct_with_dt.security_context   = round(100.0 * toDouble(with_dt.security_context)   / toDouble(total), decimals: 2),\n         pct_with_dt.cost.costcenter    = round(100.0 * toDouble(with_dt.cost.costcenter)    / toDouble(total), decimals: 2),\n         pct_with_dt.cost.product       = round(100.0 * toDouble(with_dt.cost.product)       / toDouble(total), decimals: 2),\n         pct_with_all                  = round(100.0 * toDouble(with_all)                  / toDouble(total), decimals: 2)\n"
+        },
+        "querySettings": {
+          "defaultSamplingRatio": 10,
+          "defaultScanLimitGbytes": 500,
+          "enableSampling": false,
+          "maxResultMegaBytes": 1,
+          "maxResultRecords": 1000
+        },
+        "result": {
+          "code": 200,
+          "dateTime": "2025-12-09T14:37:02.738Z",
+          "input": {
+            "filterSegments": [],
+            "timeframe": {
+              "from": "now()-1m",
+              "to": "now()"
+            },
+            "value": "fetch spans\n\n// representative sample, one per host, PGI \u0026 Service\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n\n| summarize\n    total                        = count(),\n    with_dt.security_context     = countIf(isNotNull(dt.security_context)  and dt.security_context  != \"\"),\n    with_dt.cost.costcenter      = countIf(isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"),\n    with_dt.cost.product         = countIf(isNotNull(dt.cost.product)      and dt.cost.product      != \"\"),\n    with_dt.host_group.id        = countIf(isNotNull(dt.host_group.id)     and dt.host_group.id     != \"\"),\n    with_all                    = countIf(\n                                     isNotNull(dt.security_context)  and dt.security_context  != \"\" and\n                                     isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"\n                                   )\n| fields pct_with_dt.host_group.id      = round(100.0 * toDouble(with_dt.host_group.id)      / toDouble(total), decimals: 2),\n         pct_with_dt.security_context   = round(100.0 * toDouble(with_dt.security_context)   / toDouble(total), decimals: 2),\n         pct_with_dt.cost.costcenter    = round(100.0 * toDouble(with_dt.cost.costcenter)    / toDouble(total), decimals: 2),\n         pct_with_dt.cost.product       = round(100.0 * toDouble(with_dt.cost.product)       / toDouble(total), decimals: 2),\n         pct_with_all                  = round(100.0 * toDouble(with_all)                  / toDouble(total), decimals: 2)\n"
+          },
+          "notifications": [],
+          "querySettings": {
+            "defaultSamplingRatio": 10,
+            "defaultScanLimitGbytes": 500,
+            "enableSampling": false,
+            "maxResultMegaBytes": 1,
+            "maxResultRecords": 1000
+          },
+          "value": {
+            "metadata": {
+              "grail": {
+                "analysisTimeframe": {
+                  "end": "2025-12-09T14:37:02.301000000Z",
+                  "start": "2025-12-09T14:36:02.300000000Z"
+                },
+                "canonicalQuery": "fetch spans\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n| summarize total = count(), with_dt.security_context = countIf(isNotNull(dt.security_context) AND dt.security_context != \"\"), with_dt.cost.costcenter = countIf(isNotNull(dt.cost.costcenter) AND dt.cost.costcenter != \"\"), with_dt.cost.product = countIf(isNotNull(dt.cost.product) AND dt.cost.product != \"\"), with_dt.host_group.id = countIf(isNotNull(dt.host_group.id) AND dt.host_group.id != \"\"), with_all = countIf(isNotNull(dt.security_context) AND dt.security_context != \"\" AND isNotNull(dt.cost.costcenter) AND dt.cost.costcenter != \"\")\n| fields pct_with_dt.host_group.id = round(100.0 * toDouble(with_dt.host_group.id) / toDouble(total), decimals:2), pct_with_dt.security_context = round(100.0 * toDouble(with_dt.security_context) / toDouble(total), decimals:2), pct_with_dt.cost.costcenter = round(100.0 * toDouble(with_dt.cost.costcenter) / toDouble(total), decimals:2), pct_with_dt.cost.product = round(100.0 * toDouble(with_dt.cost.product) / toDouble(total), decimals:2), pct_with_all = round(100.0 * toDouble(with_all) / toDouble(total), decimals:2)",
+                "dqlVersion": "V1_0",
+                "executionTimeMilliseconds": 33,
+                "locale": "es-419",
+                "notifications": [],
+                "query": "fetch spans\n\n// representative sample, one per host, PGI \u0026 Service\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n\n| summarize\n    total                        = count(),\n    with_dt.security_context     = countIf(isNotNull(dt.security_context)  and dt.security_context  != \"\"),\n    with_dt.cost.costcenter      = countIf(isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"),\n    with_dt.cost.product         = countIf(isNotNull(dt.cost.product)      and dt.cost.product      != \"\"),\n    with_dt.host_group.id        = countIf(isNotNull(dt.host_group.id)     and dt.host_group.id     != \"\"),\n    with_all                    = countIf(\n                                     isNotNull(dt.security_context)  and dt.security_context  != \"\" and\n                                     isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"\n                                   )\n| fields pct_with_dt.host_group.id      = round(100.0 * toDouble(with_dt.host_group.id)      / toDouble(total), decimals: 2),\n         pct_with_dt.security_context   = round(100.0 * toDouble(with_dt.security_context)   / toDouble(total), decimals: 2),\n         pct_with_dt.cost.costcenter    = round(100.0 * toDouble(with_dt.cost.costcenter)    / toDouble(total), decimals: 2),\n         pct_with_dt.cost.product       = round(100.0 * toDouble(with_dt.cost.product)       / toDouble(total), decimals: 2),\n         pct_with_all                  = round(100.0 * toDouble(with_all)                  / toDouble(total), decimals: 2)\n",
+                "queryId": "{{ .extractedIDs.id_b47dae45_b2a1_445b_b2df_ec800169aff0 }}",
+                "sampled": false,
+                "scannedBytes": 17717731,
+                "scannedDataPoints": 0,
+                "scannedRecords": 314973,
+                "timezone": "Europe/Stockholm"
+              }
+            },
+            "records": [
+              {
+                "pct_with_all": 0,
+                "pct_with_dt.cost.costcenter": 0,
+                "pct_with_dt.cost.product": 0,
+                "pct_with_dt.host_group.id": 100,
+                "pct_with_dt.security_context": 0
+              }
+            ],
+            "types": [
+              {
+                "indexRange": [
+                  0,
+                  0
+                ],
+                "mappings": {
+                  "pct_with_all": {
+                    "type": "double"
+                  },
+                  "pct_with_dt.cost.costcenter": {
+                    "type": "double"
+                  },
+                  "pct_with_dt.cost.product": {
+                    "type": "double"
+                  },
+                  "pct_with_dt.host_group.id": {
+                    "type": "double"
+                  },
+                  "pct_with_dt.security_context": {
+                    "type": "double"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "state": "success",
+        "visualization": "table",
+        "visualizationSettings": {
+          "autoSelectVisualization": false,
+          "chartSettings": {},
+          "table": {
+            "columnWidths": {
+              "[\"pct_with_dt.host_group.id\"]": 205
+            },
+            "rowDensity": "comfortable"
+          },
+          "thresholds": [
+            {
+              "field": "pct_with_dt.security_context",
+              "id": 1,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 90
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 60
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            },
+            {
+              "field": "pct_with_dt.cost.costcenter",
+              "id": 2,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 90
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 60
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            },
+            {
+              "field": "pct_with_dt.cost.product",
+              "id": 3,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 90
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 60
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            },
+            {
+              "field": "pct_with_dt.cost.costcenter",
+              "id": 4,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 90
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 60
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            },
+            {
+              "field": "pct_with_dt.host_group.id",
+              "id": 5,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 90
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 60
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            },
+            {
+              "field": "pct_with_all",
+              "id": 6,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 80
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 40
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            }
+          ],
+          "unitsOverrides": [
+            {
+              "added": 1760341591108,
+              "baseUnit": "none",
+              "decimals": 2,
+              "delimiter": false,
+              "displayUnit": null,
+              "identifier": "pct_with_dt.security_context",
+              "suffix": "",
+              "unitCategory": "unspecified"
+            }
+          ]
+        }
+      },
+      "title": "Representative sample of spans with Primary Grail Fields",
+      "type": "dql"
+    },
+    {
+      "drilldownPath": [],
+      "filterSegments": [],
+      "height": 166,
+      "id": "{{ .extractedIDs.id_fc129f56_e704_4653_b395_5d665076f717 }}",
+      "previousFilterSegments": [],
+      "showInput": false,
+      "state": {
+        "davis": {
+          "davisVisualization": {
+            "isAvailable": true
+          },
+          "includeLogs": true
+        },
+        "input": {
+          "timeframe": {
+            "from": "now()-1m",
+            "to": "now()"
+          },
+          "value": "fetch spans\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,\n         dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service, span.id"
+        },
+        "querySettings": {
+          "defaultSamplingRatio": 10,
+          "defaultScanLimitGbytes": 500,
+          "enableSampling": false,
+          "maxResultMegaBytes": 1,
+          "maxResultRecords": 1000
+        },
+        "result": {
+          "code": 200,
+          "dateTime": "2025-12-09T14:36:46.002Z",
+          "input": {
+            "filterSegments": [],
+            "timeframe": {
+              "from": "now()-1m",
+              "to": "now()"
+            },
+            "value": "fetch spans\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,\n         dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service, span.id"
+          },
+          "notifications": [],
+          "querySettings": {
+            "defaultSamplingRatio": 10,
+            "defaultScanLimitGbytes": 500,
+            "enableSampling": false,
+            "maxResultMegaBytes": 1,
+            "maxResultRecords": 1000
+          },
+          "value": {
+            "metadata": {
+              "grail": {
+                "analysisTimeframe": {
+                  "end": "2025-12-09T14:36:45.554000000Z",
+                  "start": "2025-12-09T14:35:45.554000000Z"
+                },
+                "canonicalQuery": "fetch spans\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product, dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service, span.id",
+                "dqlVersion": "V1_0",
+                "executionTimeMilliseconds": 21,
+                "locale": "es-419",
+                "notifications": [],
+                "query": "fetch spans\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,\n         dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service, span.id",
+                "queryId": "{{ .extractedIDs.id_755b0e07_ac10_424f_b3af_e1c00c8bdd1f }}",
+                "sampled": false,
+                "scannedBytes": 15853877,
+                "scannedDataPoints": 0,
+                "scannedRecords": 313737,
+                "timezone": "Europe/Stockholm"
+              }
+            },
+            "records": [
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_0636578450422862 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "dt.smartscape.service": "{{ .extractedIDs.id_SERVICE_E6FEB62035B929D2 }}",
+                "span.id": "7b6550a5a3ed6ea1"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_0ABF119515239CAE }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "dt.smartscape.service": "{{ .extractedIDs.id_SERVICE_994994FA1CE87086 }}",
+                "span.id": "511f1bd2c95b4bf6"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_35C345A2DC3147C2 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "dt.smartscape.service": "{{ .extractedIDs.id_SERVICE_C66E005959E479DA }}",
+                "span.id": "3cd492150398191f"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_3D43E87396E3AADC }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "dt.smartscape.service": "{{ .extractedIDs.id_SERVICE_449657E1C11DDDB7 }}",
+                "span.id": "020a07dc4646d07a"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_43DCA08215222D31 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "dt.smartscape.service": "{{ .extractedIDs.id_SERVICE_4D31639D8D668232 }}",
+                "span.id": "9a0b03f64beeb971"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_6021317D68B2FB78 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "dt.smartscape.service": "{{ .extractedIDs.id_SERVICE_ECBFD3CEC579C3F0 }}",
+                "span.id": "466b0e369b4e29c7"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_65AC2E6471B12F1C }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "dt.smartscape.service": "{{ .extractedIDs.id_SERVICE_03708EFB85DE3B7E }}",
+                "span.id": "c98c842550ae7538"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_66F6F76A6C196EE7 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "dt.smartscape.service": "{{ .extractedIDs.id_SERVICE_8DC8E0D5A831C5D2 }}",
+                "span.id": "f9b0b7ae7d957982"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_80A8EF8FB146C020 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "dt.smartscape.service": "{{ .extractedIDs.id_SERVICE_09DFAE3295C329F6 }}",
+                "span.id": "d531e06dc24ebf03"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_9FF3BB78E7A7DE23 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "dt.smartscape.service": "{{ .extractedIDs.id_SERVICE_9D0536A1C6EE0DBB }}",
+                "span.id": "be7ee7c3a07bcb86"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_FABDDF0B5C6C8610 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "dt.smartscape.service": "{{ .extractedIDs.id_SERVICE_109D349E87DA6BCC }}",
+                "span.id": "0751816595e8714b"
+              }
+            ],
+            "types": [
+              {
+                "indexRange": [
+                  0,
+                  10
+                ],
+                "mappings": {
+                  "dt.cost.costcenter": {
+                    "type": "undefined"
+                  },
+                  "dt.cost.product": {
+                    "type": "undefined"
+                  },
+                  "dt.entity.host": {
+                    "type": "string"
+                  },
+                  "dt.entity.process_group_instance": {
+                    "type": "string"
+                  },
+                  "dt.host_group.id": {
+                    "type": "string"
+                  },
+                  "dt.security_context": {
+                    "type": "undefined"
+                  },
+                  "dt.smartscape.service": {
+                    "type": "smartscape_id"
+                  },
+                  "span.id": {
+                    "type": "uid"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "state": "success",
+        "visualization": "table",
+        "visualizationSettings": {
+          "autoSelectVisualization": false,
+          "chartSettings": {},
+          "thresholds": []
+        }
+      },
+      "title": "Representative sample and their Primary Grail Fields",
+      "type": "dql"
+    },
+    {
+      "drilldownPath": [],
+      "filterSegments": [],
+      "height": 69,
+      "id": "{{ .extractedIDs.id_309d384a_aa50_4adc_a84a_0598ed59a693 }}",
+      "previousFilterSegments": [],
+      "showInput": false,
+      "state": {
+        "davis": {
+          "davisVisualization": {
+            "isAvailable": true
+          },
+          "includeLogs": true
+        },
+        "input": {
+          "timeframe": {
+            "from": "now()-1m",
+            "to": "now()"
+          },
+          "value": "fetch spans\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,\n         dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service, span.id\n| summarize count = count(), by:{dt.security_context}"
+        },
+        "querySettings": {
+          "defaultSamplingRatio": 10,
+          "defaultScanLimitGbytes": 500,
+          "enableSampling": false,
+          "maxResultMegaBytes": 1,
+          "maxResultRecords": 1000
+        },
+        "result": {
+          "code": 200,
+          "dateTime": "2025-12-09T14:36:41.235Z",
+          "input": {
+            "filterSegments": [],
+            "timeframe": {
+              "from": "now()-1m",
+              "to": "now()"
+            },
+            "value": "fetch spans\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,\n         dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service, span.id\n| summarize count = count(), by:{dt.security_context}"
+          },
+          "notifications": [],
+          "querySettings": {
+            "defaultSamplingRatio": 10,
+            "defaultScanLimitGbytes": 500,
+            "enableSampling": false,
+            "maxResultMegaBytes": 1,
+            "maxResultRecords": 1000
+          },
+          "value": {
+            "metadata": {
+              "grail": {
+                "analysisTimeframe": {
+                  "end": "2025-12-09T14:36:40.813000000Z",
+                  "start": "2025-12-09T14:35:40.812000000Z"
+                },
+                "canonicalQuery": "fetch spans\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product, dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service, span.id\n| summarize by:{dt.security_context}, count = count()",
+                "dqlVersion": "V1_0",
+                "executionTimeMilliseconds": 25,
+                "locale": "es-419",
+                "notifications": [],
+                "query": "fetch spans\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,\n         dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service, span.id\n| summarize count = count(), by:{dt.security_context}",
+                "queryId": "{{ .extractedIDs.id_cc014636_3357_4153_aed1_a5b8e5984c3c }}",
+                "sampled": false,
+                "scannedBytes": 15853877,
+                "scannedDataPoints": 0,
+                "scannedRecords": 313737,
+                "timezone": "Europe/Stockholm"
+              }
+            },
+            "records": [
+              {
+                "count": "11",
+                "dt.security_context": null
+              }
+            ],
+            "types": [
+              {
+                "indexRange": [
+                  0,
+                  0
+                ],
+                "mappings": {
+                  "count": {
+                    "type": "long"
+                  },
+                  "dt.security_context": {
+                    "type": "undefined"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "state": "success",
+        "visualization": "table",
+        "visualizationSettings": {
+          "autoSelectVisualization": false,
+          "chartSettings": {},
+          "thresholds": []
+        }
+      },
+      "title": "All values for dt.security_context",
+      "type": "dql"
+    },
+    {
+      "drilldownPath": [],
+      "filterSegments": [],
+      "height": 219,
+      "id": "{{ .extractedIDs.id_6f42e616_17bf_4260_be58_3db47585c9d0 }}",
+      "previousFilterSegments": [],
+      "showInput": false,
+      "state": {
+        "davis": {
+          "davisVisualization": {
+            "isAvailable": true
+          },
+          "includeLogs": true
+        },
+        "input": {
+          "timeframe": {
+            "from": "now()-5m",
+            "to": "now()"
+          },
+          "value": "fetch spans\n| filter span.id == toUid(\"b2d2f9f4850daf86\")"
+        },
+        "querySettings": {
+          "defaultSamplingRatio": 10,
+          "defaultScanLimitGbytes": 500,
+          "enableSampling": false,
+          "maxResultMegaBytes": 1,
+          "maxResultRecords": 1000
+        },
+        "result": {
+          "code": 200,
+          "dateTime": "2025-12-09T14:36:33.966Z",
+          "input": {
+            "filterSegments": [],
+            "timeframe": {
+              "from": "now()-5m",
+              "to": "now()"
+            },
+            "value": "fetch spans\n| filter span.id == toUid(\"b2d2f9f4850daf86\")"
+          },
+          "notifications": [],
+          "querySettings": {
+            "defaultSamplingRatio": 10,
+            "defaultScanLimitGbytes": 500,
+            "enableSampling": false,
+            "maxResultMegaBytes": 1,
+            "maxResultRecords": 1000
+          },
+          "value": {
+            "metadata": {
+              "grail": {
+                "analysisTimeframe": {
+                  "end": "2025-12-09T14:36:33.551000000Z",
+                  "start": "2025-12-09T14:31:33.551000000Z"
+                },
+                "canonicalQuery": "fetch spans\n| filter span.id == toUid(\"b2d2f9f4850daf86\")",
+                "dqlVersion": "V1_0",
+                "executionTimeMilliseconds": 24,
+                "locale": "es-419",
+                "notifications": [],
+                "query": "fetch spans\n| filter span.id == toUid(\"b2d2f9f4850daf86\")",
+                "queryId": "{{ .extractedIDs.id_e1b22781_cfe4_40d7_ac36_0858b54e0757 }}",
+                "sampled": false,
+                "scannedBytes": 13440714,
+                "scannedDataPoints": 0,
+                "scannedRecords": 313196,
+                "timezone": "Europe/Stockholm"
+              }
+            },
+            "records": [],
+            "types": []
+          }
+        },
+        "state": "success",
+        "visualization": "recordView",
+        "visualizationSettings": {
+          "autoSelectVisualization": false,
+          "chartSettings": {}
+        }
+      },
+      "title": "Span metadata details",
+      "type": "dql"
+    },
+    {
+      "id": "{{ .extractedIDs.id_b3d55252_7988_4101_8371_2af41ad099fc }}",
+      "markdown": "---",
+      "type": "markdown"
+    },
+    {
+      "id": "{{ .extractedIDs.id_1435e122_02d1_4683_864f_3ae93c91196c }}",
+      "markdown": "#### Logs",
+      "type": "markdown"
+    },
+    {
+      "drilldownPath": [],
+      "filterSegments": [],
+      "height": 111,
+      "id": "{{ .extractedIDs.id_085d86aa_a115_417d_8331_37498d60c726 }}",
+      "previousFilterSegments": [],
+      "showInput": true,
+      "state": {
+        "davis": {
+          "davisVisualization": {
+            "isAvailable": true
+          },
+          "includeLogs": true
+        },
+        "input": {
+          "timeframe": {
+            "from": "now()-1h",
+            "to": "now()"
+          },
+          "value": "fetch logs\n\n// representative sample, one per host, PGI \u0026 iostream\n| dedup dt.entity.host, dt.entity.process_group_instance, log.iostream\n\n//\n| summarize\n    total                        = count(),\n    with_dt.security_context     = countIf(isNotNull(dt.security_context)  and dt.security_context  != \"\"),\n    with_dt.cost.costcenter      = countIf(isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"),\n    with_dt.cost.product         = countIf(isNotNull(dt.cost.product)      and dt.cost.product      != \"\"),\n    with_dt.host_group.id        = countIf(isNotNull(dt.host_group.id)     and dt.host_group.id     != \"\"),\n    with_all                     = countIf(\n                                     isNotNull(dt.security_context)  and dt.security_context  != \"\" and\n                                     isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"\n                                   )\n| fields pct_with_dt.host_group.id      = round(100.0 * toDouble(with_dt.host_group.id)    / toDouble(total), decimals: 2),\n         pct_with_dt.security_context   = round(100.0 * toDouble(with_dt.security_context) / toDouble(total), decimals: 2),\n         pct_with_dt.cost.costcenter    = round(100.0 * toDouble(with_dt.cost.costcenter)  / toDouble(total), decimals: 2),\n         pct_with_dt.cost.product       = round(100.0 * toDouble(with_dt.cost.product)     / toDouble(total), decimals: 2),\n         pct_with_all                   = round(100.0 * toDouble(with_all)                 / toDouble(total), decimals: 2)"
+        },
+        "querySettings": {
+          "defaultSamplingRatio": 10,
+          "defaultScanLimitGbytes": 500,
+          "enableSampling": false,
+          "maxResultMegaBytes": 1,
+          "maxResultRecords": 1000
+        },
+        "result": {
+          "code": 200,
+          "dateTime": "2025-12-09T14:36:27.994Z",
+          "input": {
+            "filterSegments": [],
+            "timeframe": {
+              "from": "now()-1h",
+              "to": "now()"
+            },
+            "value": "fetch logs\n\n// representative sample, one per host, PGI \u0026 iostream\n| dedup dt.entity.host, dt.entity.process_group_instance, log.iostream\n\n//\n| summarize\n    total                        = count(),\n    with_dt.security_context     = countIf(isNotNull(dt.security_context)  and dt.security_context  != \"\"),\n    with_dt.cost.costcenter      = countIf(isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"),\n    with_dt.cost.product         = countIf(isNotNull(dt.cost.product)      and dt.cost.product      != \"\"),\n    with_dt.host_group.id        = countIf(isNotNull(dt.host_group.id)     and dt.host_group.id     != \"\"),\n    with_all                     = countIf(\n                                     isNotNull(dt.security_context)  and dt.security_context  != \"\" and\n                                     isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"\n                                   )\n| fields pct_with_dt.host_group.id      = round(100.0 * toDouble(with_dt.host_group.id)    / toDouble(total), decimals: 2),\n         pct_with_dt.security_context   = round(100.0 * toDouble(with_dt.security_context) / toDouble(total), decimals: 2),\n         pct_with_dt.cost.costcenter    = round(100.0 * toDouble(with_dt.cost.costcenter)  / toDouble(total), decimals: 2),\n         pct_with_dt.cost.product       = round(100.0 * toDouble(with_dt.cost.product)     / toDouble(total), decimals: 2),\n         pct_with_all                   = round(100.0 * toDouble(with_all)                 / toDouble(total), decimals: 2)"
+          },
+          "notifications": [],
+          "querySettings": {
+            "defaultSamplingRatio": 10,
+            "defaultScanLimitGbytes": 500,
+            "enableSampling": false,
+            "maxResultMegaBytes": 1,
+            "maxResultRecords": 1000
+          },
+          "value": {
+            "metadata": {
+              "grail": {
+                "analysisTimeframe": {
+                  "end": "2025-12-09T14:36:26.551000000Z",
+                  "start": "2025-12-09T13:36:26.551000000Z"
+                },
+                "canonicalQuery": "fetch logs\n| dedup dt.entity.host, dt.entity.process_group_instance, log.iostream\n| summarize total = count(), with_dt.security_context = countIf(isNotNull(dt.security_context) AND dt.security_context != \"\"), with_dt.cost.costcenter = countIf(isNotNull(dt.cost.costcenter) AND dt.cost.costcenter != \"\"), with_dt.cost.product = countIf(isNotNull(dt.cost.product) AND dt.cost.product != \"\"), with_dt.host_group.id = countIf(isNotNull(dt.host_group.id) AND dt.host_group.id != \"\"), with_all = countIf(isNotNull(dt.security_context) AND dt.security_context != \"\" AND isNotNull(dt.cost.costcenter) AND dt.cost.costcenter != \"\")\n| fields pct_with_dt.host_group.id = round(100.0 * toDouble(with_dt.host_group.id) / toDouble(total), decimals:2), pct_with_dt.security_context = round(100.0 * toDouble(with_dt.security_context) / toDouble(total), decimals:2), pct_with_dt.cost.costcenter = round(100.0 * toDouble(with_dt.cost.costcenter) / toDouble(total), decimals:2), pct_with_dt.cost.product = round(100.0 * toDouble(with_dt.cost.product) / toDouble(total), decimals:2), pct_with_all = round(100.0 * toDouble(with_all) / toDouble(total), decimals:2)",
+                "dqlVersion": "V1_0",
+                "executionTimeMilliseconds": 451,
+                "locale": "es-419",
+                "notifications": [],
+                "query": "fetch logs\n\n// representative sample, one per host, PGI \u0026 iostream\n| dedup dt.entity.host, dt.entity.process_group_instance, log.iostream\n\n//\n| summarize\n    total                        = count(),\n    with_dt.security_context     = countIf(isNotNull(dt.security_context)  and dt.security_context  != \"\"),\n    with_dt.cost.costcenter      = countIf(isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"),\n    with_dt.cost.product         = countIf(isNotNull(dt.cost.product)      and dt.cost.product      != \"\"),\n    with_dt.host_group.id        = countIf(isNotNull(dt.host_group.id)     and dt.host_group.id     != \"\"),\n    with_all                     = countIf(\n                                     isNotNull(dt.security_context)  and dt.security_context  != \"\" and\n                                     isNotNull(dt.cost.costcenter)   and dt.cost.costcenter   != \"\"\n                                   )\n| fields pct_with_dt.host_group.id      = round(100.0 * toDouble(with_dt.host_group.id)    / toDouble(total), decimals: 2),\n         pct_with_dt.security_context   = round(100.0 * toDouble(with_dt.security_context) / toDouble(total), decimals: 2),\n         pct_with_dt.cost.costcenter    = round(100.0 * toDouble(with_dt.cost.costcenter)  / toDouble(total), decimals: 2),\n         pct_with_dt.cost.product       = round(100.0 * toDouble(with_dt.cost.product)     / toDouble(total), decimals: 2),\n         pct_with_all                   = round(100.0 * toDouble(with_all)                 / toDouble(total), decimals: 2)",
+                "queryId": "{{ .extractedIDs.id_11229eb1_1f6f_4f04_aecc_3d45f16c9223 }}",
+                "sampled": false,
+                "scannedBytes": 715699034,
+                "scannedDataPoints": 0,
+                "scannedRecords": 621107,
+                "timezone": "Europe/Stockholm"
+              }
+            },
+            "records": [
+              {
+                "pct_with_all": 0,
+                "pct_with_dt.cost.costcenter": 0,
+                "pct_with_dt.cost.product": 0,
+                "pct_with_dt.host_group.id": 100,
+                "pct_with_dt.security_context": 0
+              }
+            ],
+            "types": [
+              {
+                "indexRange": [
+                  0,
+                  0
+                ],
+                "mappings": {
+                  "pct_with_all": {
+                    "type": "double"
+                  },
+                  "pct_with_dt.cost.costcenter": {
+                    "type": "double"
+                  },
+                  "pct_with_dt.cost.product": {
+                    "type": "double"
+                  },
+                  "pct_with_dt.host_group.id": {
+                    "type": "double"
+                  },
+                  "pct_with_dt.security_context": {
+                    "type": "double"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "state": "success",
+        "visualization": "table",
+        "visualizationSettings": {
+          "autoSelectVisualization": false,
+          "chartSettings": {},
+          "table": {
+            "columnWidths": {
+              "[\"pct_with_dt.host_group.id\"]": 205
+            },
+            "rowDensity": "comfortable"
+          },
+          "thresholds": [
+            {
+              "field": "pct_with_dt.security_context",
+              "id": 1,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 90
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 60
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            },
+            {
+              "field": "pct_with_dt.cost.costcenter",
+              "id": 2,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 90
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 60
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            },
+            {
+              "field": "pct_with_dt.cost.product",
+              "id": 3,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 90
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 60
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            },
+            {
+              "field": "pct_with_dt.cost.costcenter",
+              "id": 4,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 90
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 60
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            },
+            {
+              "field": "pct_with_dt.host_group.id",
+              "id": 5,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 90
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 60
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            },
+            {
+              "field": "pct_with_all",
+              "id": 6,
+              "isEnabled": true,
+              "rules": [
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                  },
+                  "comparator": "≥",
+                  "id": 0,
+                  "label": "",
+                  "value": 80
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                  },
+                  "comparator": "≥",
+                  "id": 1,
+                  "label": "",
+                  "value": 40
+                },
+                {
+                  "color": {
+                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                  },
+                  "comparator": "≥",
+                  "id": 2,
+                  "label": "",
+                  "value": 0
+                }
+              ],
+              "title": ""
+            }
+          ],
+          "unitsOverrides": [
+            {
+              "added": 1760341591108,
+              "baseUnit": "none",
+              "decimals": 2,
+              "delimiter": false,
+              "displayUnit": null,
+              "identifier": "pct_with_dt.security_context",
+              "suffix": "",
+              "unitCategory": "unspecified"
+            }
+          ]
+        }
+      },
+      "title": "Representative sample of spans with Primary Grail Fields",
+      "type": "dql"
+    },
+    {
+      "drilldownPath": [],
+      "filterSegments": [],
+      "height": 303,
+      "id": "{{ .extractedIDs.id_ba60f664_1ca7_42e8_93cc_d3edb17c10e2 }}",
+      "previousFilterSegments": [],
+      "showInput": false,
+      "state": {
+        "davis": {
+          "davisVisualization": {
+            "isAvailable": true
+          },
+          "includeLogs": true
+        },
+        "input": {
+          "timeframe": {
+            "from": "now()-1h",
+            "to": "now()"
+          },
+          "value": "fetch logs\n| dedup dt.entity.host, dt.entity.process_group_instance, log.iostream\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,\n         dt.entity.host, dt.entity.process_group_instance, log.iostream\n         "
+        },
+        "querySettings": {
+          "defaultSamplingRatio": 10,
+          "defaultScanLimitGbytes": 500,
+          "enableSampling": false,
+          "maxResultMegaBytes": 1,
+          "maxResultRecords": 1000
+        },
+        "result": {
+          "code": 200,
+          "dateTime": "2025-12-09T14:36:31.207Z",
+          "input": {
+            "filterSegments": [],
+            "timeframe": {
+              "from": "now()-1h",
+              "to": "now()"
+            },
+            "value": "fetch logs\n| dedup dt.entity.host, dt.entity.process_group_instance, log.iostream\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,\n         dt.entity.host, dt.entity.process_group_instance, log.iostream\n         "
+          },
+          "notifications": [],
+          "querySettings": {
+            "defaultSamplingRatio": 10,
+            "defaultScanLimitGbytes": 500,
+            "enableSampling": false,
+            "maxResultMegaBytes": 1,
+            "maxResultRecords": 1000
+          },
+          "value": {
+            "metadata": {
+              "grail": {
+                "analysisTimeframe": {
+                  "end": "2025-12-09T14:36:29.759000000Z",
+                  "start": "2025-12-09T13:36:29.758000000Z"
+                },
+                "canonicalQuery": "fetch logs\n| dedup dt.entity.host, dt.entity.process_group_instance, log.iostream\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product, dt.entity.host, dt.entity.process_group_instance, log.iostream",
+                "dqlVersion": "V1_0",
+                "executionTimeMilliseconds": 449,
+                "locale": "es-419",
+                "notifications": [],
+                "query": "fetch logs\n| dedup dt.entity.host, dt.entity.process_group_instance, log.iostream\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,\n         dt.entity.host, dt.entity.process_group_instance, log.iostream\n         ",
+                "queryId": "{{ .extractedIDs.id_6b77cfb1_bbb3_4291_afb1_2f65c8b5fc7b }}",
+                "sampled": false,
+                "scannedBytes": 715585171,
+                "scannedDataPoints": 0,
+                "scannedRecords": 621107,
+                "timezone": "Europe/Stockholm"
+              }
+            },
+            "records": [
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_0636578450422862 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_0ABF119515239CAE }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_23C45930E070AB71 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_2BEFEAF9EFAFFA15 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_2CB8B42CA580711A }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_35C345A2DC3147C2 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_37CEA7BFDFBD89B3 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_3D43E87396E3AADC }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_3E5B55BE45600292 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_4269984F3C054CC4 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_43DCA08215222D31 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_449921AC980BF92C }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stderr"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_490B3CA47D98CDEA }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_493C459218B7BA16 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": null
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_6021317D68B2FB78 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_65AC2E6471B12F1C }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_66F6F76A6C196EE7 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_7EA68CEA79EA9E7F }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": null
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_7FCCE8ADECF3CBBD }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stderr"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_80A8EF8FB146C020 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_8224FC8F095F0732 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_841076783CF16D98 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": null
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_89052D4179254DD4 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": null
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_9FF3BB78E7A7DE23 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_AE286E91CD868AD3 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stderr"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_BB9D415391A1AF34 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_C46BBF21E43ACD24 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": null
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_D19DE0DCE0CA7FB6 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_FABDDF0B5C6C8610 }}",
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stderr"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": [
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_0D6E44F337AE549C }}",
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_69B919297804B16B }}",
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_DFFCCB1E412BDF74 }}",
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_FE1971D237B42A9A }}"
+                ],
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": null
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": [
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_0D6E44F337AE549C }}",
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_FE1971D237B42A9A }}"
+                ],
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": null
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": [
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_493C459218B7BA16 }}",
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_7EA68CEA79EA9E7F }}",
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_841076783CF16D98 }}",
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_89052D4179254DD4 }}",
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_F106DED8CE3606CE }}"
+                ],
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              },
+              {
+                "dt.cost.costcenter": null,
+                "dt.cost.product": null,
+                "dt.entity.host": "{{ .extractedIDs.id_HOST_A5430E3355DC03FE }}",
+                "dt.entity.process_group_instance": [
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_792EAE0EC4840679 }}",
+                  "{{ .extractedIDs.id_PROCESS_GROUP_INSTANCE_EE15AE7A3CB23DF2 }}"
+                ],
+                "dt.host_group.id": "k8s_multi_prod",
+                "dt.security_context": null,
+                "log.iostream": "stdout"
+              }
+            ],
+            "types": [
+              {
+                "indexRange": [
+                  0,
+                  28
+                ],
+                "mappings": {
+                  "dt.cost.costcenter": {
+                    "type": "undefined"
+                  },
+                  "dt.cost.product": {
+                    "type": "undefined"
+                  },
+                  "dt.entity.host": {
+                    "type": "string"
+                  },
+                  "dt.entity.process_group_instance": {
+                    "type": "string"
+                  },
+                  "dt.host_group.id": {
+                    "type": "string"
+                  },
+                  "dt.security_context": {
+                    "type": "undefined"
+                  },
+                  "log.iostream": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "indexRange": [
+                  29,
+                  29
+                ],
+                "mappings": {
+                  "dt.cost.costcenter": {
+                    "type": "undefined"
+                  },
+                  "dt.cost.product": {
+                    "type": "undefined"
+                  },
+                  "dt.entity.host": {
+                    "type": "string"
+                  },
+                  "dt.entity.process_group_instance": {
+                    "type": "array",
+                    "types": [
+                      {
+                        "indexRange": [
+                          0,
+                          3
+                        ],
+                        "mappings": {
+                          "element": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "dt.host_group.id": {
+                    "type": "string"
+                  },
+                  "dt.security_context": {
+                    "type": "undefined"
+                  },
+                  "log.iostream": {
+                    "type": "undefined"
+                  }
+                }
+              },
+              {
+                "indexRange": [
+                  30,
+                  30
+                ],
+                "mappings": {
+                  "dt.cost.costcenter": {
+                    "type": "undefined"
+                  },
+                  "dt.cost.product": {
+                    "type": "undefined"
+                  },
+                  "dt.entity.host": {
+                    "type": "string"
+                  },
+                  "dt.entity.process_group_instance": {
+                    "type": "array",
+                    "types": [
+                      {
+                        "indexRange": [
+                          0,
+                          1
+                        ],
+                        "mappings": {
+                          "element": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "dt.host_group.id": {
+                    "type": "string"
+                  },
+                  "dt.security_context": {
+                    "type": "undefined"
+                  },
+                  "log.iostream": {
+                    "type": "undefined"
+                  }
+                }
+              },
+              {
+                "indexRange": [
+                  31,
+                  31
+                ],
+                "mappings": {
+                  "dt.cost.costcenter": {
+                    "type": "undefined"
+                  },
+                  "dt.cost.product": {
+                    "type": "undefined"
+                  },
+                  "dt.entity.host": {
+                    "type": "string"
+                  },
+                  "dt.entity.process_group_instance": {
+                    "type": "array",
+                    "types": [
+                      {
+                        "indexRange": [
+                          0,
+                          4
+                        ],
+                        "mappings": {
+                          "element": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "dt.host_group.id": {
+                    "type": "string"
+                  },
+                  "dt.security_context": {
+                    "type": "undefined"
+                  },
+                  "log.iostream": {
+                    "type": "string"
+                  }
+                }
+              },
+              {
+                "indexRange": [
+                  32,
+                  32
+                ],
+                "mappings": {
+                  "dt.cost.costcenter": {
+                    "type": "undefined"
+                  },
+                  "dt.cost.product": {
+                    "type": "undefined"
+                  },
+                  "dt.entity.host": {
+                    "type": "string"
+                  },
+                  "dt.entity.process_group_instance": {
+                    "type": "array",
+                    "types": [
+                      {
+                        "indexRange": [
+                          0,
+                          1
+                        ],
+                        "mappings": {
+                          "element": {
+                            "type": "string"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "dt.host_group.id": {
+                    "type": "string"
+                  },
+                  "dt.security_context": {
+                    "type": "undefined"
+                  },
+                  "log.iostream": {
+                    "type": "string"
+                  }
+                }
+              }
+            ]
+          }
+        },
+        "state": "success",
+        "visualization": "table",
+        "visualizationSettings": {
+          "autoSelectVisualization": false,
+          "chartSettings": {}
+        }
+      },
+      "type": "dql"
+    }
+  ],
+  "version": "7"
+}

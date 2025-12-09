@@ -24,7 +24,7 @@ fetch spans
 
 4. Create a new Segment, and filter Data (all types) with the java.jar.path. E.g.
 
-```py
+```bash
 java.jar.path = "/home/easytrade/app.jar" 
 ```
 
@@ -34,7 +34,7 @@ See how java.jar.path is just available for spans? not quite a good fit for a te
 
 5. Now let's use k8s.namespace.name to filter Data (all types). E.g.
 
-```py
+```bash
 k8s.namespace.name = "easytrade"
 ```
 
