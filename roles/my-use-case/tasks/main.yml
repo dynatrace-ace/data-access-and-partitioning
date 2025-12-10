@@ -36,3 +36,30 @@
 
 - include_role:
     name: app-easytrade
+
+- include_role:
+    name: dt-access-token
+  vars:
+    access_token_var_name: "dt_operator_dt_access_token_name"
+    access_token_scope: ["DataExport", "InstallerDownload", "activeGateTokenManagement.create", "entities.read", "settings.read", "settings.write", "ReadConfig", "WriteConfig"]
+
+- name: Configure tenant setting new k8s app
+  shell: >
+    curl -X 'POST' \
+      '{{ dynatrace_tenant_url }}/api/v2/settings/objects?validateOnly=false' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json; charset=utf-8' \
+      -H 'Authorization: Api-Token {{ dt_operator_dt_access_token_name }}' \
+      -d '[
+            {
+              "schemaId": "builtin:app-transition.kubernetes",
+              "scope": "environment",
+              "value": {
+                  "kubernetesAppOptions": {
+                    "enableKubernetesApp": true
+                  }
+              }
+            }'
+
+- include_role:
+    name: dashboard

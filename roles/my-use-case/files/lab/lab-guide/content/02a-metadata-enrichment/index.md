@@ -5,7 +5,7 @@ We understood now the need of setting
 - dt.cost.costcenter
 - dt.cost.product
 
-1. Open the Notebooks App, and especifically the provided Enrichment Overview notebook. We will be using the notebook to track the enrichment status within our environment.
+1. In your Dynatrace environment, open the Notebooks app, and especifically the provided Enrichment Overview notebook. We will be using the notebook to track the enrichment status within our environment.
 
 ![](../../assets/images/enrichment_initial.png)
 
@@ -27,16 +27,23 @@ If you are not a new to Dynatrace, you may face this scenario. Having host group
 
 ![](../../assets/images/dtcostproduct.png)
 
-
-The Dynatrace
-This step in a real-life scenario is not needed. 
-
-Restart operator to grab config changes
+6. This step in a real-life scenario is not needed. The Dynatrace Operator queries the settings API once every 45 mins. After creating or modifying rules, if you want to ensure inmediate effects, you can restart the it with. Restart operator to grab config changes
 
 ```bash
 kubectl -n dynatrace rollout restart deployment dynatrace-operator
 ```
 
-6. Check enriched signal in Dynatrace
+![](../../assets/images/enrichement45min.png)
 
-SCREENSHOT
+
+7. Restart all deployments in the easytrade namespace:
+
+```bash
+for d in $(kubectl -n easytrade get deploy -o name); do
+  kubectl -n easytrade rollout restart "$d"
+done
+```
+
+8. Check the pod labels for accountservice
+
+kubectl describe pod -n easytrade -l app=accountservice
