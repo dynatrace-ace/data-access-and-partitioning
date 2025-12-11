@@ -46,4 +46,28 @@ done
 
 8. Check the pod labels for accountservice
 
+```bash
 kubectl describe pod -n easytrade -l app=accountservice
+```
+
+![](../../assets/images/enriched.png)
+
+9. Check once again your Enrichment Notebook
+
+![](../../assets/images/enrichment_final.png)
+
+## Close Up & Next Challenge
+
+Well Done, now we have enriched our 3rd Gen environment, based on how we want ot slice & dice our data.
+
+Now we will run into a New challenge
+
+Easytrade doesn’t follow k8s standards, and have multiple teams working within the same namespace
+
+We need to provide data access, not at app level (easytrade), but at component level (e.g. BrokerService)
+
+We need a lower higher of granularity
+
+We will have to solve this by manual pod annotations
+
+![](../../assets/images/enrichapproaches.png)
