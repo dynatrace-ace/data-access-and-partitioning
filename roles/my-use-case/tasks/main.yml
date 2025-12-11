@@ -59,7 +59,8 @@
                     "enableKubernetesApp": true
                   }
               }
-            }'
+            }
+          ]'
 
 - include_role:
     name: dashboard
