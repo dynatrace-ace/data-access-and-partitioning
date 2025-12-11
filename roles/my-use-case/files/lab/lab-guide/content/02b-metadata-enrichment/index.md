@@ -44,5 +44,6 @@ Well Done, you manage to achieve a custom higher level of granularity.
 
 Discuss with your class how to enrich a regular OA & Cloud!
 
+That was easy, what's next? Back to slides
 
 

@@ -36,3 +36,5 @@ dt.security_context = $dt.security_context
 ![](../../assets/images/segmentspans.png)
 
 ![](../../assets/images/segmentlogs.png)
+
+Good job! Back to the slides for some theory

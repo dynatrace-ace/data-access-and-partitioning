@@ -71,3 +71,5 @@ We need a lower higher of granularity
 We will have to solve this by manual pod annotations
 
 ![](../../assets/images/enrichapproaches.png)
+
+Good job!, back to the slides
