@@ -1,0 +1,325 @@
+# Copyright 2024 Dynatrace LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+  - ../../base/common
+
+# Strategic merge patches for annotations (one per deployment)
+patches:
+  - target:
+      kind: Deployment
+      name: accountservice
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: accountservice
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "accountservice"
+              metadata.dynatrace.com/dt.security_context: "accountservice"
+  
+  - target:
+      kind: Deployment
+      name: aggregator-service
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: aggregator-service
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "aggregator-service"
+              metadata.dynatrace.com/dt.security_context: "aggregator-service"
+  
+  - target:
+      kind: Deployment
+      name: broker-service
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: broker-service
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "broker-service"
+              metadata.dynatrace.com/dt.security_context: "broker-service"
+  
+  - target:
+      kind: Deployment
+      name: calculationservice
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: calculationservice
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "calculationservice"
+              metadata.dynatrace.com/dt.security_context: "calculationservice"
+  
+  - target:
+      kind: Deployment
+      name: contentcreator
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: contentcreator
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "contentcreator"
+              metadata.dynatrace.com/dt.security_context: "contentcreator"
+  
+  - target:
+      kind: Deployment
+      name: credit-card-order-service
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: credit-card-order-service
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "credit-card-order-service"
+              metadata.dynatrace.com/dt.security_context: "credit-card-order-service"
+  
+  - target:
+      kind: Deployment
+      name: db
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: db
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "db"
+              metadata.dynatrace.com/dt.security_context: "db"
+  
+  - target:
+      kind: Deployment
+      name: engine
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: engine
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "engine"
+              metadata.dynatrace.com/dt.security_context: "engine"
+  
+  - target:
+      kind: Deployment
+      name: feature-flag-service
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: feature-flag-service
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "feature-flag-service"
+              metadata.dynatrace.com/dt.security_context: "feature-flag-service"
+  
+  - target:
+      kind: Deployment
+      name: frontend
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: frontend
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "frontend"
+              metadata.dynatrace.com/dt.security_context: "frontend"
+  
+  - target:
+      kind: Deployment
+      name: frontendreverseproxy
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: frontendreverseproxy
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "frontendreverseproxy"
+              metadata.dynatrace.com/dt.security_context: "frontendreverseproxy"
+  
+  - target:
+      kind: Deployment
+      name: loadgen
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: loadgen
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "loadgen"
+              metadata.dynatrace.com/dt.security_context: "loadgen"
+  
+  - target:
+      kind: Deployment
+      name: loginservice
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: loginservice
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "loginservice"
+              metadata.dynatrace.com/dt.security_context: "loginservice"
+  
+  - target:
+      kind: Deployment
+      name: manager
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: manager
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "manager"
+              metadata.dynatrace.com/dt.security_context: "manager"
+  
+  - target:
+      kind: Deployment
+      name: offerservice
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: offerservice
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "offerservice"
+              metadata.dynatrace.com/dt.security_context: "offerservice"
+  
+  - target:
+      kind: Deployment
+      name: pricing-service
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: pricing-service
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "pricing-service"
+              metadata.dynatrace.com/dt.security_context: "pricing-service"
+  
+  - target:
+      kind: Deployment
+      name: problem-operator
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: problem-operator
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "problem-operator"
+              metadata.dynatrace.com/dt.security_context: "problem-operator"
+  
+  - target:
+      kind: Deployment
+      name: rabbitmq
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: rabbitmq
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "rabbitmq"
+              metadata.dynatrace.com/dt.security_context: "rabbitmq"
+  
+  - target:
+      kind: Deployment
+      name: third-party-service
+    patch: |-
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: third-party-service
+      spec:
+        template:
+          metadata:
+            annotations:
+              metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+              metadata.dynatrace.com/dt.cost.product: "third-party-service"
+              metadata.dynatrace.com/dt.security_context: "third-party-service"

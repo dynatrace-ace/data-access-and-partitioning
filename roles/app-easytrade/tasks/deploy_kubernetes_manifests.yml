@@ -29,6 +29,6 @@
 
 - name: Apply Kubernetes manifests using kubectl and Kustomize
   ansible.builtin.shell:
-    cmd: kubectl apply -k "{{ role_path }}/files/kustomize/base" -n "{{ easytrade_namespace }}"
+    cmd: kubectl apply -k "{{ role_path }}/files/kustomize/overlays/initial" -n "{{ easytrade_namespace }}"
   args:
     executable: /bin/bash

@@ -1,0 +1,10 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
+spec:
+  template:
+    metadata:
+      annotations:
+        metadata.dynatrace.com/dt.cost.costcenter: "ecommerce-apps"
