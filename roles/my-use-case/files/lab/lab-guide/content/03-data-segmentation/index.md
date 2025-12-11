@@ -4,18 +4,10 @@
 
 SCREENSHOT
 
-2. Create Stage segments based on k8s cluster host group 
+2. Filtering in an app
 
 SCREENSHOT
 
-3. Populate version segment based on primary grail tags
-
-SCREENSHOT
-
-4. Filtering in an app
-
-SCREENSHOT
-
-5. Filtering dashboards & workflows
+3. Filtering dashboards & workflows
 
 SCREENSHOT

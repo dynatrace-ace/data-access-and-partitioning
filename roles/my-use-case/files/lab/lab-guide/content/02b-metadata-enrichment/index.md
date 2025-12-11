@@ -42,4 +42,7 @@ kubectl describe pod -n easytrade -l app=frontend
 
 Well Done, you manage to achieve a custom higher level of granularity.
 
+Discuss with your class how to enrich a regular OA & Cloud!
+
+
 
