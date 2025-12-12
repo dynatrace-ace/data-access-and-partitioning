@@ -2,16 +2,18 @@
 
 ## Introduction
 
-You're responsible to execute the Proof-of-Concept for a new application onboarded into Dybatrace called "Easytrade".
+You're responsible for executing the Proof-of-Concept for a new application onboarded into Dynatrace called "Easytrade".
 
 ## Warm Up
 
-1. Open your Dynatrace environment, open a new notebook and fetch 1 spans. This is how you can check all metadata available for a single datapoint
+1. Open your Dynatrace environment, open a new notebook, and fetch one span. This is how you can check all fields and metadata available for a signal, as shown here as a record.
 
 ```sql
 fetch spans
 | limit 1
 ```
+
+Change the view to "Record list" to have a nice overview of all fields.
 
 ![](../../assets/images/fetch_spans.png)
 
@@ -46,7 +48,7 @@ See how the metadata is available in all signals, a good fit for a tenant-wise c
 
 Well done, hopefully now you understand the importance of Primary Grail Fields
 
-With OOTB Primary Grail Fields, you could directly configure IAM to give access to each team to their own namespace. The boundary and policy would look as follows
+With OOTB permission relevant Primary Grail Fields, you could directly configure IAM to give access to each team to their own namespace. The boundary and policy would look as follows
 
 ![](../../assets/images/iam_with_namespace.png)
 
@@ -61,7 +63,7 @@ This is the most simple scenario, but what if namespace is not enough to meet ou
 
 Teams under K8s are relying on k8s.namespace, but there are teams building apps on premise, and serverless.
 
-Then we recommend a common metadata, we will define 3:
+As of today, we recommend using a common metadata structure and defining three key attributes:
 - dt.security_context
 - dt.cost.costcenter
 - dt.cost.product
