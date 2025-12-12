@@ -40,6 +40,8 @@ k8s.namespace.name = "easytrade"
 
 See how the metadata is available in all signals, a good fit for a tenant-wise configuration
 
+![](../../assets/images/pgfallsignals.png)
+
 ## Close Up & Next Challenge
 
 Well done, hopefully now you understand the importance of Primary Grail Fields
