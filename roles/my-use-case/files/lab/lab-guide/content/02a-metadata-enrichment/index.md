@@ -5,17 +5,17 @@ We understood now the need of setting
 - dt.cost.costcenter
 - dt.cost.product
 
-1. In your Dynatrace environment, open the Notebooks app, and especifically the provided Enrichment Overview notebook. We will be using the notebook to track the enrichment status within our environment.
+1. In your Dynatrace environment, open the Notebooks app, and specifically the provided Enrichment Overview notebook. We will be using the notebook to track the enrichment status within our environment.
 
 ![](../../assets/images/enrichment_initial.png)
 
-If you are not a new to Dynatrace, you may face this scenario. Having host group, but not the rest. 
+If you are not a new to Dynatrace, you may face this scenario. Having a host group, but not the rest. 
 
-2. Open K8s app, go to Namespaces, and check the existing labels & annotations for easytrade
+2. Open K8s app, go to Namespaces, and check the existing labels & annotations for the easytrade namespace.
 
 ![](../../assets/images/labels_of_easytrade.png)
 
-3. Configure dt.security_context based on the kubernetes.io/metadata.name label
+3. In settings -> Cloud and virtualization -> Kubernetes telemetry enrichment configure dt.security_context based on the kubernetes.io/metadata.name label
 
 ![](../../assets/images/dt_sec_context.png)
 
@@ -27,7 +27,7 @@ If you are not a new to Dynatrace, you may face this scenario. Having host group
 
 ![](../../assets/images/dtcostproduct.png)
 
-6. This step in a real-life scenario is not needed. The Dynatrace Operator queries the settings API once every 45 mins. After creating or modifying rules, if you want to ensure inmediate effects, you can restart the it with. Restart operator to grab config changes
+6. This step is not necessary in a real-life scenario. The Dynatrace Operator queries the settings API once every 45 minutes. After creating or modifying rules, if you want to ensure immediate effects, you can restart it. Restart operator to grab config changes:
 
 ```bash
 kubectl -n dynatrace rollout restart deployment dynatrace-operator
@@ -58,17 +58,17 @@ kubectl describe pod -n easytrade -l app=accountservice
 
 ## Close Up & Next Challenge
 
-Well Done, now we have enriched our 3rd Gen environment, based on how we want ot slice & dice our data.
+Well Done, now we have enriched our 3rd Gen environment, based on how we want ot slice and dice our data.
 
-Now we will run into a New challenge
+Now we will run into a New challenge.
 
-Easytrade doesn’t follow k8s standards, and have multiple teams working within the same namespace
+Easytrade doesn’t follow k8s standards, and has multiple teams working within the same namespace.
 
-We need to provide data access, not at app level (easytrade), but at component level (e.g. BrokerService)
+We need to provide data access, not at the app level (easytrade), but at the component level (e.g. BrokerService)
 
-We need a lower higher of granularity
+We need a lower granularity
 
-We will have to solve this by manual pod annotations
+We will have to solve this by manual pod annotations.
 
 ![](../../assets/images/enrichapproaches.png)
 
