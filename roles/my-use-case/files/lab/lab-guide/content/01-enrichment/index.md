@@ -58,3 +58,7 @@ broker-service:
       DT_TAGS: "dt.security_context=brokerservice,dt.cost.costcenter=brokerservice,dt.cost.product=brokerservice, primary_tags.team=beta, primary_tags.stage=prod"
 
 If you have hundred of host groups and you would like to automate the process, contact us and we can provide you some some scripts to help!
+
+If you're running in K8s or Cloud environments, there are special enrichment mechanisms that will grab the metadata directly from the source, which could reduce efforts!. 
+- https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/guides/metadata-automation/k8s-metadata-telemetry-enrichment
+- https://docs.dynatrace.com/docs/whats-new/preview-releases#new-cloud-aws
