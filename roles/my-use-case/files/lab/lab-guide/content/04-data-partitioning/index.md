@@ -45,25 +45,46 @@ So far we have enrichement in place, data access & segmentation all sorted out. 
 
 ### Data Retention & Performance Requirements
 
-Let's suppose Span of credit-card-order-service retained for 12 months for auditing and compliance (PCI DSS). Let's add it to the table, run this DQL
+Let's suppose a company requirement that is that Span of credit-card-order-service must be retained for 12 months for auditing and compliance (PCI DSS). Let's add it to the table, run this DQL
 
 
-11. Uncomment the query and run it again
+11. Click on Show Input, uncomment the first 2 commented blocks as it is shown in the picture
+query and run it again
 
-![](../../assets/images/performance-reason.png)
+![](../../assets/images/first2.png)
 
-12. Another column with bucket naming convention
+12. Uncomment the highlighted fields at the bottom of the DQL and run again
 
-SCREENSHOT
+![](../../assets/images/uncommendandrun.png)
 
-13. Create bucket 
+Now we should have a clear understanding on which apps need a separate bucket for data retention or performance reasons. For larger environments we could aggregate the numbers by a higher hierarchy, e.g. business unit. We will keep it simple for this exercise
 
-SCREENSHOT
+### Bucket Tracking & Naming
 
-14. Create rule in OpenPipeline to route traffic
+This DQL helps track and understand the reason of custom buckets, we will columns to define the naming convention
 
-SCREENSHOT
+13. Uncomment the remaining blocks of the DQL, and run again
 
-15. Validate 
+![](../../assets/images/remainingblocks.png)
 
-SCREENSHOT
+14. Copy the bucket name, go to Storage management setting and create a new bucket
+
+![](../../assets/images/newbucket.png)
+
+15. Go to the Spans Openpipeline, and open the "General Openpipeline" we've created before
+
+![](../../assets/images/backtoop.png)
+
+16. Create a storage processor to ruote all spans with dt.security_context = "credit-card-order-service" to the recently created bucket
+
+![](../../assets/images/spanstobucket.png)
+
+17. Validate traffic with our master Notebook
+
+![](../../assets/images/validatetraffic.png)
+
+## Close Up
+
+Well done! Now you have a separate bucket to meet Easytrade's requirements. 
+
+You can apply the same steps for Logs, the Notebook provided will also guide you on how to do this same exercise for Logs. Not during the lab, but for you to take back and implement it in your organization.
