@@ -3,7 +3,7 @@
 Now that we've implemented the right enrichment and data segmentation, let's make sure that all of that also reflects on our cost allocation to different departments.
 
 Make sure that you:
-- Verify that cost allocation attributes (dt.cost.costcenter and dt.cost.product) are correctly applied.
+- Verify that cost allocation attributes (`dt.cost.costcenter` and `dt.cost.product`) are correctly applied.
 - Understand how Dynatrace uses these attributes for DPS tracking.
 - Explore an out-of-the-box dashboard that visualizes cost allocation.
 
@@ -14,6 +14,7 @@ dt.cost.product = easytrade
 ```
 
 **Step 1: Check Current Cost Allocation Attributes**
+
 Goal: Confirm that the cost allocation attributes are recognized by Dynatrace by fetching different data types in a notebook.
 
 Example query:
@@ -24,24 +25,26 @@ fetch logs
 
 [Screenshot Placeholder for a notebook querying logs]
 
-> Cost Allocation Allowlist page showing dt.cost.costcenter and dt.cost.product.
+> Fetch logs showing `dt.cost.costcenter` and `dt.cost.product` correctly applied.
 
 ***
 
 **Step 2: Open the Out-of-the-Box Cost Allocation Dashboard**
+
 Goal: Visualize how cost allocation attributes are applied to DPS usage.
 
 Navigate to Dashboards → Cost Allocation Overview
 
 [Screenshot Placeholder for the dashboard with a breakdown - WE NEED TO MAKE SURE TO UPLOAD THE DASHBOARD WITHIN PROVISIONING]
 
-> Dashboard overview showing cost allocation breakdown by cost center and product.
+> Dashboard overview showing cost allocation breakdown by `dt.cost.costcenter` and `dt.cost.product`.
 
 ***
 
-Summary
+**Summary**
+
 In this lab, you:
-- Confirmed metadata enrichment for cost attributes.
+- Confirmed enrichment for cost attributes.
 - Explored an OOTB dashboard for DPS cost tracking.
 
 
