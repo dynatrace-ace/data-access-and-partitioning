@@ -6,21 +6,21 @@ You're responsible for executing the Proof-of-Concept for a new application onbo
 
 ## Warm Up
 
-1. Open your Dynatrace environment, open a new notebook, and fetch one span. This is how you can check all fields and metadata available for a signal, as shown here as a record.
+1. Open your Dynatrace environment, open a new notebook, and click the _plus_ icon to write a DQL to fetch one span. This is how you can check all fields and metadata available for a signal, as shown here as a record.
 
 ```sql
 fetch spans
 | limit 1
 ```
 
-Change the view to "Record list" to have a nice overview of all fields.
+Change the view to "Record list" to have a nice overview of all fields. You can do this by clicking on Options->Record List on the DQL tile.
 
 ![](../../assets/images/fetch_spans.png)
 
 
-2. Copy the value of the java.jar.file property.
+2. Copy the value of the java.jar.path property.
 
-3. Open the Segments settings
+3. Open the Segments settings by searching for Segments using the search bar in the top left menu bar
 
 ![](../../assets/images/search_segment.png)
 
@@ -40,7 +40,7 @@ See how java.jar.path is just available for spans? not quite a good fit for a te
 k8s.namespace.name = "easytrade"
 ```
 
-See how the metadata is available in all signals, a good fit for a tenant-wise configuration
+Click on the Metrics tab. See how the metadata is available in all signals, a good fit for a tenant-wise configuration
 
 ![](../../assets/images/pgfallsignals.png)
 
