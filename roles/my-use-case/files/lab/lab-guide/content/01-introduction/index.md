@@ -50,7 +50,9 @@ Well done, hopefully now you understand the importance of Primary Grail Fields
 
 With OOTB permission relevant Primary Grail Fields, you could directly configure IAM to give access to each team to their own namespace. The boundary and policy would look as follows
 
-![](../../assets/images/iam_with_namespace.png)
+<div align="left">
+<img width="600" src="../../assets/images/iam_with_namespace.png">
+</div>
 
 This is the most simple scenario, but what if namespace is not enough to meet our requirements? E.g.
 
