@@ -63,11 +63,11 @@ This is the most simple scenario, but what if namespace is not enough to meet ou
 
 ### "there are other underlying technologies apart from k8s"
 
-Teams under K8s are relying on k8s.namespace, but there are teams building apps on premise, and serverless.
+Teams under K8s are relying on `k8s.namespace.name`, but there are teams building apps on premise, and serverless.
 
 As of today, we recommend using a common metadata structure and defining three key attributes:
-- dt.security_context
-- dt.cost.costcenter
-- dt.cost.product
+- `dt.security_context`
+- `dt.cost.costcenter`
+- `dt.cost.product`
 
 Back to the presentation!
