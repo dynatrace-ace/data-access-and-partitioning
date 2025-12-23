@@ -19,18 +19,24 @@ Dynatrace CloudNativeFullStack licensing is based on Host-level RAM, so we need 
 
 > Important: If you want a split on the namespace level, what you are looking for is Full-Stack Monitoring which combines [Kubernetes Platform Monitoring and Application-only monitoring](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/deployment/application-observability). Licensing here is calculated based on pod-hours, plus the enrichment you’ve already applied in previous exercises.
 
-What to do:
-1. Run the following command that automatically applies these 3 fields to your Dynakube manifest.
-```bash
-CODE
-```
-2. Apply the updated manifest
-```bash
-kubectl apply -f dynakube.yaml
-```
-3. Go to Infrastructure and Operations App and check your Node
+In this particular example, we will assign this whole host to only 1 product and that is "easytrade".
 
-[SCREENSHOT OF THIS WORKING]
+What to do:
+1. Run the following command that collects your current Dynakube with its configuration and exports it into a yaml manifest locally:
+```bash
+kubectl get dynakube dynakube -n dynatrace -o yaml > dynakube-export.yaml
+```
+2. Use vi/vim/nano to open the file and go to line where arguments are set for cloudNativeFullStack. Set the following arguments:
+
+![](../../assets/images/dynakube-update-args.png)
+
+3. Exit and Save the manifest. Lastly, apply the updated manifest
+```bash
+kubectl apply -f dynakube-export.yaml
+```
+4. Wait a few mins and go to Infrastructure and Operations App and check your Node
+
+![](../../assets/images/dynakube-update-ui.png)
 
 > Why this matters: These properties ensure accurate licensing calculation and cost attribution for CloudNativeFullStack monitoring, aligning technical usage with organizational governance.
 
@@ -44,7 +50,7 @@ fetch logs
 | filter dt.cost.costcenter == "ecommerce-apps"
 ```
 
-[Screenshot Placeholder for a notebook querying logs]
+![](../../assets/images/logs-enrichment.png)
 
 > Fetch logs showing `dt.cost.costcenter` and `dt.cost.product` correctly applied.
 
