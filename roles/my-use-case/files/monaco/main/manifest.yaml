@@ -1,6 +1,7 @@
 manifestVersion: 1.0
 projects:
   - name: document-notebook
+  - name: document-dashboard
   # - name: auto-tags
   # - name: bucket
   # - name: builtinopenpipeline.spans.pipelines

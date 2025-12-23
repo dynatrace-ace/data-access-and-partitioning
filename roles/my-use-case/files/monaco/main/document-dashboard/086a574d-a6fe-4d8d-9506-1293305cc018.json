@@ -1,0 +1,681 @@
+{
+  "importedWithCode": true,
+  "layouts": {
+    "33": {
+      "h": 2,
+      "w": 12,
+      "x": 0,
+      "y": 0
+    },
+    "36": {
+      "h": 4,
+      "w": 12,
+      "x": 0,
+      "y": 20
+    },
+    "38": {
+      "h": 10,
+      "w": 24,
+      "x": 0,
+      "y": 32
+    },
+    "40": {
+      "h": 5,
+      "w": 12,
+      "x": 12,
+      "y": 26
+    },
+    "44": {
+      "h": 1,
+      "w": 24,
+      "x": 0,
+      "y": 12
+    },
+    "47": {
+      "h": 5,
+      "w": 12,
+      "x": 0,
+      "y": 26
+    },
+    "48": {
+      "h": 2,
+      "w": 24,
+      "x": 0,
+      "y": 24
+    },
+    "50": {
+      "h": 7,
+      "w": 12,
+      "x": 0,
+      "y": 5
+    },
+    "52": {
+      "h": 11,
+      "w": 12,
+      "x": 12,
+      "y": 13
+    },
+    "56": {
+      "h": 3,
+      "w": 12,
+      "x": 0,
+      "y": 2
+    },
+    "57": {
+      "h": 7,
+      "w": 12,
+      "x": 0,
+      "y": 13
+    },
+    "58": {
+      "h": 5,
+      "w": 12,
+      "x": 12,
+      "y": 0
+    },
+    "60": {
+      "h": 7,
+      "w": 12,
+      "x": 12,
+      "y": 5
+    },
+    "61": {
+      "h": 1,
+      "w": 24,
+      "x": 0,
+      "y": 42
+    },
+    "62": {
+      "h": 1,
+      "w": 24,
+      "x": 0,
+      "y": 31
+    }
+  },
+  "settings": {},
+  "tiles": {
+    "33": {
+      "content": "## Disclaimer\n* ensure to adopt the ratecard_data variable\n* Usage of the Dashboard is free of charge",
+      "type": "markdown"
+    },
+    "36": {
+      "davis": {
+        "davisVisualization": {
+          "isAvailable": true
+        },
+        "enabled": false
+      },
+      "description": "",
+      "query": "fetch dt.system.events\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| filterOut event.type ==\"Traces - Ingest \u0026 Process\" //traces need special handling\n| dedup event.id\n| filter in(event.type, {$Capability})\n| fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n| fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n| fieldsRemove dt.cost.costcenter, dt.cost.product\n| expand costallocation\n| fieldsAdd filter = coalesce(costallocation[key], costallocation)\n| filter in(filter, {$Filter})\n| fieldsAdd billed_bytes = coalesce(costallocation[billed_bytes], billed_bytes)\n| fieldsAdd usage = coalesce(\n    billed_host_hours, //Infra, F\u0026D\n    billed_gibibyte_hours, //Fullstack, Runtime Application Protection, Runtime Vulnerability Analytics\n    toDouble(billed_bytes) / (1024*1024*1024), //ALL I/R/Q\n    billed_invocations, //AppEngine\n    ingested_bytes,\n    1 //workflow count\n    )\n| fieldsAdd usage.start = if(isNull(usage.start), timestamp, else: usage.start)\n| makeTimeseries interval: 15m, time: usage.start, nonempty:false, by:{filter, event.type },{\n  usage = sum(usage)\n}\n| append [\n// THIS IS JUST FOR TRACES INGEST NORMALIZATION -----\u003e\n\n\n      FETCH dt.system.events\n      | filter event.kind == \"BILLING_USAGE_EVENT\" and event.type == \"Traces - Ingest \u0026 Process\"\n      | filter in(event.type, {$Capability})\n      | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n      | fieldsRemove dt.cost.costcenter, dt.cost.product\n      | fieldsAdd filter = costallocation\n      | filter in(filter, {$Filter})\n      | fieldsKeep usage.start, licensing_type, ingested_bytes, costallocation, event.id\n      | dedup event.id\n      | fieldsAdd licensing_type = if(in(licensing_type, {\n        \"otlp-trace-ingest\", \"serverless\"}), \"other\", else: licensing_type)\n      \n      | fieldsAdd adaptive_volume = if(licensing_type == \"fullstack-adaptive\", ingested_bytes)\n      | fieldsAdd fixed_rate_volume = if(licensing_type == \"fullstack-fixed-rate\", ingested_bytes)\n      | fieldsAdd other_volume = if(licensing_type == \"other\", ingested_bytes)\n    \n      | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      \n      | makeTimeseries interval: 15m, time: usage.start, by: {\n        costallocation}, nonempty: true, {\n        adaptive_volume = sum(adaptive_volume, default: 0),\n        fixed_rate_volume = sum(fixed_rate_volume, default: 0),\n        other_volume = sum(other_volume, default: 0)\n      }\n      \n        // calculate included volume per costcenter and join with trace-ingest usage\n      | join [\n          FETCH dt.system.events\n          | filter event.kind == \"BILLING_USAGE_EVENT\"\n          | filter event.type == \"Full-Stack Monitoring\"\n          | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n          | fieldsRemove dt.cost.costcenter, dt.cost.product\n          | fieldsKeep usage.start, billed_gibibyte_hours, costallocation, event.id\n          | dedup event.id\n          | makeTimeseries {\n            billed = sum(billed_gibibyte_hours) }, by: {\n            costallocation }, time: usage.start, interval: 15m\n          | summarize by: {\n            timeframe, interval }, {\n            total = sum(billed[]), r = collectArray(record(costallocation, billed)) }\n          | expand r\n          | fieldsFlatten r, fields: {\n            costallocation, billed }\n          | fieldsAdd ratio = billed[] / total[]\n          | fields timeframe, interval, costallocation, ratio\n          | join [\n              timeseries interval: 15m, union: true, nonempty: true, {\n                included_volume = max(dt.billing.traces.maximum_included_fullstack_volume_per_minute, default: null),\n                configured_volume = max(dt.billing.traces.maximum_configured_fullstack_volume_per_minute, default: null)\n              }\n              | fieldsAdd interval_in_minutes = toLong(interval) / 60000000000\n              | fieldsAdd extra_ingest_on = configured_volume[] \u003e included_volume[]\n              | fieldsAdd included_volume = interval_in_minutes * if(isNull(configured_volume[]), null, else: included_volume[])\n          ], on: {\n            timeframe, interval }, fields: {\n            included_volume, extra_ingest_on }\n          | fieldsAdd included_volume_costallocation = included_volume[] * ratio[]\n          | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      ], on: {\n        timeframe, interval, costallocation }, kind: outer, prefix: \"included.\"\n      \n      | fieldsAdd timeframe = coalesce(timeframe, included.timeframe)\n      | fieldsAdd interval = coalesce(interval, included.interval)\n      | fieldsAdd costallocation = coalesce(costallocation, included.costallocation)\n      | fieldsAdd\n          extra_ingest_on =\n              if(exists(included.extra_ingest_on) and isNotNull(included.extra_ingest_on), included.extra_ingest_on,\n                else: array(false, false, false, false))\n      \n      | fieldsAdd included_volume_costallocation = included.included_volume_costallocation\n        // replace nulls with 0\n      | fieldsAdd adaptive_volume = iCollectArray(coalesce(adaptive_volume[], 0))\n      | fieldsAdd fixed_rate_volume = iCollectArray(coalesce(fixed_rate_volume[], 0))\n      | fieldsAdd other_volume = iCollectArray(coalesce(other_volume[], 0))\n      \n      | fieldsKeep timeframe, interval, costallocation, adaptive_volume, fixed_rate_volume, other_volume,\n          included_volume_costallocation, extra_ingest_on\n      \n        // calculate fullstack trace-ingest usage per costcenter\n      | fieldsAdd license_remaining = included_volume_costallocation[] - adaptive_volume[]\n      | fieldsAdd license_remaining = if(license_remaining[] \u003e 0, license_remaining[], else: 0)\n      \n      | fieldsAdd\n          billable_fullstack =\n              if(isNull(included_volume_costallocation[]), 0,\n                else: if(extra_ingest_on[], adaptive_volume[] + fixed_rate_volume[] - included_volume_costallocation[],\n                  else: fixed_rate_volume[] - license_remaining[]))\n      \n      | fieldsAdd billable_fullstack = if(billable_fullstack[] \u003e 0, billable_fullstack[], else: 0)\n      \n      | summarize {\n        total_included = sum(included_volume_costallocation[]),\n        total_adaptive = sum(adaptive_volume[]),\n        total_fixed_rate = sum(fixed_rate_volume[]),\n        total_fullstack_to_allocate = sum(billable_fullstack[]),\n        per_costallocation = collectArray(record(extra_ingest_on, billable_fullstack, billable_other = other_volume, costallocation, included_volume_costallocation))}, \n        by: { timeframe, interval }\n      | expand per_costallocation\n      | fieldsFlatten per_costallocation\n      | fieldsRemove per_costallocation\n      \n      | fieldsAdd total_license_remaining = total_included[] - total_adaptive[]\n      | fieldsAdd total_license_remaining = if(total_license_remaining[] \u003e 0, total_license_remaining[], else: 0)\n      | fieldsAdd\n          total_applicable_fullstack =\n              if(isNull(per_costallocation.included_volume_costallocation), 0,\n                else: if(per_costallocation.extra_ingest_on[], total_adaptive[] + total_fixed_rate[] - total_included[],\n                  else: total_fixed_rate[] - total_license_remaining[]))\n      | fieldsAdd total_billable_fullstack = if(total_applicable_fullstack[] \u003e 0, total_applicable_fullstack[], else: 0)\n      \n      | fieldsAdd\n          distributed_fullstack =\n              if(total_fullstack_to_allocate[] \u003c= 0, 0,\n                else: per_costallocation.billable_fullstack[] / total_fullstack_to_allocate[] * total_billable_fullstack[])\n      // filter out  entry if the included was not fetched\n      | fieldsAdd\n          adjusted_billable_total_per_costallocation =\n              per_costallocation.billable_other[] + if(total_included[] == 0, null, else: toDouble(distributed_fullstack[]))\n      | filterOut isNull(adjusted_billable_total_per_costallocation)\n      \n      | fields timeframe, interval, costallocation = per_costallocation.costallocation, adjusted_billable_total_per_costallocation\n      | fieldsAdd event.type =\"Traces - Ingest \u0026 Process\"\n      | fieldsAdd filter = costallocation\n]\n| fieldsAdd traces_usage = adjusted_billable_total_per_costallocation[] / (1024*1024*1024)\n// \u003c---------THIS IS JUST FOR TRACES INGEST NORMALIZATION \n\n\n| lookup [\n   data json:$ratecard_data\n], sourceField:event.type, lookupField:name, prefix: \"ratecard.\"\n| fieldsAdd isnull = isNull(adjusted_billable_total_per_costallocation)\n| fieldsAdd usage = if(isnull, usage, else: traces_usage)\n| fieldsKeep timeframe, interval, costallocation, event.type, usage,ratecard.price, filter\n| fieldsAdd cost = usage[] * toDouble(ratecard.price)\n| fieldsAdd cost = arraySum(cost)\n| fieldsAdd usage = arraySum(usage)\n| summarize {sum(usage), sum(cost)}, by:{event.type, filter}",
+      "querySettings": {
+        "defaultSamplingRatio": 10,
+        "defaultScanLimitGbytes": 500,
+        "enableSampling": false,
+        "maxResultMegaBytes": 1,
+        "maxResultRecords": 1000
+      },
+      "title": "Capability / Cost center Heatmap",
+      "type": "data",
+      "visualization": "heatmap",
+      "visualizationSettings": {
+        "axes": {
+          "yAxis": {
+            "showLabel": true
+          }
+        },
+        "dataMapping": {
+          "bucketValue": "sum(cost)",
+          "xAxis": "filter",
+          "yAxis": "event.type"
+        },
+        "legend": {
+          "ratio": 5
+        },
+        "thresholds": [],
+        "unitsOverrides": [
+          {
+            "added": 1753286738031,
+            "baseUnit": "usd",
+            "decimals": 2,
+            "delimiter": false,
+            "displayUnit": null,
+            "identifier": "sum(cost)",
+            "suffix": "",
+            "unitCategory": "currency"
+          }
+        ]
+      }
+    },
+    "38": {
+      "davis": {
+        "davisVisualization": {
+          "isAvailable": true
+        },
+        "enabled": false
+      },
+      "query": "fetch dt.system.events\n\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| filterOut event.type ==\"Traces - Ingest \u0026 Process\" //traces need special handling\n| dedup event.id\n| filter in(event.type, {$Capability})\n| fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n| fieldsRemove dt.cost.costcenter, dt.cost.product\n| expand costallocation\n| fieldsAdd filter = coalesce(costallocation[key], costallocation)\n| filter in(filter, {$Filter})\n| fieldsAdd billed_bytes = coalesce(costallocation[billed_bytes], billed_bytes)\n| fieldsAdd usage = coalesce(\n    billed_host_hours, //Infra, F\u0026D\n    billed_gibibyte_hours, //Fullstack, Runtime Application Protection, Runtime Vulnerability Analytics\n    toDouble(billed_bytes) / (1024*1024*1024), //ALL I/R/Q\n    billed_invocations, //AppEngine\n    ingested_bytes,\n    1 //workflow count\n    )\n| fieldsAdd entityName(dt.entity.host)\n| fieldsAdd usage.start = if(isNull(usage.start), timestamp, else: usage.start)\n| append [\n// THIS IS JUST FOR TRACES INGEST NORMALIZATION -----\u003e\n      FETCH dt.system.events\n      | filter event.kind == \"BILLING_USAGE_EVENT\" and event.type == \"Traces - Ingest \u0026 Process\"\n      | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n      | fieldsRemove dt.cost.costcenter, dt.cost.product\n      | fieldsAdd filter = costallocation\n      | filter in(filter, {$Filter})\n      | fieldsAdd usage = toDouble(ingested_bytes) / (1024*1024*1024)\n]\n\n| lookup [\n   data json:$ratecard_data\n], sourceField:event.type, lookupField:name, prefix: \"ratecard.\"\n| fieldsAdd cost = if(event.type == \"Traces - Ingest \u0026 Process\", \"not applicable*\", else:usage * toDouble(ratecard.price))\n| fieldsRename currency = ratecard.currencyCode, capability = event.type, price = ratecard.price\n| fieldsKeep usage.start, usage.end, capability, filter, usage, cost, price, currency, dt.entity.host.name, billed_bytes, application_only_type, dt.openpipeline.pipelines, dt.entity.host, billed_container_hours, dt.openpipeline.source, billed_gibibyte_hours, k8s.cluster.uid, k8s.namespace.name, ingested_bytes, ingested_spans, licensing_type\n| sort filter, usage.start, capability\n",
+      "querySettings": {
+        "defaultSamplingRatio": 10,
+        "defaultScanLimitGbytes": 500,
+        "enableSampling": false,
+        "maxResultMegaBytes": 1,
+        "maxResultRecords": 1000
+      },
+      "title": "",
+      "type": "data",
+      "visualization": "table",
+      "visualizationSettings": {
+        "table": {
+          "columnOrder": [
+            "[\"usage.start\"]",
+            "[\"usage.end\"]",
+            "[\"capability\"]",
+            "[\"filter\"]",
+            "[\"usage\"]",
+            "[\"cost\"]",
+            "[\"currency\"]",
+            "[\"dt.entity.host.name\"]",
+            "[\"billed_bytes\"]",
+            "[\"price\"]",
+            "[\"ingested_bytes\"]",
+            "[\"ingested_spans\"]",
+            "[\"licensing_type\"]"
+          ],
+          "hiddenColumns": [
+            [
+              "event.version"
+            ]
+          ],
+          "hideColumnsForLargeResults": false,
+          "sortBy": [
+            {
+              "columnId": "[\"billed_gibibyte_hours\"]",
+              "direction": "descending"
+            }
+          ]
+        },
+        "thresholds": []
+      }
+    },
+    "40": {
+      "davis": {
+        "davisVisualization": {
+          "isAvailable": true
+        },
+        "enabled": false
+      },
+      "query": "fetch dt.system.events\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| filterOut event.type ==\"Traces - Ingest \u0026 Process\" //traces need special handling\n| dedup event.id\n| filter in(event.type, {$Capability})\n| fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n| fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n| fieldsRemove dt.cost.costcenter, dt.cost.product\n| expand costallocation\n| fieldsAdd filter = coalesce(costallocation[key], costallocation)\n| filter in(filter, {$Filter})\n| fieldsAdd billed_bytes = coalesce(costallocation[billed_bytes], billed_bytes)\n| fieldsAdd usage = coalesce(\n    billed_host_hours, //Infra, F\u0026D\n    billed_gibibyte_hours, //Fullstack, Runtime Application Protection, Runtime Vulnerability Analytics\n    toDouble(billed_bytes) / (1024*1024*1024), //ALL I/R/Q\n    billed_invocations, //AppEngine\n    ingested_bytes,\n    1 //workflow count\n    )\n| fieldsAdd usage.start = if(isNull(usage.start), timestamp, else: usage.start)\n| makeTimeseries interval: 15m, time: usage.start, nonempty:false, by:{filter, event.type },{\n  usage = sum(usage)\n}\n| append [\n// THIS IS JUST FOR TRACES INGEST NORMALIZATION -----\u003e\n\n\n      FETCH dt.system.events\n      | filter event.kind == \"BILLING_USAGE_EVENT\" and event.type == \"Traces - Ingest \u0026 Process\"\n      | filter in(event.type, {$Capability})\n      | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n      | fieldsRemove dt.cost.costcenter, dt.cost.product\n      | fieldsAdd filter = costallocation\n      | filter in(filter, {$Filter})\n      | fieldsKeep usage.start, licensing_type, ingested_bytes, costallocation, event.id\n      | dedup event.id\n      | fieldsAdd licensing_type = if(in(licensing_type, {\n        \"otlp-trace-ingest\", \"serverless\"}), \"other\", else: licensing_type)\n      \n      | fieldsAdd adaptive_volume = if(licensing_type == \"fullstack-adaptive\", ingested_bytes)\n      | fieldsAdd fixed_rate_volume = if(licensing_type == \"fullstack-fixed-rate\", ingested_bytes)\n      | fieldsAdd other_volume = if(licensing_type == \"other\", ingested_bytes)\n    \n      | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      \n      | makeTimeseries interval: 15m, time: usage.start, by: {\n        costallocation}, nonempty: true, {\n        adaptive_volume = sum(adaptive_volume, default: 0),\n        fixed_rate_volume = sum(fixed_rate_volume, default: 0),\n        other_volume = sum(other_volume, default: 0)\n      }\n      \n        // calculate included volume per costcenter and join with trace-ingest usage\n      | join [\n          FETCH dt.system.events\n          | filter event.kind == \"BILLING_USAGE_EVENT\"\n          | filter event.type == \"Full-Stack Monitoring\"\n          | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n          | fieldsRemove dt.cost.costcenter, dt.cost.product\n          | fieldsKeep usage.start, billed_gibibyte_hours, costallocation, event.id\n          | dedup event.id\n          | makeTimeseries {\n            billed = sum(billed_gibibyte_hours) }, by: {\n            costallocation }, time: usage.start, interval: 15m\n          | summarize by: {\n            timeframe, interval }, {\n            total = sum(billed[]), r = collectArray(record(costallocation, billed)) }\n          | expand r\n          | fieldsFlatten r, fields: {\n            costallocation, billed }\n          | fieldsAdd ratio = billed[] / total[]\n          | fields timeframe, interval, costallocation, ratio\n          | join [\n              timeseries interval: 15m, union: true, nonempty: true, {\n                included_volume = max(dt.billing.traces.maximum_included_fullstack_volume_per_minute, default: null),\n                configured_volume = max(dt.billing.traces.maximum_configured_fullstack_volume_per_minute, default: null)\n              }\n              | fieldsAdd interval_in_minutes = toLong(interval) / 60000000000\n              | fieldsAdd extra_ingest_on = configured_volume[] \u003e included_volume[]\n              | fieldsAdd included_volume = interval_in_minutes * if(isNull(configured_volume[]), null, else: included_volume[])\n          ], on: {\n            timeframe, interval }, fields: {\n            included_volume, extra_ingest_on }\n          | fieldsAdd included_volume_costallocation = included_volume[] * ratio[]\n          | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      ], on: {\n        timeframe, interval, costallocation }, kind: outer, prefix: \"included.\"\n      \n      | fieldsAdd timeframe = coalesce(timeframe, included.timeframe)\n      | fieldsAdd interval = coalesce(interval, included.interval)\n      | fieldsAdd costallocation = coalesce(costallocation, included.costallocation)\n      | fieldsAdd\n          extra_ingest_on =\n              if(exists(included.extra_ingest_on) and isNotNull(included.extra_ingest_on), included.extra_ingest_on,\n                else: array(false, false, false, false))\n      \n      | fieldsAdd included_volume_costallocation = included.included_volume_costallocation\n        // replace nulls with 0\n      | fieldsAdd adaptive_volume = iCollectArray(coalesce(adaptive_volume[], 0))\n      | fieldsAdd fixed_rate_volume = iCollectArray(coalesce(fixed_rate_volume[], 0))\n      | fieldsAdd other_volume = iCollectArray(coalesce(other_volume[], 0))\n      \n      | fieldsKeep timeframe, interval, costallocation, adaptive_volume, fixed_rate_volume, other_volume,\n          included_volume_costallocation, extra_ingest_on\n      \n        // calculate fullstack trace-ingest usage per costcenter\n      | fieldsAdd license_remaining = included_volume_costallocation[] - adaptive_volume[]\n      | fieldsAdd license_remaining = if(license_remaining[] \u003e 0, license_remaining[], else: 0)\n      \n      | fieldsAdd\n          billable_fullstack =\n              if(isNull(included_volume_costallocation[]), 0,\n                else: if(extra_ingest_on[], adaptive_volume[] + fixed_rate_volume[] - included_volume_costallocation[],\n                  else: fixed_rate_volume[] - license_remaining[]))\n      \n      | fieldsAdd billable_fullstack = if(billable_fullstack[] \u003e 0, billable_fullstack[], else: 0)\n      \n      | summarize {\n        total_included = sum(included_volume_costallocation[]),\n        total_adaptive = sum(adaptive_volume[]),\n        total_fixed_rate = sum(fixed_rate_volume[]),\n        total_fullstack_to_allocate = sum(billable_fullstack[]),\n        per_costallocation = collectArray(record(extra_ingest_on, billable_fullstack, billable_other = other_volume, costallocation, included_volume_costallocation))}, \n        by: { timeframe, interval }\n      | expand per_costallocation\n      | fieldsFlatten per_costallocation\n      | fieldsRemove per_costallocation\n      \n      | fieldsAdd total_license_remaining = total_included[] - total_adaptive[]\n      | fieldsAdd total_license_remaining = if(total_license_remaining[] \u003e 0, total_license_remaining[], else: 0)\n      | fieldsAdd\n          total_applicable_fullstack =\n              if(isNull(per_costallocation.included_volume_costallocation), 0,\n                else: if(per_costallocation.extra_ingest_on[], total_adaptive[] + total_fixed_rate[] - total_included[],\n                  else: total_fixed_rate[] - total_license_remaining[]))\n      | fieldsAdd total_billable_fullstack = if(total_applicable_fullstack[] \u003e 0, total_applicable_fullstack[], else: 0)\n      \n      | fieldsAdd\n          distributed_fullstack =\n              if(total_fullstack_to_allocate[] \u003c= 0, 0,\n                else: per_costallocation.billable_fullstack[] / total_fullstack_to_allocate[] * total_billable_fullstack[])\n      // filter out  entry if the included was not fetched\n      | fieldsAdd\n          adjusted_billable_total_per_costallocation =\n              per_costallocation.billable_other[] + if(total_included[] == 0, null, else: toDouble(distributed_fullstack[]))\n      | filterOut isNull(adjusted_billable_total_per_costallocation)\n      \n      | fields timeframe, interval, costallocation = per_costallocation.costallocation, adjusted_billable_total_per_costallocation\n      | fieldsAdd event.type =\"Traces - Ingest \u0026 Process\"\n      | fieldsAdd filter = costallocation\n]\n| fieldsAdd traces_usage = adjusted_billable_total_per_costallocation[] / (1024*1024*1024)\n// \u003c---------THIS IS JUST FOR TRACES INGEST NORMALIZATION \n\n| lookup [\n   data json:$ratecard_data\n], sourceField:event.type, lookupField:name, prefix: \"ratecard.\"\n| fieldsAdd isnull = isNull(adjusted_billable_total_per_costallocation)\n| fieldsAdd usage = if(isnull, usage, else: traces_usage)\n| fieldsKeep timeframe, interval, event.type, usage,ratecard.price, filter\n| fieldsAdd cost = usage[] * toDouble(ratecard.price) \n\n\n//  | summarize {\n//         total_usage = sum(usage[]),\n//         total_cost = sum(cost[])},\n//         by: { timeframe, interval, event.type, filter }\n// | sort event.type",
+      "querySettings": {
+        "defaultSamplingRatio": 10,
+        "defaultScanLimitGbytes": 500,
+        "enableSampling": true,
+        "maxResultMegaBytes": 5,
+        "maxResultRecords": 10000
+      },
+      "title": "Estimated Costs per capability and $CostAllocation",
+      "type": "data",
+      "visualization": "lineChart",
+      "visualizationSettings": {
+        "autoSelectVisualization": false,
+        "chartSettings": {
+          "fieldMapping": {
+            "leftAxisValues": [
+              "cost"
+            ]
+          },
+          "gapPolicy": "connect",
+          "xAxisScaling": "analyzedTimeframe"
+        },
+        "dataMapping": {
+          "displayedFields": [
+            "filter",
+            "event.type"
+          ]
+        },
+        "thresholds": [],
+        "unitsOverrides": [
+          {
+            "added": 1754648177039,
+            "baseUnit": "one",
+            "decimals": 0,
+            "delimiter": false,
+            "displayUnit": null,
+            "identifier": "total_usage",
+            "suffix": "",
+            "unitCategory": "amount"
+          },
+          {
+            "added": 1754648199722,
+            "baseUnit": "usd",
+            "decimals": 2,
+            "delimiter": true,
+            "displayUnit": null,
+            "identifier": "total_cost",
+            "suffix": "",
+            "unitCategory": "currency"
+          }
+        ]
+      }
+    },
+    "44": {
+      "content": "## Estimated costs per $CostAllocation",
+      "type": "markdown"
+    },
+    "47": {
+      "davis": {
+        "davisVisualization": {
+          "isAvailable": true
+        },
+        "enabled": false
+      },
+      "query": "fetch dt.system.events\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| filterOut event.type ==\"Traces - Ingest \u0026 Process\" //traces need special handling\n| dedup event.id\n| filter in(event.type, {$Capability})\n| fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n| fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n| fieldsRemove dt.cost.costcenter, dt.cost.product\n| expand costallocation\n| fieldsAdd filter = coalesce(costallocation[key], costallocation)\n| filter in(filter, {$Filter})\n| fieldsAdd billed_bytes = coalesce(costallocation[billed_bytes], billed_bytes)\n| fieldsAdd usage = coalesce(\n    billed_host_hours, //Infra, F\u0026D\n    billed_gibibyte_hours, //Fullstack, Runtime Application Protection, Runtime Vulnerability Analytics\n    toDouble(billed_bytes) / (1024*1024*1024), //ALL I/R/Q\n    billed_invocations, //AppEngine\n    ingested_bytes,\n    1 //workflow count\n    )\n| fieldsAdd usage.start = if(isNull(usage.start), timestamp, else: usage.start)\n| makeTimeseries interval: 15m, time: usage.start, nonempty:false, by:{filter, event.type },{\n  usage = sum(usage)\n}\n| append [\n// THIS IS JUST FOR TRACES INGEST NORMALIZATION -----\u003e\n\n\n      FETCH dt.system.events\n      | filter event.kind == \"BILLING_USAGE_EVENT\" and event.type == \"Traces - Ingest \u0026 Process\"\n      | filter in(event.type, {$Capability})\n      | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n      | fieldsRemove dt.cost.costcenter, dt.cost.product\n      | fieldsAdd filter = costallocation\n      | filter in(filter, {$Filter})\n      | fieldsKeep usage.start, licensing_type, ingested_bytes, costallocation, event.id\n      | dedup event.id\n      | fieldsAdd licensing_type = if(in(licensing_type, {\n        \"otlp-trace-ingest\", \"serverless\"}), \"other\", else: licensing_type)\n      \n      | fieldsAdd adaptive_volume = if(licensing_type == \"fullstack-adaptive\", ingested_bytes)\n      | fieldsAdd fixed_rate_volume = if(licensing_type == \"fullstack-fixed-rate\", ingested_bytes)\n      | fieldsAdd other_volume = if(licensing_type == \"other\", ingested_bytes)\n    \n      | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      \n      | makeTimeseries interval: 15m, time: usage.start, by: {\n        costallocation}, nonempty: true, {\n        adaptive_volume = sum(adaptive_volume, default: 0),\n        fixed_rate_volume = sum(fixed_rate_volume, default: 0),\n        other_volume = sum(other_volume, default: 0)\n      }\n      \n        // calculate included volume per costcenter and join with trace-ingest usage\n      | join [\n          FETCH dt.system.events\n          | filter event.kind == \"BILLING_USAGE_EVENT\"\n          | filter event.type == \"Full-Stack Monitoring\"\n          | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n          | fieldsRemove dt.cost.costcenter, dt.cost.product\n          | fieldsKeep usage.start, billed_gibibyte_hours, costallocation, event.id\n          | dedup event.id\n          | makeTimeseries {\n            billed = sum(billed_gibibyte_hours) }, by: {\n            costallocation }, time: usage.start, interval: 15m\n          | summarize by: {\n            timeframe, interval }, {\n            total = sum(billed[]), r = collectArray(record(costallocation, billed)) }\n          | expand r\n          | fieldsFlatten r, fields: {\n            costallocation, billed }\n          | fieldsAdd ratio = billed[] / total[]\n          | fields timeframe, interval, costallocation, ratio\n          | join [\n              timeseries interval: 15m, union: true, nonempty: true, {\n                included_volume = max(dt.billing.traces.maximum_included_fullstack_volume_per_minute, default: null),\n                configured_volume = max(dt.billing.traces.maximum_configured_fullstack_volume_per_minute, default: null)\n              }\n              | fieldsAdd interval_in_minutes = toLong(interval) / 60000000000\n              | fieldsAdd extra_ingest_on = configured_volume[] \u003e included_volume[]\n              | fieldsAdd included_volume = interval_in_minutes * if(isNull(configured_volume[]), null, else: included_volume[])\n          ], on: {\n            timeframe, interval }, fields: {\n            included_volume, extra_ingest_on }\n          | fieldsAdd included_volume_costallocation = included_volume[] * ratio[]\n          | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      ], on: {\n        timeframe, interval, costallocation }, kind: outer, prefix: \"included.\"\n      \n      | fieldsAdd timeframe = coalesce(timeframe, included.timeframe)\n      | fieldsAdd interval = coalesce(interval, included.interval)\n      | fieldsAdd costallocation = coalesce(costallocation, included.costallocation)\n      | fieldsAdd\n          extra_ingest_on =\n              if(exists(included.extra_ingest_on) and isNotNull(included.extra_ingest_on), included.extra_ingest_on,\n                else: array(false, false, false, false))\n      \n      | fieldsAdd included_volume_costallocation = included.included_volume_costallocation\n        // replace nulls with 0\n      | fieldsAdd adaptive_volume = iCollectArray(coalesce(adaptive_volume[], 0))\n      | fieldsAdd fixed_rate_volume = iCollectArray(coalesce(fixed_rate_volume[], 0))\n      | fieldsAdd other_volume = iCollectArray(coalesce(other_volume[], 0))\n      \n      | fieldsKeep timeframe, interval, costallocation, adaptive_volume, fixed_rate_volume, other_volume,\n          included_volume_costallocation, extra_ingest_on\n      \n        // calculate fullstack trace-ingest usage per costcenter\n      | fieldsAdd license_remaining = included_volume_costallocation[] - adaptive_volume[]\n      | fieldsAdd license_remaining = if(license_remaining[] \u003e 0, license_remaining[], else: 0)\n      \n      | fieldsAdd\n          billable_fullstack =\n              if(isNull(included_volume_costallocation[]), 0,\n                else: if(extra_ingest_on[], adaptive_volume[] + fixed_rate_volume[] - included_volume_costallocation[],\n                  else: fixed_rate_volume[] - license_remaining[]))\n      \n      | fieldsAdd billable_fullstack = if(billable_fullstack[] \u003e 0, billable_fullstack[], else: 0)\n      \n      | summarize {\n        total_included = sum(included_volume_costallocation[]),\n        total_adaptive = sum(adaptive_volume[]),\n        total_fixed_rate = sum(fixed_rate_volume[]),\n        total_fullstack_to_allocate = sum(billable_fullstack[]),\n        per_costallocation = collectArray(record(extra_ingest_on, billable_fullstack, billable_other = other_volume, costallocation, included_volume_costallocation))}, \n        by: { timeframe, interval }\n      | expand per_costallocation\n      | fieldsFlatten per_costallocation\n      | fieldsRemove per_costallocation\n      \n      | fieldsAdd total_license_remaining = total_included[] - total_adaptive[]\n      | fieldsAdd total_license_remaining = if(total_license_remaining[] \u003e 0, total_license_remaining[], else: 0)\n      | fieldsAdd\n          total_applicable_fullstack =\n              if(isNull(per_costallocation.included_volume_costallocation), 0,\n                else: if(per_costallocation.extra_ingest_on[], total_adaptive[] + total_fixed_rate[] - total_included[],\n                  else: total_fixed_rate[] - total_license_remaining[]))\n      | fieldsAdd total_billable_fullstack = if(total_applicable_fullstack[] \u003e 0, total_applicable_fullstack[], else: 0)\n      \n      | fieldsAdd\n          distributed_fullstack =\n              if(total_fullstack_to_allocate[] \u003c= 0, 0,\n                else: per_costallocation.billable_fullstack[] / total_fullstack_to_allocate[] * total_billable_fullstack[])\n      // filter out  entry if the included was not fetched\n      | fieldsAdd\n          adjusted_billable_total_per_costallocation =\n              per_costallocation.billable_other[] + if(total_included[] == 0, null, else: toDouble(distributed_fullstack[]))\n      | filterOut isNull(adjusted_billable_total_per_costallocation)\n      \n      | fields timeframe, interval, costallocation = per_costallocation.costallocation, adjusted_billable_total_per_costallocation\n      | fieldsAdd event.type =\"Traces - Ingest \u0026 Process\"\n      | fieldsAdd filter = costallocation\n]\n| fieldsAdd traces_usage = adjusted_billable_total_per_costallocation[] / (1024*1024*1024)\n// \u003c---------THIS IS JUST FOR TRACES INGEST NORMALIZATION \n\n| lookup [\n   data json:$ratecard_data\n], sourceField:event.type, lookupField:name, prefix: \"ratecard.\"\n| fieldsAdd isnull = isNull(adjusted_billable_total_per_costallocation)\n| fieldsAdd usage = if(isnull, usage, else: traces_usage)\n| fieldsKeep timeframe, interval, costallocation, event.type, usage,ratecard.price, filter\n| fieldsAdd cost = usage[] * toDouble(ratecard.price) \n\n | summarize {\n        total_usage = sum(usage[]),\n        total_cost = sum(cost[])},\n        by: { timeframe, interval, event.type }\n| sort event.type",
+      "querySettings": {
+        "defaultSamplingRatio": 10,
+        "defaultScanLimitGbytes": 500,
+        "enableSampling": false,
+        "maxResultMegaBytes": 1,
+        "maxResultRecords": 5000
+      },
+      "title": "Estimated Costs per capability",
+      "type": "data",
+      "visualization": "lineChart",
+      "visualizationSettings": {
+        "autoSelectVisualization": false,
+        "chartSettings": {
+          "fieldMapping": {
+            "leftAxisValues": [
+              "total_cost"
+            ]
+          },
+          "gapPolicy": "connect",
+          "xAxisScaling": "analyzedTimeframe"
+        },
+        "dataMapping": {
+          "displayedFields": [
+            "event.type"
+          ]
+        },
+        "thresholds": [],
+        "unitsOverrides": [
+          {
+            "added": 1754648177039,
+            "baseUnit": "one",
+            "decimals": 0,
+            "delimiter": false,
+            "displayUnit": null,
+            "identifier": "usage",
+            "suffix": "",
+            "unitCategory": "amount"
+          },
+          {
+            "added": 1754648199722,
+            "baseUnit": "usd",
+            "decimals": 2,
+            "delimiter": true,
+            "displayUnit": null,
+            "identifier": "cost",
+            "suffix": "",
+            "unitCategory": "currency"
+          }
+        ]
+      }
+    },
+    "48": {
+      "content": "## Historical view of capabilities",
+      "type": "markdown"
+    },
+    "50": {
+      "davis": {
+        "davisVisualization": {
+          "isAvailable": true
+        },
+        "enabled": false
+      },
+      "description": "",
+      "query": "fetch dt.system.events\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| filterOut event.type ==\"Traces - Ingest \u0026 Process\" //traces need special handling\n| dedup event.id\n| filter in(event.type, {$Capability})\n| fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n| fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n| fieldsRemove dt.cost.costcenter, dt.cost.product\n| expand costallocation\n| fieldsAdd filter = coalesce(costallocation[key], costallocation)\n| filter in(filter, {$Filter})\n| fieldsAdd billed_bytes = coalesce(costallocation[billed_bytes], billed_bytes)\n| fieldsAdd usage = coalesce(\n    billed_host_hours, //Infra, F\u0026D\n    billed_gibibyte_hours, //Fullstack, Runtime Application Protection, Runtime Vulnerability Analytics\n    toDouble(billed_bytes) / (1024*1024*1024), //ALL I/R/Q\n    billed_invocations, //AppEngine\n    ingested_bytes,\n    1 //workflow count\n    )\n| fieldsAdd usage.start = if(isNull(usage.start), timestamp, else: usage.start)\n| makeTimeseries interval: 15m, time: usage.start,nonempty:false, by:{filter, event.type },{\n  usage = sum(usage)\n}\n| append [\n// THIS IS JUST FOR TRACES INGEST NORMALIZATION -----\u003e\n\n\n      FETCH dt.system.events\n      | filter event.kind == \"BILLING_USAGE_EVENT\" and event.type == \"Traces - Ingest \u0026 Process\"\n      | filter in(event.type, {$Capability})\n      | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n      | fieldsRemove dt.cost.costcenter, dt.cost.product\n      | fieldsAdd filter = costallocation\n      | filter in(filter, {$Filter})\n      | fieldsKeep usage.start, licensing_type, ingested_bytes, costallocation, event.id\n      | dedup event.id\n      | fieldsAdd licensing_type = if(in(licensing_type, {\n        \"otlp-trace-ingest\", \"serverless\"}), \"other\", else: licensing_type)\n      \n      | fieldsAdd adaptive_volume = if(licensing_type == \"fullstack-adaptive\", ingested_bytes)\n      | fieldsAdd fixed_rate_volume = if(licensing_type == \"fullstack-fixed-rate\", ingested_bytes)\n      | fieldsAdd other_volume = if(licensing_type == \"other\", ingested_bytes)\n    \n      | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      \n      | makeTimeseries interval: 15m, time: usage.start, by: {\n        costallocation}, nonempty: true, {\n        adaptive_volume = sum(adaptive_volume, default: 0),\n        fixed_rate_volume = sum(fixed_rate_volume, default: 0),\n        other_volume = sum(other_volume, default: 0)\n      }\n      \n        // calculate included volume per costcenter and join with trace-ingest usage\n      | join [\n          FETCH dt.system.events\n          | filter event.kind == \"BILLING_USAGE_EVENT\"\n          | filter event.type == \"Full-Stack Monitoring\"\n          | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n          | fieldsRemove dt.cost.costcenter, dt.cost.product\n          | fieldsKeep usage.start, billed_gibibyte_hours, costallocation, event.id\n          | dedup event.id\n          | makeTimeseries {\n            billed = sum(billed_gibibyte_hours) }, by: {\n            costallocation }, time: usage.start, interval: 15m\n          | summarize by: {\n            timeframe, interval }, {\n            total = sum(billed[]), r = collectArray(record(costallocation, billed)) }\n          | expand r\n          | fieldsFlatten r, fields: {\n            costallocation, billed }\n          | fieldsAdd ratio = billed[] / total[]\n          | fields timeframe, interval, costallocation, ratio\n          | join [\n              timeseries interval: 15m, union: true, nonempty: true, {\n                included_volume = max(dt.billing.traces.maximum_included_fullstack_volume_per_minute, default: null),\n                configured_volume = max(dt.billing.traces.maximum_configured_fullstack_volume_per_minute, default: null)\n              }\n              | fieldsAdd interval_in_minutes = toLong(interval) / 60000000000\n              | fieldsAdd extra_ingest_on = configured_volume[] \u003e included_volume[]\n              | fieldsAdd included_volume = interval_in_minutes * if(isNull(configured_volume[]), null, else: included_volume[])\n          ], on: {\n            timeframe, interval }, fields: {\n            included_volume, extra_ingest_on }\n          | fieldsAdd included_volume_costallocation = included_volume[] * ratio[]\n          | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      ], on: {\n        timeframe, interval, costallocation }, kind: outer, prefix: \"included.\"\n      \n      | fieldsAdd timeframe = coalesce(timeframe, included.timeframe)\n      | fieldsAdd interval = coalesce(interval, included.interval)\n      | fieldsAdd costallocation = coalesce(costallocation, included.costallocation)\n      | fieldsAdd\n          extra_ingest_on =\n              if(exists(included.extra_ingest_on) and isNotNull(included.extra_ingest_on), included.extra_ingest_on,\n                else: array(false, false, false, false))\n      \n      | fieldsAdd included_volume_costallocation = included.included_volume_costallocation\n        // replace nulls with 0\n      | fieldsAdd adaptive_volume = iCollectArray(coalesce(adaptive_volume[], 0))\n      | fieldsAdd fixed_rate_volume = iCollectArray(coalesce(fixed_rate_volume[], 0))\n      | fieldsAdd other_volume = iCollectArray(coalesce(other_volume[], 0))\n      \n      | fieldsKeep timeframe, interval, costallocation, adaptive_volume, fixed_rate_volume, other_volume,\n          included_volume_costallocation, extra_ingest_on\n      \n        // calculate fullstack trace-ingest usage per costcenter\n      | fieldsAdd license_remaining = included_volume_costallocation[] - adaptive_volume[]\n      | fieldsAdd license_remaining = if(license_remaining[] \u003e 0, license_remaining[], else: 0)\n      \n      | fieldsAdd\n          billable_fullstack =\n              if(isNull(included_volume_costallocation[]), 0,\n                else: if(extra_ingest_on[], adaptive_volume[] + fixed_rate_volume[] - included_volume_costallocation[],\n                  else: fixed_rate_volume[] - license_remaining[]))\n      \n      | fieldsAdd billable_fullstack = if(billable_fullstack[] \u003e 0, billable_fullstack[], else: 0)\n      \n      | summarize {\n        total_included = sum(included_volume_costallocation[]),\n        total_adaptive = sum(adaptive_volume[]),\n        total_fixed_rate = sum(fixed_rate_volume[]),\n        total_fullstack_to_allocate = sum(billable_fullstack[]),\n        per_costallocation = collectArray(record(extra_ingest_on, billable_fullstack, billable_other = other_volume, costallocation, included_volume_costallocation))}, \n        by: { timeframe, interval }\n      | expand per_costallocation\n      | fieldsFlatten per_costallocation\n      | fieldsRemove per_costallocation\n      \n      | fieldsAdd total_license_remaining = total_included[] - total_adaptive[]\n      | fieldsAdd total_license_remaining = if(total_license_remaining[] \u003e 0, total_license_remaining[], else: 0)\n      | fieldsAdd\n          total_applicable_fullstack =\n              if(isNull(per_costallocation.included_volume_costallocation), 0,\n                else: if(per_costallocation.extra_ingest_on[], total_adaptive[] + total_fixed_rate[] - total_included[],\n                  else: total_fixed_rate[] - total_license_remaining[]))\n      | fieldsAdd total_billable_fullstack = if(total_applicable_fullstack[] \u003e 0, total_applicable_fullstack[], else: 0)\n      \n      | fieldsAdd\n          distributed_fullstack =\n              if(total_fullstack_to_allocate[] \u003c= 0, 0,\n                else: per_costallocation.billable_fullstack[] / total_fullstack_to_allocate[] * total_billable_fullstack[])\n      // filter out  entry if the included was not fetched\n      | fieldsAdd\n          adjusted_billable_total_per_costallocation =\n              per_costallocation.billable_other[] + if(total_included[] == 0, null, else: toDouble(distributed_fullstack[]))\n      | filterOut isNull(adjusted_billable_total_per_costallocation)\n      \n      | fields timeframe, interval, costallocation = per_costallocation.costallocation, adjusted_billable_total_per_costallocation\n      | fieldsAdd event.type =\"Traces - Ingest \u0026 Process\"\n      | fieldsAdd filter = costallocation\n]\n| fieldsAdd traces_usage = adjusted_billable_total_per_costallocation[] / (1024*1024*1024)\n// \u003c---------THIS IS JUST FOR TRACES INGEST NORMALIZATION \n| lookup [\n   data json:$ratecard_data\n], sourceField:event.type, lookupField:name, prefix: \"ratecard.\"\n| fieldsAdd isnull = isNull(adjusted_billable_total_per_costallocation)\n| fieldsAdd usage = if(isnull, usage, else: traces_usage)\n| fieldsKeep timeframe, interval, costallocation, event.type, usage,ratecard.price, filter\n| fieldsAdd cost = usage[] * toDouble(ratecard.price)\n| fieldsAdd cost = arraySum(cost)\n| fieldsAdd usage = arraySum(usage)\n| summarize {total_usage=sum(usage), total_cost=sum(cost)}, by:{capability=event.type}\n",
+      "querySettings": {
+        "defaultSamplingRatio": 10,
+        "defaultScanLimitGbytes": 500,
+        "enableSampling": false,
+        "maxResultMegaBytes": 1,
+        "maxResultRecords": 1000
+      },
+      "title": "Estimated cost distribution per Capability",
+      "type": "data",
+      "visualization": "pieChart",
+      "visualizationSettings": {
+        "autoSelectVisualization": false,
+        "chartSettings": {
+          "categoricalBarChartSettings": {
+            "categoryAxis": [
+              "capability"
+            ],
+            "categoryAxisLabel": "capability",
+            "valueAxis": "total_cost",
+            "valueAxisLabel": "total_cost"
+          },
+          "circleChartSettings": {
+            "groupingName": "Other",
+            "groupingThresholdType": "number-of-slices",
+            "groupingThresholdValue": 20,
+            "valueType": "relative"
+          },
+          "legend": {
+            "position": "right"
+          }
+        },
+        "legend": {
+          "ratio": 33
+        },
+        "thresholds": [],
+        "unitsOverrides": [
+          {
+            "added": 1754648177039,
+            "baseUnit": "one",
+            "decimals": 0,
+            "delimiter": false,
+            "displayUnit": null,
+            "identifier": "total_usage",
+            "suffix": "",
+            "unitCategory": "amount"
+          },
+          {
+            "added": 1754648199722,
+            "baseUnit": "usd",
+            "decimals": 2,
+            "delimiter": true,
+            "displayUnit": null,
+            "identifier": "total_cost",
+            "suffix": "",
+            "unitCategory": "currency"
+          }
+        ]
+      }
+    },
+    "52": {
+      "davis": {
+        "davisVisualization": {
+          "isAvailable": true
+        },
+        "enabled": false
+      },
+      "query": "fetch dt.system.events\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| filterOut event.type ==\"Traces - Ingest \u0026 Process\" //traces need special handling\n| dedup event.id\n| filter in(event.type, {$Capability})\n| fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n| fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n| fieldsRemove dt.cost.costcenter, dt.cost.product\n| expand costallocation\n| fieldsAdd filter = coalesce(costallocation[key], costallocation)\n| filter in(filter, {$Filter})\n| fieldsAdd billed_bytes = coalesce(costallocation[billed_bytes], billed_bytes)\n| fieldsAdd usage = coalesce(\n    billed_host_hours, //Infra, F\u0026D\n    billed_gibibyte_hours, //Fullstack, Runtime Application Protection, Runtime Vulnerability Analytics\n    toDouble(billed_bytes) / (1024*1024*1024), //ALL I/R/Q\n    billed_invocations, //AppEngine\n    ingested_bytes,\n    1 //workflow count\n    )\n| fieldsAdd usage.start = if(isNull(usage.start), timestamp, else: usage.start)\n| makeTimeseries interval: 15m, time: usage.start, nonempty:false, by:{filter, event.type },{\n  usage = sum(usage)\n}\n| append [\n// THIS IS JUST FOR TRACES INGEST NORMALIZATION -----\u003e\n\n\n      FETCH dt.system.events\n      | filter event.kind == \"BILLING_USAGE_EVENT\" and event.type == \"Traces - Ingest \u0026 Process\"\n      | filter in(event.type, {$Capability})\n      | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n      | fieldsRemove dt.cost.costcenter, dt.cost.product\n      | fieldsAdd filter = costallocation\n      | filter in(filter, {$Filter})\n      | fieldsKeep usage.start, licensing_type, ingested_bytes, costallocation, event.id\n      | dedup event.id\n      | fieldsAdd licensing_type = if(in(licensing_type, {\n        \"otlp-trace-ingest\", \"serverless\"}), \"other\", else: licensing_type)\n      \n      | fieldsAdd adaptive_volume = if(licensing_type == \"fullstack-adaptive\", ingested_bytes)\n      | fieldsAdd fixed_rate_volume = if(licensing_type == \"fullstack-fixed-rate\", ingested_bytes)\n      | fieldsAdd other_volume = if(licensing_type == \"other\", ingested_bytes)\n    \n      | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      \n      | makeTimeseries interval: 15m, time: usage.start, by: {\n        costallocation}, nonempty: true, {\n        adaptive_volume = sum(adaptive_volume, default: 0),\n        fixed_rate_volume = sum(fixed_rate_volume, default: 0),\n        other_volume = sum(other_volume, default: 0)\n      }\n      \n        // calculate included volume per costcenter and join with trace-ingest usage\n      | join [\n          FETCH dt.system.events\n          | filter event.kind == \"BILLING_USAGE_EVENT\"\n          | filter event.type == \"Full-Stack Monitoring\"\n          | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n          | fieldsRemove dt.cost.costcenter, dt.cost.product\n          | fieldsKeep usage.start, billed_gibibyte_hours, costallocation, event.id\n          | dedup event.id\n          | makeTimeseries {\n            billed = sum(billed_gibibyte_hours) }, by: {\n            costallocation }, time: usage.start, interval: 15m\n          | summarize by: {\n            timeframe, interval }, {\n            total = sum(billed[]), r = collectArray(record(costallocation, billed)) }\n          | expand r\n          | fieldsFlatten r, fields: {\n            costallocation, billed }\n          | fieldsAdd ratio = billed[] / total[]\n          | fields timeframe, interval, costallocation, ratio\n          | join [\n              timeseries interval: 15m, union: true, nonempty: true, {\n                included_volume = max(dt.billing.traces.maximum_included_fullstack_volume_per_minute, default: null),\n                configured_volume = max(dt.billing.traces.maximum_configured_fullstack_volume_per_minute, default: null)\n              }\n              | fieldsAdd interval_in_minutes = toLong(interval) / 60000000000\n              | fieldsAdd extra_ingest_on = configured_volume[] \u003e included_volume[]\n              | fieldsAdd included_volume = interval_in_minutes * if(isNull(configured_volume[]), null, else: included_volume[])\n          ], on: {\n            timeframe, interval }, fields: {\n            included_volume, extra_ingest_on }\n          | fieldsAdd included_volume_costallocation = included_volume[] * ratio[]\n          | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      ], on: {\n        timeframe, interval, costallocation }, kind: outer, prefix: \"included.\"\n      \n      | fieldsAdd timeframe = coalesce(timeframe, included.timeframe)\n      | fieldsAdd interval = coalesce(interval, included.interval)\n      | fieldsAdd costallocation = coalesce(costallocation, included.costallocation)\n      | fieldsAdd\n          extra_ingest_on =\n              if(exists(included.extra_ingest_on) and isNotNull(included.extra_ingest_on), included.extra_ingest_on,\n                else: array(false, false, false, false))\n      \n      | fieldsAdd included_volume_costallocation = included.included_volume_costallocation\n        // replace nulls with 0\n      | fieldsAdd adaptive_volume = iCollectArray(coalesce(adaptive_volume[], 0))\n      | fieldsAdd fixed_rate_volume = iCollectArray(coalesce(fixed_rate_volume[], 0))\n      | fieldsAdd other_volume = iCollectArray(coalesce(other_volume[], 0))\n      \n      | fieldsKeep timeframe, interval, costallocation, adaptive_volume, fixed_rate_volume, other_volume,\n          included_volume_costallocation, extra_ingest_on\n      \n        // calculate fullstack trace-ingest usage per costcenter\n      | fieldsAdd license_remaining = included_volume_costallocation[] - adaptive_volume[]\n      | fieldsAdd license_remaining = if(license_remaining[] \u003e 0, license_remaining[], else: 0)\n      \n      | fieldsAdd\n          billable_fullstack =\n              if(isNull(included_volume_costallocation[]), 0,\n                else: if(extra_ingest_on[], adaptive_volume[] + fixed_rate_volume[] - included_volume_costallocation[],\n                  else: fixed_rate_volume[] - license_remaining[]))\n      \n      | fieldsAdd billable_fullstack = if(billable_fullstack[] \u003e 0, billable_fullstack[], else: 0)\n      \n      | summarize {\n        total_included = sum(included_volume_costallocation[]),\n        total_adaptive = sum(adaptive_volume[]),\n        total_fixed_rate = sum(fixed_rate_volume[]),\n        total_fullstack_to_allocate = sum(billable_fullstack[]),\n        per_costallocation = collectArray(record(extra_ingest_on, billable_fullstack, billable_other = other_volume, costallocation, included_volume_costallocation))}, \n        by: { timeframe, interval }\n      | expand per_costallocation\n      | fieldsFlatten per_costallocation\n      | fieldsRemove per_costallocation\n      \n      | fieldsAdd total_license_remaining = total_included[] - total_adaptive[]\n      | fieldsAdd total_license_remaining = if(total_license_remaining[] \u003e 0, total_license_remaining[], else: 0)\n      | fieldsAdd\n          total_applicable_fullstack =\n              if(isNull(per_costallocation.included_volume_costallocation), 0,\n                else: if(per_costallocation.extra_ingest_on[], total_adaptive[] + total_fixed_rate[] - total_included[],\n                  else: total_fixed_rate[] - total_license_remaining[]))\n      | fieldsAdd total_billable_fullstack = if(total_applicable_fullstack[] \u003e 0, total_applicable_fullstack[], else: 0)\n      \n      | fieldsAdd\n          distributed_fullstack =\n              if(total_fullstack_to_allocate[] \u003c= 0, 0,\n                else: per_costallocation.billable_fullstack[] / total_fullstack_to_allocate[] * total_billable_fullstack[])\n      // filter out  entry if the included was not fetched\n      | fieldsAdd\n          adjusted_billable_total_per_costallocation =\n              per_costallocation.billable_other[] + if(total_included[] == 0, null, else: toDouble(distributed_fullstack[]))\n      | filterOut isNull(adjusted_billable_total_per_costallocation)\n      \n      | fields timeframe, interval, costallocation = per_costallocation.costallocation, adjusted_billable_total_per_costallocation\n      | fieldsAdd event.type =\"Traces - Ingest \u0026 Process\"\n      | fieldsAdd filter = costallocation\n]\n| fieldsAdd traces_usage = adjusted_billable_total_per_costallocation[] / (1024*1024*1024)\n// \u003c---------THIS IS JUST FOR TRACES INGEST NORMALIZATION \n\n| lookup [\n   data json:$ratecard_data\n], sourceField:event.type, lookupField:name, prefix: \"ratecard.\"\n| fieldsAdd isnull = isNull(adjusted_billable_total_per_costallocation)\n| fieldsAdd usage = if(isnull, usage, else: traces_usage)\n| fieldsKeep timeframe, interval, costallocation, event.type, usage,ratecard.price, filter\n| fieldsAdd cost = usage[] * toDouble(ratecard.price)\n| fieldsAdd cost = arraySum(cost)\n| fieldsAdd usage = arraySum(usage)\n| summarize {total_usage=sum(usage), total_cost=sum(cost)}, by:{capability=event.type,filter}\n| sort total_cost desc",
+      "querySettings": {
+        "defaultSamplingRatio": 10,
+        "defaultScanLimitGbytes": 500,
+        "enableSampling": false,
+        "maxResultMegaBytes": 1,
+        "maxResultRecords": 1000
+      },
+      "title": "List of usage and estimated costs per Capability and Cost Center",
+      "type": "data",
+      "visualization": "table",
+      "visualizationSettings": {
+        "table": {
+          "columnOrder": [
+            "[\"capability\"]",
+            "[\"filter\"]",
+            "[\"total_usage\"]",
+            "[\"total_cost\"]"
+          ],
+          "columnWidths": {
+            "[\"event.type\"]": 312,
+            "[\"total_cost\"]": 88
+          },
+          "sortBy": [
+            {
+              "columnId": "[\"capability\"]",
+              "direction": "descending"
+            }
+          ]
+        },
+        "thresholds": [],
+        "unitsOverrides": [
+          {
+            "added": 1754648177039,
+            "baseUnit": "one",
+            "decimals": 0,
+            "delimiter": false,
+            "displayUnit": null,
+            "identifier": "total_usage",
+            "suffix": "",
+            "unitCategory": "amount"
+          },
+          {
+            "added": 1754648199722,
+            "baseUnit": "usd",
+            "decimals": 2,
+            "delimiter": true,
+            "displayUnit": null,
+            "identifier": "total_cost",
+            "suffix": "",
+            "unitCategory": "currency"
+          }
+        ]
+      }
+    },
+    "56": {
+      "content": "## Change Log\n* v 3: Branched a version w/o lookup tables to ensure no related costs\n* v 3.1: dedup events \n* v 3.2: fixed some overlooked lookup table references\n* v 3.3: Adjusted for Log Retain/RwiQ \u0026 Fixed Trace Ingest billed usage",
+      "type": "markdown"
+    },
+    "57": {
+      "davis": {
+        "davisVisualization": {
+          "isAvailable": true
+        },
+        "enabled": false
+      },
+      "description": "Showing only values above 5% of total costs",
+      "query": "fetch dt.system.events\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| filterOut event.type ==\"Traces - Ingest \u0026 Process\" //traces need special handling\n| dedup event.id\n| filter in(event.type, {$Capability})\n| fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n| fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n| fieldsRemove dt.cost.costcenter, dt.cost.product\n| expand costallocation\n| fieldsAdd filter = coalesce(costallocation[key], costallocation)\n| filter in(filter, {$Filter})\n| fieldsAdd billed_bytes = coalesce(costallocation[billed_bytes], billed_bytes)\n| fieldsAdd usage = coalesce(\n    billed_host_hours, //Infra, F\u0026D\n    billed_gibibyte_hours, //Fullstack, Runtime Application Protection, Runtime Vulnerability Analytics\n    toDouble(billed_bytes) / (1024*1024*1024), //ALL I/R/Q\n    billed_invocations, //AppEngine\n    ingested_bytes,\n    1 //workflow count\n    )\n| fieldsAdd usage.start = if(isNull(usage.start), timestamp, else: usage.start)\n| makeTimeseries interval: 15m, time: usage.start, nonempty:false, by:{filter, event.type },{\n  usage = sum(usage)\n}\n| append [\n// THIS IS JUST FOR TRACES INGEST NORMALIZATION -----\u003e\n\n\n      FETCH dt.system.events\n      | filter event.kind == \"BILLING_USAGE_EVENT\" and event.type == \"Traces - Ingest \u0026 Process\"\n      | filter in(event.type, {$Capability})\n      | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n      | fieldsRemove dt.cost.costcenter, dt.cost.product\n      | fieldsAdd filter = costallocation\n      | filter in(filter, {$Filter})\n      | fieldsKeep usage.start, licensing_type, ingested_bytes, costallocation, event.id\n      | dedup event.id\n      | fieldsAdd licensing_type = if(in(licensing_type, {\n        \"otlp-trace-ingest\", \"serverless\"}), \"other\", else: licensing_type)\n      \n      | fieldsAdd adaptive_volume = if(licensing_type == \"fullstack-adaptive\", ingested_bytes)\n      | fieldsAdd fixed_rate_volume = if(licensing_type == \"fullstack-fixed-rate\", ingested_bytes)\n      | fieldsAdd other_volume = if(licensing_type == \"other\", ingested_bytes)\n    \n      | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      \n      | makeTimeseries interval: 15m, time: usage.start, by: {\n        costallocation}, nonempty: true, {\n        adaptive_volume = sum(adaptive_volume, default: 0),\n        fixed_rate_volume = sum(fixed_rate_volume, default: 0),\n        other_volume = sum(other_volume, default: 0)\n      }\n      \n        // calculate included volume per costcenter and join with trace-ingest usage\n      | join [\n          FETCH dt.system.events\n          | filter event.kind == \"BILLING_USAGE_EVENT\"\n          | filter event.type == \"Full-Stack Monitoring\"\n          | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n          | fieldsRemove dt.cost.costcenter, dt.cost.product\n          | fieldsKeep usage.start, billed_gibibyte_hours, costallocation, event.id\n          | dedup event.id\n          | makeTimeseries {\n            billed = sum(billed_gibibyte_hours) }, by: {\n            costallocation }, time: usage.start, interval: 15m\n          | summarize by: {\n            timeframe, interval }, {\n            total = sum(billed[]), r = collectArray(record(costallocation, billed)) }\n          | expand r\n          | fieldsFlatten r, fields: {\n            costallocation, billed }\n          | fieldsAdd ratio = billed[] / total[]\n          | fields timeframe, interval, costallocation, ratio\n          | join [\n              timeseries interval: 15m, union: true, nonempty: true, {\n                included_volume = max(dt.billing.traces.maximum_included_fullstack_volume_per_minute, default: null),\n                configured_volume = max(dt.billing.traces.maximum_configured_fullstack_volume_per_minute, default: null)\n              }\n              | fieldsAdd interval_in_minutes = toLong(interval) / 60000000000\n              | fieldsAdd extra_ingest_on = configured_volume[] \u003e included_volume[]\n              | fieldsAdd included_volume = interval_in_minutes * if(isNull(configured_volume[]), null, else: included_volume[])\n          ], on: {\n            timeframe, interval }, fields: {\n            included_volume, extra_ingest_on }\n          | fieldsAdd included_volume_costallocation = included_volume[] * ratio[]\n          | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      ], on: {\n        timeframe, interval, costallocation }, kind: outer, prefix: \"included.\"\n      \n      | fieldsAdd timeframe = coalesce(timeframe, included.timeframe)\n      | fieldsAdd interval = coalesce(interval, included.interval)\n      | fieldsAdd costallocation = coalesce(costallocation, included.costallocation)\n      | fieldsAdd\n          extra_ingest_on =\n              if(exists(included.extra_ingest_on) and isNotNull(included.extra_ingest_on), included.extra_ingest_on,\n                else: array(false, false, false, false))\n      \n      | fieldsAdd included_volume_costallocation = included.included_volume_costallocation\n        // replace nulls with 0\n      | fieldsAdd adaptive_volume = iCollectArray(coalesce(adaptive_volume[], 0))\n      | fieldsAdd fixed_rate_volume = iCollectArray(coalesce(fixed_rate_volume[], 0))\n      | fieldsAdd other_volume = iCollectArray(coalesce(other_volume[], 0))\n      \n      | fieldsKeep timeframe, interval, costallocation, adaptive_volume, fixed_rate_volume, other_volume,\n          included_volume_costallocation, extra_ingest_on\n      \n        // calculate fullstack trace-ingest usage per costcenter\n      | fieldsAdd license_remaining = included_volume_costallocation[] - adaptive_volume[]\n      | fieldsAdd license_remaining = if(license_remaining[] \u003e 0, license_remaining[], else: 0)\n      \n      | fieldsAdd\n          billable_fullstack =\n              if(isNull(included_volume_costallocation[]), 0,\n                else: if(extra_ingest_on[], adaptive_volume[] + fixed_rate_volume[] - included_volume_costallocation[],\n                  else: fixed_rate_volume[] - license_remaining[]))\n      \n      | fieldsAdd billable_fullstack = if(billable_fullstack[] \u003e 0, billable_fullstack[], else: 0)\n      \n      | summarize {\n        total_included = sum(included_volume_costallocation[]),\n        total_adaptive = sum(adaptive_volume[]),\n        total_fixed_rate = sum(fixed_rate_volume[]),\n        total_fullstack_to_allocate = sum(billable_fullstack[]),\n        per_costallocation = collectArray(record(extra_ingest_on, billable_fullstack, billable_other = other_volume, costallocation, included_volume_costallocation))}, \n        by: { timeframe, interval }\n      | expand per_costallocation\n      | fieldsFlatten per_costallocation\n      | fieldsRemove per_costallocation\n      \n      | fieldsAdd total_license_remaining = total_included[] - total_adaptive[]\n      | fieldsAdd total_license_remaining = if(total_license_remaining[] \u003e 0, total_license_remaining[], else: 0)\n      | fieldsAdd\n          total_applicable_fullstack =\n              if(isNull(per_costallocation.included_volume_costallocation), 0,\n                else: if(per_costallocation.extra_ingest_on[], total_adaptive[] + total_fixed_rate[] - total_included[],\n                  else: total_fixed_rate[] - total_license_remaining[]))\n      | fieldsAdd total_billable_fullstack = if(total_applicable_fullstack[] \u003e 0, total_applicable_fullstack[], else: 0)\n      \n      | fieldsAdd\n          distributed_fullstack =\n              if(total_fullstack_to_allocate[] \u003c= 0, 0,\n                else: per_costallocation.billable_fullstack[] / total_fullstack_to_allocate[] * total_billable_fullstack[])\n      // filter out  entry if the included was not fetched\n      | fieldsAdd\n          adjusted_billable_total_per_costallocation =\n              per_costallocation.billable_other[] + if(total_included[] == 0, null, else: toDouble(distributed_fullstack[]))\n      | filterOut isNull(adjusted_billable_total_per_costallocation)\n      \n      | fields timeframe, interval, costallocation = per_costallocation.costallocation, adjusted_billable_total_per_costallocation\n      | fieldsAdd event.type =\"Traces - Ingest \u0026 Process\"\n      | fieldsAdd filter = costallocation\n]\n| fieldsAdd traces_usage = adjusted_billable_total_per_costallocation[] / (1024*1024*1024)\n// \u003c---------THIS IS JUST FOR TRACES INGEST NORMALIZATION \n\n\n| lookup [\n   data json:$ratecard_data\n], sourceField:event.type, lookupField:name, prefix: \"ratecard.\"\n| fieldsAdd isnull = isNull(adjusted_billable_total_per_costallocation)\n| fieldsAdd usage = if(isnull, usage, else: traces_usage)\n| fieldsKeep timeframe, interval, costallocation, event.type, usage,ratecard.price, filter\n| fieldsAdd cost = usage[] * toDouble(ratecard.price)\n| fieldsAdd cost = arraySum(cost)\n| fieldsAdd usage = arraySum(usage)\n| summarize {total_usage=sum(usage), total_cost=sum(cost)}, by:{filter}\n| sort total_cost desc",
+      "querySettings": {
+        "defaultSamplingRatio": 10,
+        "defaultScanLimitGbytes": 500,
+        "enableSampling": false,
+        "maxResultMegaBytes": 1,
+        "maxResultRecords": 1000
+      },
+      "title": "Estimated cost distribution per cost center",
+      "type": "data",
+      "visualization": "pieChart",
+      "visualizationSettings": {
+        "autoSelectVisualization": false,
+        "chartSettings": {
+          "categoricalBarChartSettings": {
+            "categoryAxis": [
+              "capability",
+              "filter"
+            ],
+            "categoryAxisLabel": "capability,filter",
+            "valueAxis": "total_cost",
+            "valueAxisLabel": "total_cost"
+          },
+          "circleChartSettings": {
+            "groupingName": "Other",
+            "groupingThresholdType": "number-of-slices",
+            "groupingThresholdValue": 10,
+            "valueType": "relative"
+          },
+          "colorPalette": "fireplace-inverted",
+          "legend": {
+            "position": "right"
+          }
+        },
+        "legend": {
+          "ratio": 33
+        },
+        "thresholds": [],
+        "unitsOverrides": [
+          {
+            "added": 1754648177039,
+            "baseUnit": "one",
+            "decimals": 0,
+            "delimiter": false,
+            "displayUnit": null,
+            "identifier": "total_usage",
+            "suffix": "",
+            "unitCategory": "amount"
+          },
+          {
+            "added": 1754648199722,
+            "baseUnit": "usd",
+            "decimals": 2,
+            "delimiter": true,
+            "displayUnit": null,
+            "identifier": "total_cost",
+            "suffix": "",
+            "unitCategory": "currency"
+          }
+        ]
+      }
+    },
+    "58": {
+      "davis": {
+        "davisVisualization": {
+          "isAvailable": true
+        },
+        "enabled": false
+      },
+      "query": "data json:$ratecard_data",
+      "querySettings": {
+        "defaultSamplingRatio": 10,
+        "defaultScanLimitGbytes": 500,
+        "enableSampling": false,
+        "maxResultMegaBytes": 1,
+        "maxResultRecords": 1000
+      },
+      "title": "Used Ratecard (can be changed by editing the ratecard_data variable \u003c---)",
+      "type": "data",
+      "visualization": "table",
+      "visualizationSettings": {
+        "autoSelectVisualization": true,
+        "table": {
+          "sortBy": [
+            {
+              "columnId": "[\"key\"]",
+              "direction": "ascending"
+            }
+          ]
+        }
+      }
+    },
+    "60": {
+      "davis": {
+        "davisVisualization": {
+          "isAvailable": true
+        },
+        "enabled": false
+      },
+      "description": "",
+      "query": "fetch dt.system.events\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| filterOut event.type ==\"Traces - Ingest \u0026 Process\" //traces need special handling\n| dedup event.id\n| filter in(event.type, {$Capability})\n| fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n| fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n| fieldsRemove dt.cost.costcenter, dt.cost.product\n| expand costallocation\n| fieldsAdd filter = coalesce(costallocation[key], costallocation)\n| filter in(filter, {$Filter})\n| fieldsAdd billed_bytes = coalesce(costallocation[billed_bytes], billed_bytes)\n| fieldsAdd usage = coalesce(\n    billed_host_hours, //Infra, F\u0026D\n    billed_gibibyte_hours, //Fullstack, Runtime Application Protection, Runtime Vulnerability Analytics\n    toDouble(billed_bytes) / (1024*1024*1024), //ALL I/R/Q\n    billed_invocations, //AppEngine\n    ingested_bytes,\n    1 //workflow count\n    )\n| fieldsAdd usage.start = if(isNull(usage.start), timestamp, else: usage.start)\n| makeTimeseries interval: 15m, time: usage.start, nonempty:false, by:{filter, event.type },{\n  usage = sum(usage)\n}\n| append [\n// THIS IS JUST FOR TRACES INGEST NORMALIZATION -----\u003e\n\n\n      FETCH dt.system.events\n      | filter event.kind == \"BILLING_USAGE_EVENT\" and event.type == \"Traces - Ingest \u0026 Process\"\n      | filter in(event.type, {$Capability})\n      | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n      | fieldsRemove dt.cost.costcenter, dt.cost.product\n      | fieldsAdd filter = costallocation\n      | filter in(filter, {$Filter})\n      | fieldsKeep usage.start, licensing_type, ingested_bytes, costallocation, event.id\n      | dedup event.id\n      | fieldsAdd licensing_type = if(in(licensing_type, {\n        \"otlp-trace-ingest\", \"serverless\"}), \"other\", else: licensing_type)\n      \n      | fieldsAdd adaptive_volume = if(licensing_type == \"fullstack-adaptive\", ingested_bytes)\n      | fieldsAdd fixed_rate_volume = if(licensing_type == \"fullstack-fixed-rate\", ingested_bytes)\n      | fieldsAdd other_volume = if(licensing_type == \"other\", ingested_bytes)\n    \n      | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      \n      | makeTimeseries interval: 15m, time: usage.start, by: {\n        costallocation}, nonempty: true, {\n        adaptive_volume = sum(adaptive_volume, default: 0),\n        fixed_rate_volume = sum(fixed_rate_volume, default: 0),\n        other_volume = sum(other_volume, default: 0)\n      }\n      \n        // calculate included volume per costcenter and join with trace-ingest usage\n      | join [\n          FETCH dt.system.events\n          | filter event.kind == \"BILLING_USAGE_EVENT\"\n          | filter event.type == \"Full-Stack Monitoring\"\n          | fieldsAdd costallocation = if($CostAllocation==\"costcenter\",dt.cost.costcenter, else: dt.cost.product)\n          | fieldsRemove dt.cost.costcenter, dt.cost.product\n          | fieldsKeep usage.start, billed_gibibyte_hours, costallocation, event.id\n          | dedup event.id\n          | makeTimeseries {\n            billed = sum(billed_gibibyte_hours) }, by: {\n            costallocation }, time: usage.start, interval: 15m\n          | summarize by: {\n            timeframe, interval }, {\n            total = sum(billed[]), r = collectArray(record(costallocation, billed)) }\n          | expand r\n          | fieldsFlatten r, fields: {\n            costallocation, billed }\n          | fieldsAdd ratio = billed[] / total[]\n          | fields timeframe, interval, costallocation, ratio\n          | join [\n              timeseries interval: 15m, union: true, nonempty: true, {\n                included_volume = max(dt.billing.traces.maximum_included_fullstack_volume_per_minute, default: null),\n                configured_volume = max(dt.billing.traces.maximum_configured_fullstack_volume_per_minute, default: null)\n              }\n              | fieldsAdd interval_in_minutes = toLong(interval) / 60000000000\n              | fieldsAdd extra_ingest_on = configured_volume[] \u003e included_volume[]\n              | fieldsAdd included_volume = interval_in_minutes * if(isNull(configured_volume[]), null, else: included_volume[])\n          ], on: {\n            timeframe, interval }, fields: {\n            included_volume, extra_ingest_on }\n          | fieldsAdd included_volume_costallocation = included_volume[] * ratio[]\n          | fieldsAdd costallocation = if(isNull(costallocation), $unassigned, else: costallocation)\n      ], on: {\n        timeframe, interval, costallocation }, kind: outer, prefix: \"included.\"\n      \n      | fieldsAdd timeframe = coalesce(timeframe, included.timeframe)\n      | fieldsAdd interval = coalesce(interval, included.interval)\n      | fieldsAdd costallocation = coalesce(costallocation, included.costallocation)\n      | fieldsAdd\n          extra_ingest_on =\n              if(exists(included.extra_ingest_on) and isNotNull(included.extra_ingest_on), included.extra_ingest_on,\n                else: array(false, false, false, false))\n      \n      | fieldsAdd included_volume_costallocation = included.included_volume_costallocation\n        // replace nulls with 0\n      | fieldsAdd adaptive_volume = iCollectArray(coalesce(adaptive_volume[], 0))\n      | fieldsAdd fixed_rate_volume = iCollectArray(coalesce(fixed_rate_volume[], 0))\n      | fieldsAdd other_volume = iCollectArray(coalesce(other_volume[], 0))\n      \n      | fieldsKeep timeframe, interval, costallocation, adaptive_volume, fixed_rate_volume, other_volume,\n          included_volume_costallocation, extra_ingest_on\n      \n        // calculate fullstack trace-ingest usage per costcenter\n      | fieldsAdd license_remaining = included_volume_costallocation[] - adaptive_volume[]\n      | fieldsAdd license_remaining = if(license_remaining[] \u003e 0, license_remaining[], else: 0)\n      \n      | fieldsAdd\n          billable_fullstack =\n              if(isNull(included_volume_costallocation[]), 0,\n                else: if(extra_ingest_on[], adaptive_volume[] + fixed_rate_volume[] - included_volume_costallocation[],\n                  else: fixed_rate_volume[] - license_remaining[]))\n      \n      | fieldsAdd billable_fullstack = if(billable_fullstack[] \u003e 0, billable_fullstack[], else: 0)\n      \n      | summarize {\n        total_included = sum(included_volume_costallocation[]),\n        total_adaptive = sum(adaptive_volume[]),\n        total_fixed_rate = sum(fixed_rate_volume[]),\n        total_fullstack_to_allocate = sum(billable_fullstack[]),\n        per_costallocation = collectArray(record(extra_ingest_on, billable_fullstack, billable_other = other_volume, costallocation, included_volume_costallocation))}, \n        by: { timeframe, interval }\n      | expand per_costallocation\n      | fieldsFlatten per_costallocation\n      | fieldsRemove per_costallocation\n      \n      | fieldsAdd total_license_remaining = total_included[] - total_adaptive[]\n      | fieldsAdd total_license_remaining = if(total_license_remaining[] \u003e 0, total_license_remaining[], else: 0)\n      | fieldsAdd\n          total_applicable_fullstack =\n              if(isNull(per_costallocation.included_volume_costallocation), 0,\n                else: if(per_costallocation.extra_ingest_on[], total_adaptive[] + total_fixed_rate[] - total_included[],\n                  else: total_fixed_rate[] - total_license_remaining[]))\n      | fieldsAdd total_billable_fullstack = if(total_applicable_fullstack[] \u003e 0, total_applicable_fullstack[], else: 0)\n      \n      | fieldsAdd\n          distributed_fullstack =\n              if(total_fullstack_to_allocate[] \u003c= 0, 0,\n                else: per_costallocation.billable_fullstack[] / total_fullstack_to_allocate[] * total_billable_fullstack[])\n      // filter out  entry if the included was not fetched\n      | fieldsAdd\n          adjusted_billable_total_per_costallocation =\n              per_costallocation.billable_other[] + if(total_included[] == 0, null, else: toDouble(distributed_fullstack[]))\n      | filterOut isNull(adjusted_billable_total_per_costallocation)\n      \n      | fields timeframe, interval, costallocation = per_costallocation.costallocation, adjusted_billable_total_per_costallocation\n      | fieldsAdd event.type =\"Traces - Ingest \u0026 Process\"\n      | fieldsAdd filter = costallocation\n]\n| fieldsAdd traces_usage = adjusted_billable_total_per_costallocation[] / (1024*1024*1024)\n// \u003c---------THIS IS JUST FOR TRACES INGEST NORMALIZATION \n\n| lookup [\n   data json:$ratecard_data\n], sourceField:event.type, lookupField:name, prefix: \"ratecard.\"\n| fieldsAdd isnull = isNull(adjusted_billable_total_per_costallocation)\n| fieldsAdd usage = if(isnull, usage, else: traces_usage)\n| fieldsKeep timeframe, interval, costallocation, event.type, usage,ratecard.price, filter\n| fieldsAdd cost = usage[] * toDouble(ratecard.price)\n| fieldsAdd cost = arraySum(cost)\n| fieldsAdd usage = arraySum(usage)\n| summarize {total_usage=sum(usage), total_cost=sum(cost)}\n",
+      "querySettings": {
+        "defaultSamplingRatio": 10,
+        "defaultScanLimitGbytes": 500,
+        "enableSampling": false,
+        "maxResultMegaBytes": 1,
+        "maxResultRecords": 1000
+      },
+      "title": "Estimated cost distribution per Capability",
+      "type": "data",
+      "visualization": "singleValue",
+      "visualizationSettings": {
+        "autoSelectVisualization": false,
+        "singleValue": {
+          "label": "total costs",
+          "recordField": "total_cost"
+        },
+        "thresholds": [],
+        "unitsOverrides": [
+          {
+            "added": 1754648177039,
+            "baseUnit": "one",
+            "decimals": 0,
+            "delimiter": false,
+            "displayUnit": null,
+            "identifier": "total_usage",
+            "suffix": "",
+            "unitCategory": "amount"
+          },
+          {
+            "added": 1754648199722,
+            "baseUnit": "usd",
+            "decimals": 2,
+            "delimiter": true,
+            "displayUnit": null,
+            "identifier": "total_cost",
+            "suffix": "",
+            "unitCategory": "currency"
+          }
+        ]
+      }
+    },
+    "61": {
+      "content": "*shown trace usage also includes included, non billable usage. The calculation for billable Traces cannot be done on record level. Therefore costs cannot be calculated within this table. For the Trace Ingest usage and costs which is billable - check the other tiles please.",
+      "type": "markdown"
+    },
+    "62": {
+      "content": "## Maximum detail level for usage",
+      "type": "markdown"
+    }
+  },
+  "variables": [
+    {
+      "defaultValue": "costcenter",
+      "editable": true,
+      "input": "costcenter,product",
+      "key": "CostAllocation",
+      "multiple": false,
+      "type": "csv",
+      "version": 2,
+      "visible": true
+    },
+    {
+      "defaultValue": [
+        "{{ .extractedIDs.id_3420b2ac_f1cf_4b24_b62d_61ba1ba8ed05 }}*"
+      ],
+      "editable": true,
+      "input": "fetch dt.system.events\n| filter $CostAllocation == \"costcenter\"\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| fieldsAdd value = coalesce(dt.cost.costcenter, $unassigned)\n| summarize count(), by: {value}\n| fieldsKeep value\n| append [\n  fetch dt.system.events\n  | filter $CostAllocation == \"product\"\n  | filter event.kind == \"BILLING_USAGE_EVENT\"\n  | fieldsAdd value = coalesce(dt.cost.product, $unassigned)\n  | summarize count(), by: {value}\n  | fieldsKeep value\n]",
+      "key": "Filter",
+      "multiple": true,
+      "type": "query",
+      "version": 2,
+      "visible": true
+    },
+    {
+      "editable": true,
+      "input": "fetch dt.system.events\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| expand dt.cost.costcenter\n| fieldsAdd dt.cost.costcenter = coalesce(dt.cost.costcenter[key], dt.cost.costcenter)\n| expand dt.cost.product\n| fieldsAdd dt.cost.product = coalesce(dt.cost.product[key], dt.cost.product)\n| filter $SupportedCapabilitiesOnly == \"no\" OR isNotNull(dt.cost.costcenter) OR isNotNull(dt.cost.product)\n| fields event.type\n| dedup event.type",
+      "key": "Capability",
+      "multiple": true,
+      "type": "query",
+      "version": 2,
+      "visible": true
+    },
+    {
+      "defaultValue": "unassigned",
+      "editable": true,
+      "key": "unassigned",
+      "type": "text",
+      "version": 2,
+      "visible": false
+    },
+    {
+      "defaultValue": "yes",
+      "editable": true,
+      "input": "yes,no",
+      "key": "SupportedCapabilitiesOnly",
+      "multiple": false,
+      "type": "csv",
+      "version": 2,
+      "visible": true
+    },
+    {
+      "editable": true,
+      "input": "/*\n* This will run JavaScript in the DYNATRACE\n* serverless environment.\n* To generate variable options return string array.\n*/\nexport default async function () {\n  return `[\n  {\"key\":\"AUTOMATIONS\",\"name\":\"Automation Workflow\",\"price\":\"0.13\",\"currencyCode\":\"USD\"},\n  {\"key\":\"BUSINESS_EVENTS_ANALYZE\",\"name\":\"Events - Query\",\"price\":\"0.0035\",\"currencyCode\":\"USD\"},\n  {\"key\":\"BUSINESS_EVENTS_INGEST\",\"name\":\"Events - Ingest \u0026 Process\",\"price\":\"0.2\",\"currencyCode\":\"USD\"},\n  {\"key\":\"BUSINESS_EVENTS_RETAIN\",\"name\":\"Events - Retain\",\"price\":\"0.0007\",\"currencyCode\":\"USD\"},\n  {\"key\":\"CODE_MONITORING\",\"name\":\"Code Monitoring\",\"price\":\"0.005\",\"currencyCode\":\"USD\"},\n  {\"key\":\"COMPUTE\",\"name\":\"AppEngine Functions - Small\",\"price\":\"0.001\",\"currencyCode\":\"USD\"},\n  {\"key\":\"EVENTS\",\"name\":\"Custom Events Classic\",\"price\":\"0.000002\",\"currencyCode\":\"USD\"},\n  {\"key\":\"FOUNDATION_AND_DISCOVERY\",\"name\":\"Foundation \u0026 Discovery\",\"price\":\"0.01\",\"currencyCode\":\"USD\"},\n  {\"key\":\"FULLSTACK_MONITORING\",\"name\":\"Full-Stack Monitoring\",\"price\":\"0.01\",\"currencyCode\":\"USD\"},\n  {\"key\":\"INFRASTRUCTURE_MONITORING\",\"name\":\"Infrastructure Monitoring\",\"price\":\"0.04\",\"currencyCode\":\"USD\"},\n  {\"key\":\"KUBERNETES_OPERATIONS\",\"name\":\"Kubernetes Platform Monitoring\",\"price\":\"0.002\",\"currencyCode\":\"USD\"},\n  {\"key\":\"LOG_MANAGEMENT_ANALYZE\",\"name\":\"Log Management \u0026 Analytics - Query\",\"price\":\"0.0035\",\"currencyCode\":\"USD\"},\n  {\"key\":\"LOG_MANAGEMENT_INGEST\",\"name\":\"Log Management \u0026 Analytics - Ingest \u0026 Process\",\"price\":\"0.2\",\"currencyCode\":\"USD\"},\n  {\"key\":\"LOG_MANAGEMENT_RETAIN\",\"name\":\"Log Management \u0026 Analytics - Retain\",\"price\":\"0.0007\",\"currencyCode\":\"USD\"},\n  {\"key\":\"LOGS\",\"name\":\"Log Monitoring Classic\",\"price\":\"0.000001\",\"currencyCode\":\"USD\"},\n  {\"key\":\"MAINFRAME_MONITORING\",\"name\":\"Mainframe Monitoring\",\"price\":\"0.1\",\"currencyCode\":\"USD\"},\n  {\"key\":\"METRICS\",\"name\":\"Custom Metrics Classic\",\"price\":\"0.000002\",\"currencyCode\":\"USD\"},\n  {\"key\":\"RUNTIME_APPLICATION_PROTECTION\",\"name\":\"Runtime Application Protection\",\"price\":\"0.00225\",\"currencyCode\":\"USD\"},\n  {\"key\":\"RUNTIME_VULNERABILITY_ANALYTICS\",\"name\":\"Runtime Vulnerability Analytics\",\"price\":\"0.00225\",\"currencyCode\":\"USD\"},\n  {\"key\":\"SECURITY_POSTURE_MANAGEMENT\",\"name\":\"Security Posture Management\",\"price\":\"0\",\"currencyCode\":\"USD\"},\n  {\"key\":\"SERVERLESS\",\"name\":\"Serverless Functions Classic\",\"price\":\"0.000004\",\"currencyCode\":\"USD\"},\n  {\"key\":\"SYNTHETIC_MONITORING_BROWSER\",\"name\":\"Browser Monitor or Clickpath\",\"price\":\"0.009\",\"currencyCode\":\"USD\"},\n  {\"key\":\"SYNTHETIC_MONITORING_HTTP\",\"name\":\"HTTP Monitor\",\"price\":\"0.001\",\"currencyCode\":\"USD\"},\n  {\"key\":\"SYNTHETIC_MONITORING_THIRD_PARTY\",\"name\":\"Third-Party Synthetic API Ingestion\",\"price\":\"0.001\",\"currencyCode\":\"USD\"},\n  {\"key\":\"TRACE_INGEST\",\"name\":\"Traces - Ingest \\\u0026 Process\",\"price\":\"0.2\",\"currencyCode\":\"USD\"},\n  {\"key\":\"TRACE_QUERY\",\"name\":\"Traces - Query\",\"price\":\"0.0035\",\"currencyCode\":\"USD\"},\n  {\"key\":\"TRACE_RETAIN\",\"name\":\"Traces - Retain\",\"price\":\"0.0007\",\"currencyCode\":\"USD\"},\n  {\"key\":\"TRACES\",\"name\":\"Custom Traces Classic\",\"price\":\"0.0000014\",\"currencyCode\":\"USD\"},\n  {\"key\":\"USER_SESSION_PROPERTIES\",\"name\":\"Real User Monitoring Property\",\"price\":\"0.0001\",\"currencyCode\":\"USD\"},\n  {\"key\":\"USER_SESSION_REPLAYS\",\"name\":\"Real User Monitoring with Session Replay\",\"price\":\"0.009\",\"currencyCode\":\"USD\"},\n  {\"key\":\"USER_SESSIONS\",\"name\":\"Real User Monitoring\",\"price\":\"0.00225\",\"currencyCode\":\"USD\"}\n]`\n}",
+      "key": "ratecard_data",
+      "multiple": false,
+      "type": "code",
+      "version": 2,
+      "visible": false
+    }
+  ],
+  "version": 20
+}
