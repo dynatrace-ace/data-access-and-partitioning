@@ -33,7 +33,9 @@ So far we have enrichement in place, data access & segmentation all sorted out. 
 
 7. Route all the traffic to the respective pipeline
 
-![](../../assets/images/routetopipeline.png)
+<div align="center">
+<img width="400" src="../../assets/images/routetopipeline.png">
+</div>
 
 8. Go back to your Notebook and run the DQL of the `Spans Ingest a day per App` tile
 
@@ -41,7 +43,9 @@ So far we have enrichement in place, data access & segmentation all sorted out. 
 
 9. Run the `Avg/day Spans Ingest per App` tile
 
-![](../../assets/images/avgperapp.png)
+<div align="center">
+<img width="600" src="../../assets/images/avgperapp.png">
+</div>
 
 ### Data Retention & Performance Requirements
 

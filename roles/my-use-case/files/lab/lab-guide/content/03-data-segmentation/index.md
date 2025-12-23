@@ -8,7 +8,9 @@ With data access already sorted out, let's create Segments to filter our data ac
 
 2. Call it app, and create a variable
 
-![](../../assets/images/variablesegment.png)
+<div align="center">
+<img width="400" src="../../assets/images/variablesegment.png">
+</div>
 
 3. Paste the following code, preview and done
 
