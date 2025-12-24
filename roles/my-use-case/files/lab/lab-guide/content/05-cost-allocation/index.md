@@ -62,7 +62,7 @@ Goal: Visualize how cost allocation attributes are applied to DPS usage.
 
 Navigate to Dashboards → Cost Allocation Overview
 
-[Screenshot Placeholder for the dashboard with a breakdown - WE NEED TO MAKE SURE TO UPLOAD THE DASHBOARD WITHIN PROVISIONING]
+![](../../assets/images/dps-dashboard.png)
 
 > Dashboard overview showing cost allocation breakdown by `dt.cost.costcenter` and `dt.cost.product`.
 
