@@ -29,7 +29,7 @@ kubectl describe pod -n easytrade -l app=broker-service
 3. Run command to redeploy all pods with the custom values
 
 ```bash
-kubectl apply -k roles/app-easytrade/files/kustomize/overlays/with-annotations -n easytrade
+kubectl apply -k "/home/$USER/repos/data-access-and-partitioning/roles/app-easytrade/files/kustomize/overlays/with-annotations" -n easytrade
 ```
 
 4. Check another workload
