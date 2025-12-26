@@ -1,0 +1,11 @@
+configs:
+- id: a9e02149-7822-4242-b2b3-07732bcbb86e
+  config:
+    name: dps-overview
+    template: a9e02149-7822-4242-b2b3-07732bcbb86e.json
+    skip: false
+    originObjectId: a9e02149-7822-4242-b2b3-07732bcbb86e
+  type:
+    document:
+      kind: dashboard
+      private: false
