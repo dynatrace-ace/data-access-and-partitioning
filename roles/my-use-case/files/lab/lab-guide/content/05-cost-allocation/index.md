@@ -61,8 +61,17 @@ SCREENSHOT MISSING LAST TICKLE
 
 6. The biggest portion of unallocation is because of Full-Stack monitoring. It is highly recommended to add those properties to your OA
 
-![](../../assets/images/)
+![](../../assets/images/oanocost.png)
 
+7. We've ready for you a Dynakube with the relevant host properties to add. Run the following command to apply the dynakube with the costcenter value 
 
+kubectl apply -f /home/ace/.ansible/collections/ansible_collections/ace_box/ace_box/roles/dt-operator/files/cloudNativeFullStack-properties.yaml
 
-We've ready for you a Dynakube with the relevant host properties to add. Run the following command to apply the dynakube with the costcenter value 
+8. Wait a few minutes until the cost center info appears
+
+![](../../assets/images/oacost.png)
+
+We can start allocating costs for ecommerce-app department
+
+![](../../assets/images/allocated.png)
+
