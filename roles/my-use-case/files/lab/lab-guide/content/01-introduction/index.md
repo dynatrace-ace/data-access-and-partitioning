@@ -8,10 +8,7 @@ In this session, you will learn how to work with Dynatrace Platform native featu
 - Partitioning, Bucket Strategy, OpenPipeline routing
 - Segmentation using Segments
 
-By learning the Platform concepts, you will be able to:
-- Upgrade from classic to 3rd-Gen – Existing customer
-- Use the Dynatrace Platform - New customer
-Be aware that the steps differ a bit... We will see that soon…  
+By learning the Platform concepts, you will be able to use the Dynatrace Platform from scratch!
 
 For our example today, you're responsible for executing the Proof-of-Concept for a new application onboarded into Dynatrace called "Easytrade".
 

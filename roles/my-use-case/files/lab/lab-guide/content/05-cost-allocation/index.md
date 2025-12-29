@@ -38,8 +38,6 @@ This model spreads the charge across the capabilities you actually use. The adva
 
 1. Let's have a look at the Dashboard "DPS Overview". What you'll find there is a breakdown of your DPS Consumption. Please note that you have a breakdown for the whole tenant as well as per capability.
 
-![](../../assets/images/dps-dashboard.png)
-
 ![](../../assets/images/dpsoverview3.png)
 
 2. Scroll down and check the consumption by capability
