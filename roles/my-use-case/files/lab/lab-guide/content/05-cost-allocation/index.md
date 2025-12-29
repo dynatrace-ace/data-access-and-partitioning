@@ -11,9 +11,24 @@ Before Allocating Costs, let's start by understanding them.
 Dynatrace’s model is predictable and volume-centric, which often results in lower total cost for large log volumes, compared to other observability tools.
 
 
-A Dynatrace Platform Subscription (DPS) agreement is typically signed for 1–3 years, with a minimum annual commitment. in our case, let's put as an example that our commited budget is 10 usd. You will see your budget under account management (no access to this during this lab)
+In this particular example, we will assign this whole host to only 1 product and that is "easytrade".
 
-![](../../assets/images/dpsbudget.png)
+What to do:
+1. Run the following command that collects your current Dynakube with its configuration and exports it into a yaml manifest locally:
+```bash
+kubectl get dynakube dynakube -n dynatrace -o yaml > dynakube-export.yaml
+```
+2. Use vi/vim/nano to open the file and go to line where arguments are set for cloudNativeFullStack. Set the following arguments:
+
+![](../../assets/images/dynakube-update-args.png)
+
+3. Exit and Save the manifest. Lastly, apply the updated manifest
+```bash
+kubectl apply -f dynakube-export.yaml
+```
+4. Wait a few mins and go to Infrastructure and Operations App and check your Node
+
+![](../../assets/images/dynakube-update-ui.png)
 
 Each platform capability has a price point defined in the rate card that's included with your agreement. You will be able to see your DPS rate cards under `Account Management > Subscription > Pricing` (no access to this during this lab). Example default rate card:
 
@@ -23,7 +38,7 @@ Each platform capability has a price point defined in the rate card that's inclu
 
 Dynatrace will consume based on the capabilities your organization is using, allowing your teams flexibility to focus on their needs. [Link](https://docs.dynatrace.com/docs/license/capabilities) to doc.
 
-![](../../assets/images/capabilities.png)
+![](../../assets/images/logs-enrichment.png)
 
 #### Cloud VM example
 
@@ -35,7 +50,7 @@ This model spreads the charge across the capabilities you actually use. The adva
 
 ### Understand Costs
 
-1. Go to Dashboards and open the `DPS Overview` dashboard, run all the tiles and understand how much of the license has been consumed.
+![](../../assets/images/dps-dashboard.png)
 
 ![](../../assets/images/dpsoverview3.png)
 

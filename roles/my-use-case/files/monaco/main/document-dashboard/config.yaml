@@ -9,3 +9,18 @@ configs:
     document:
       kind: dashboard
       private: false
+- id: 086a574d-a6fe-4d8d-9506-1293305cc018
+  config:
+    name: DPS Cost Allocation Overview Dashboard
+    parameters:
+      extractedIDs:
+        type: value
+        value:
+          id_3420b2ac_f1cf_4b24_b62d_61ba1ba8ed05: 3420b2ac-f1cf-4b24-b62d-61ba1ba8ed05
+    template: 086a574d-a6fe-4d8d-9506-1293305cc018.json
+    skip: false
+    originObjectId: 086a574d-a6fe-4d8d-9506-1293305cc018
+  type:
+    document:
+      kind: dashboard
+      private: false
