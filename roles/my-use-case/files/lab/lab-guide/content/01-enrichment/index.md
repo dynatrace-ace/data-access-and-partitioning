@@ -1,8 +1,12 @@
-## Enrich directly from the tenant!
+## Enrichment at Source
 
-There are special "fields" we recommend to use in Segments that are called Primary Grail Field, Host Group is one of them. We will show you how to add other relevant Primary Grail Fields (and Tags) directly from the Dynatrace Environment
+The team are using auto-tags & management zones for filtering & access control in their Dynatrace classic platform. A very common setup was to rely on the values provided with the host group, to configure auto-tags, and Management Zones based on them.
 
-1. Go to remote execution, check the host group of the host of the easytrade app we want to enrich, you should see onPrem_easytrade_staging
+![](../../assets/images/tagssetup.png)
+
+There are special "fields" we recommend to use in Segments that are called Primary Grail Field, Host Group is one of them. We will show you how to add other relevant Primary Grail Fields (and Tags) directly from the Dynatrace Environment.
+
+1. Go to Deployment Status, filter by the host group of the team `onPrem_easytrade_staging`, click on all the hosts (just 1 for us), and modify host properties
 
 SCREENSHOT
 
@@ -10,7 +14,7 @@ SCREENSHOT
     - dt.security_context: easytrade
     - dt.cost.costcenter: ecommerce-apps
     - dt.cost.product: easytrade
-    - primary_tags.stage: staging
+    - primary_tags.environment: staging
     - primary_tags.team: alpha
     - primary_tags.app: easytrade
     - primary_tags.platform: onPremDedicated

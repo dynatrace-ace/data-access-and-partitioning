@@ -29,3 +29,5 @@ SCREENSHOT
 5. Improve dashboard with tiles & views that were not possible before. E.g. Exceptions? Logs? Business events?​
 
 SCREENSHOT
+
+Once validated and approved, we will demonstrate how classic apps can be disabled, to simplify the navigation for end users, and avoid for them to be using the old screens.
