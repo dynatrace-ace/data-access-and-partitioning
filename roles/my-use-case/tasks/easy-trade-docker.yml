@@ -35,3 +35,24 @@
   debug:
     msg: "Docker Compose started successfully"
   when: docker_compose_result.changed
+
+# Wait for easytrade services to be ready
+- name: Wait for easytrade to stabilize
+  pause:
+    seconds: 30
+
+# Enable a problem pattern (e.g., DbNotRespondingPlugin)
+- name: Enable high_cpu_usage problem pattern
+  uri:
+    url: http://localhost/feature-flag-service/v1/flags/high_cpu_usage
+    method: PUT
+    body: '{"enabled": true}'
+    body_format: json
+    status_code: 200
+  register: enable_pattern_result
+
+# Display enable result
+- name: Display enable pattern result
+  debug:
+    msg: "Problem pattern enabled successfully"
+  when: enable_pattern_result.status == 200
