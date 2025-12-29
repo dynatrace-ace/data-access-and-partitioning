@@ -1,0 +1,952 @@
+{
+    "importedWithCode": true,
+    "layouts": {
+        "58": {
+            "h": 5,
+            "w": 12,
+            "x": 12,
+            "y": 0
+        },
+        "61": {
+            "h": 12,
+            "w": 8,
+            "x": 16,
+            "y": 16
+        },
+        "62": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 6
+        },
+        "63": {
+            "h": 12,
+            "w": 16,
+            "x": 0,
+            "y": 16
+        },
+        "64": {
+            "h": 5,
+            "w": 12,
+            "x": 0,
+            "y": 0
+        },
+        "65": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 5
+        },
+        "66": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 15
+        },
+        "67": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 29
+        },
+        "68": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 51
+        },
+        "69": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 28
+        },
+        "70": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 14
+        },
+        "72": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 50
+        },
+        "74": {
+            "h": 3,
+            "w": 24,
+            "x": 0,
+            "y": 30
+        },
+        "75": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 6
+        },
+        "78": {
+            "h": 7,
+            "w": 6,
+            "x": 18,
+            "y": 34
+        },
+        "79": {
+            "h": 8,
+            "w": 12,
+            "x": 12,
+            "y": 42
+        },
+        "80": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 41
+        },
+        "81": {
+            "h": 1,
+            "w": 24,
+            "x": 0,
+            "y": 33
+        },
+        "82": {
+            "h": 8,
+            "w": 12,
+            "x": 0,
+            "y": 42
+        },
+        "84": {
+            "h": 6,
+            "w": 12,
+            "x": 0,
+            "y": 52
+        },
+        "85": {
+            "h": 7,
+            "w": 18,
+            "x": 0,
+            "y": 34
+        },
+        "86": {
+            "h": 6,
+            "w": 12,
+            "x": 12,
+            "y": 52
+        }
+    },
+    "settings": {
+        "defaultTimeframe": {
+            "enabled": false,
+            "value": {
+                "from": "now()-35d",
+                "to": "now()"
+            }
+        }
+    },
+    "tiles": {
+        "58": {
+            "davis": {
+                "davisVisualization": {
+                    "isAvailable": true
+                },
+                "enabled": false
+            },
+            "query": "data json:$ratecard_data",
+            "querySettings": {
+                "defaultSamplingRatio": 10,
+                "defaultScanLimitGbytes": 500,
+                "enableSampling": false,
+                "maxResultMegaBytes": 1,
+                "maxResultRecords": 1000
+            },
+            "title": "Used Ratecard (can be changed by editing the ratecard_data variable \u003c---)",
+            "type": "data",
+            "visualization": "table",
+            "visualizationSettings": {
+                "autoSelectVisualization": true,
+                "table": {
+                    "columnWidths": {
+                        "[\"key\"]": 243.3,
+                        "[\"name\"]": 270.9
+                    },
+                    "sortBy": [
+                        {
+                            "columnId": "[\"price\"]",
+                            "direction": "descending"
+                        }
+                    ]
+                }
+            }
+        },
+        "61": {
+            "davis": {
+                "davisVisualization": {
+                    "isAvailable": true
+                },
+                "enabled": false
+            },
+            "query": "fetch dt.system.events\n| lookup [\n   data json:$ratecard_data\n], sourceField:event.type, lookupField:name, prefix: \"ratecard.\"\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| dedup event.id\n// | filter in(event.type, {$Capability})\n// | fieldsAdd dt.cost.costcenter = coalesce(dt.cost.costcenter,  $unassigned)\n// | fieldsAdd dt.cost.product = coalesce(dt.cost.product, $unassigned)\n// | filter in(dt.cost.product, {$Product})\n// | filter in(dt.cost.costcenter, {$CostCenter})\n//| filter event.type == \"Full-Stack Monitoring\"\n| fieldsAdd usage = coalesce(\n    billed_host_hours, //Infra, F\u0026D\n    billed_gibibyte_hours, //Fullstack, Runtime Application Protection, Runtime Vulnerability Analytics\n    billed_bytes/(1024*1024*1024), //ALL I/R/Q\n    billed_invocations, //AppEngine\n    ingested_bytes/(1024*1024*1024),\n    1 //workflow count\n    )\n| fieldsAdd cost = usage * toDouble(ratecard.price)\n// | sort capability\n\n| summarize {`Usage`=sum(usage), `Total Cost`=sum(cost)}, by:{event.type}\n| sort `Total Cost` desc",
+            "querySettings": {
+                "defaultSamplingRatio": 10,
+                "defaultScanLimitGbytes": 500,
+                "enableSampling": false,
+                "maxResultMegaBytes": 1,
+                "maxResultRecords": 5000
+            },
+            "timeframe": {
+                "tileTimeframe": {
+                    "from": "now()-35d",
+                    "to": "now()"
+                },
+                "tileTimeframeEnabled": false
+            },
+            "title": "Estimated Costs aggregated - per capability",
+            "type": "data",
+            "visualization": "table",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "table": {
+                    "sortBy": [
+                        {
+                            "columnId": "[\"Total Cost\"]",
+                            "direction": "descending"
+                        }
+                    ]
+                },
+                "thresholds": [],
+                "unitsOverrides": [
+                    {
+                        "added": 1754648177039,
+                        "baseUnit": "one",
+                        "decimals": 0,
+                        "delimiter": false,
+                        "displayUnit": null,
+                        "identifier": "total_usage",
+                        "suffix": "",
+                        "unitCategory": "amount"
+                    },
+                    {
+                        "added": 1754648199722,
+                        "baseUnit": "usd",
+                        "decimals": 2,
+                        "delimiter": true,
+                        "displayUnit": null,
+                        "identifier": "total_cost",
+                        "suffix": "",
+                        "unitCategory": "currency"
+                    }
+                ]
+            }
+        },
+        "62": {
+            "davis": {
+                "davisVisualization": {
+                    "isAvailable": true
+                },
+                "enabled": false
+            },
+            "query": "fetch dt.system.events\n| lookup [ data json:$ratecard_data ], sourceField:event.type, lookupField:name, prefix:\"ratecard.\"\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| dedup event.id\n| fieldsAdd usage = coalesce(\n    billed_host_hours,\n    billed_gibibyte_hours,\n    billed_bytes / (1024*1024*1024),\n    billed_invocations,\n    ingested_bytes / (1024*1024*1024),\n    1\n  )\n| fieldsAdd cost = usage * toDouble(ratecard.price)\n| summarize\n    daily_cost = sum(cost),\n    budget_usd = (sum(0) + toDouble($budget)),\n  by:{day = bin(timestamp, 1d)}\n| sort day asc\n",
+            "querySettings": {
+                "defaultSamplingRatio": 10,
+                "defaultScanLimitGbytes": 500,
+                "enableSampling": false,
+                "maxResultMegaBytes": 1,
+                "maxResultRecords": 5000
+            },
+            "timeframe": {
+                "tileTimeframe": {
+                    "from": "2025-11-18T09:46:40.441Z",
+                    "to": "2025-12-23T09:46:40.441Z"
+                },
+                "tileTimeframeEnabled": false
+            },
+            "title": "Estimated Costs per day",
+            "type": "data",
+            "visualization": "barChart",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "chartSettings": {
+                    "fieldMapping": {
+                        "leftAxisValues": [
+                            "daily_cost"
+                        ]
+                    },
+                    "xAxisScaling": "analyzedTimeframe"
+                },
+                "dataMapping": {
+                    "displayedFields": [
+                        "cost_usd",
+                        "daily_cost",
+                        "budget_usd"
+                    ]
+                },
+                "legend": {
+                    "ratio": 16
+                },
+                "thresholds": [],
+                "unitsOverrides": [
+                    {
+                        "added": 1754648177039,
+                        "baseUnit": "one",
+                        "decimals": 0,
+                        "delimiter": false,
+                        "displayUnit": null,
+                        "identifier": "total_usage",
+                        "suffix": "",
+                        "unitCategory": "amount"
+                    },
+                    {
+                        "added": 1754648199722,
+                        "baseUnit": "usd",
+                        "decimals": 2,
+                        "delimiter": true,
+                        "displayUnit": null,
+                        "identifier": "total_cost",
+                        "suffix": "",
+                        "unitCategory": "currency"
+                    }
+                ]
+            }
+        },
+        "63": {
+            "davis": {
+                "davisVisualization": {
+                    "isAvailable": true
+                },
+                "enabled": false
+            },
+            "query": "fetch dt.system.events\n| lookup [ data json:$ratecard_data ], sourceField:event.type, lookupField:name, prefix:\"ratecard.\"\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| dedup event.id\n| fieldsAdd usage = coalesce(\n    billed_host_hours,\n    billed_gibibyte_hours,\n    billed_bytes / (1024*1024*1024),\n    billed_invocations,\n    ingested_bytes / (1024*1024*1024),\n    1\n  )\n| fieldsAdd cost = usage * toDouble(ratecard.price)\n| summarize total_cost = sum(cost), by:{capability = event.type, ts = bin(timestamp, 1d)}\n| sort ts asc\n",
+            "querySettings": {
+                "defaultSamplingRatio": 10,
+                "defaultScanLimitGbytes": 500,
+                "enableSampling": false,
+                "maxResultMegaBytes": 1,
+                "maxResultRecords": 5000
+            },
+            "timeframe": {
+                "tileTimeframe": {
+                    "from": "now()-30d",
+                    "to": "now()"
+                },
+                "tileTimeframeEnabled": false
+            },
+            "title": "Estimated Costs per day - per capability",
+            "type": "data",
+            "visualization": "barChart",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "chartSettings": {
+                    "fieldMapping": {
+                        "leftAxisValues": [
+                            "total_cost"
+                        ]
+                    },
+                    "xAxisScaling": "analyzedTimeframe"
+                },
+                "dataMapping": {
+                    "displayedFields": [
+                        "capability"
+                    ]
+                },
+                "legend": {
+                    "ratio": 20
+                },
+                "thresholds": [],
+                "unitsOverrides": [
+                    {
+                        "added": 1754648177039,
+                        "baseUnit": "one",
+                        "decimals": 0,
+                        "delimiter": false,
+                        "displayUnit": null,
+                        "identifier": "total_usage",
+                        "suffix": "",
+                        "unitCategory": "amount"
+                    },
+                    {
+                        "added": 1754648199722,
+                        "baseUnit": "usd",
+                        "decimals": 2,
+                        "delimiter": true,
+                        "displayUnit": null,
+                        "identifier": "total_cost",
+                        "suffix": "",
+                        "unitCategory": "currency"
+                    }
+                ]
+            }
+        },
+        "64": {
+            "content": "## Get started\n\nDynatrace is reporting DPS usage with BILLING_USAGE_EVENT. They are stored for 372 days (check respective bucket)\n\n1. Adjust the `ratecard_data` variable in this dashboard, based on the rate cards of your DPS. You can check the rate cards of your DPS under `Account Management \u003e Subscription \u003e Pricing`. If you don't change them, the cost reflected could be higher from what your organization actually is billed. \n2. Adjust the `budget` variable in this dashboard, based on the total DPS budget commited. You can check the total budget under `Account Management \u003e Overview`\n\nIf you're planning to use this dashboard in your tenant, make sure to make it private and share it with the right individuals, since sensitive information such as budget \u0026 rate cards will be visible",
+            "type": "markdown"
+        },
+        "65": {
+            "content": "### Overall DPS Consumption",
+            "type": "markdown"
+        },
+        "66": {
+            "content": "### DPS Consumption by Capability",
+            "type": "markdown"
+        },
+        "67": {
+            "content": "### Unallocated Costs",
+            "type": "markdown"
+        },
+        "68": {
+            "content": "### DPS Consumption by costcenter - Chargeback",
+            "type": "markdown"
+        },
+        "69": {
+            "content": "---",
+            "type": "markdown"
+        },
+        "70": {
+            "content": "---",
+            "type": "markdown"
+        },
+        "72": {
+            "content": "---",
+            "type": "markdown"
+        },
+        "74": {
+            "content": "We need to ensure all events have dt.cost.costcenter \u0026 dt.cost.product \nThere are 2 types of unallocated states:\n- not-allowlisted: the cost center hasn't been configured under Account Management\n- unassigned: dt.cost.costcenter \u0026 dt.cost.product hasn't been set for the signal\n\nYour goal is to reach 100% of allocation",
+            "type": "markdown"
+        },
+        "75": {
+            "davis": {
+                "davisVisualization": {
+                    "isAvailable": true
+                },
+                "enabled": false
+            },
+            "query": "fetch dt.system.events\n| lookup [ data json:$ratecard_data ], sourceField:event.type, lookupField:name, prefix:\"ratecard.\"\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| dedup event.id\n| fieldsAdd usage = coalesce(\n    billed_host_hours,\n    billed_gibibyte_hours,\n    billed_bytes / (1024*1024*1024),\n    billed_invocations,\n    ingested_bytes / (1024*1024*1024),\n    1\n  )\n| fieldsAdd cost = usage * toDouble(ratecard.price)\n| summarize daily_cost = sum(cost), by:{day = bin(timestamp, 1d)}\n| sort day asc\n| makeTimeseries\n    daily_cost_ts = sum(daily_cost, default: 0),\n    budget_usd_ts = max(toDouble($budget), default: toDouble($budget)),\n    time: day,\n    interval: 1d\n| fieldsAdd cumulative_cost = arrayCumulativeSum(daily_cost_ts)\n| fieldsAdd cumulative_budget = arrayCumulativeSum(budget_usd_ts)",
+            "querySettings": {
+                "defaultSamplingRatio": 10,
+                "defaultScanLimitGbytes": 500,
+                "enableSampling": false,
+                "maxResultMegaBytes": 1,
+                "maxResultRecords": 5000
+            },
+            "timeframe": {
+                "tileTimeframe": {
+                    "from": "2025-11-18T09:46:40.441Z",
+                    "to": "2025-12-23T09:46:40.441Z"
+                },
+                "tileTimeframeEnabled": false
+            },
+            "title": "DPS Annual Commitment vs Cumulative Costs",
+            "type": "data",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "chartSettings": {
+                    "fieldMapping": {
+                        "leftAxisValues": [
+                            "cumulative_cost",
+                            "budget_usd_ts"
+                        ]
+                    },
+                    "gapPolicy": "connect",
+                    "xAxisScaling": "analyzedTimeframe"
+                },
+                "dataMapping": {
+                    "displayedFields": [
+                        "daily_cost",
+                        "cumulative_cost",
+                        "daily_cost_ts"
+                    ]
+                },
+                "legend": {
+                    "ratio": 18
+                },
+                "thresholds": [],
+                "unitsOverrides": [
+                    {
+                        "added": 1754648177039,
+                        "baseUnit": "one",
+                        "decimals": 0,
+                        "delimiter": false,
+                        "displayUnit": null,
+                        "identifier": "total_usage",
+                        "suffix": "",
+                        "unitCategory": "amount"
+                    },
+                    {
+                        "added": 1754648199722,
+                        "baseUnit": "usd",
+                        "decimals": 2,
+                        "delimiter": true,
+                        "displayUnit": null,
+                        "identifier": "total_cost",
+                        "suffix": "",
+                        "unitCategory": "currency"
+                    }
+                ]
+            }
+        },
+        "78": {
+            "davis": {
+                "davisVisualization": {
+                    "isAvailable": true
+                },
+                "enabled": false
+            },
+            "query": "fetch spans\n| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service\n| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,\n         dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service, span.id\n| summarize count = count(), by:{dt.cost.costcenter}",
+            "querySettings": {
+                "defaultSamplingRatio": 10,
+                "defaultScanLimitGbytes": 500,
+                "enableSampling": false,
+                "maxResultMegaBytes": 1,
+                "maxResultRecords": 1000
+            },
+            "title": "All costcenter",
+            "type": "data",
+            "visualization": "table",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "table": {
+                    "columnOrder": [
+                        "[\"dt.cost.costcenter\"]",
+                        "[\"count\"]"
+                    ],
+                    "columnWidths": {
+                        "[\"event.type\"]": 312,
+                        "[\"total_cost\"]": 226
+                    },
+                    "sortBy": [
+                        {
+                            "columnId": "[\"dt.cost.costcenter\"]",
+                            "direction": "ascending"
+                        }
+                    ]
+                },
+                "thresholds": [],
+                "unitsOverrides": [
+                    {
+                        "added": 1754648177039,
+                        "baseUnit": "one",
+                        "decimals": 0,
+                        "delimiter": false,
+                        "displayUnit": null,
+                        "identifier": "total_usage",
+                        "suffix": "",
+                        "unitCategory": "amount"
+                    },
+                    {
+                        "added": 1754648199722,
+                        "baseUnit": "usd",
+                        "decimals": 2,
+                        "delimiter": true,
+                        "displayUnit": null,
+                        "identifier": "total_cost",
+                        "suffix": "",
+                        "unitCategory": "currency"
+                    }
+                ]
+            }
+        },
+        "79": {
+            "davis": {
+                "davisVisualization": {
+                    "isAvailable": true
+                },
+                "enabled": false
+            },
+            "query": "fetch dt.system.events\n| lookup [ data json:$ratecard_data ], sourceField:event.type, lookupField:name, prefix:\"ratecard.\"\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n\n| expand costcenter = dt.cost.costcenter\n| fieldsFlatten costcenter\n\n| fieldsAdd usage = coalesce(\n    billed_host_hours,\n    billed_gibibyte_hours,\n    billed_bytes / (1024*1024*1024),\n    billed_invocations,\n    ingested_bytes / (1024*1024*1024),\n    1\n  )\n| fieldsAdd cost = usage * toDouble(ratecard.price)\n| fieldsAdd cost_center = coalesce(costcenter.key, dt.cost.costcenter, \"unassigned\")\n| fieldsAdd entity_associated = coalesce(\n    dt.entity.host,\n    dt.entity.kubernetes_cluster,\n    dt.entity.application,\n    \"none\"\n  )\n\n// ✅ only show “unassigned” or “not-allowlisted”\n| filter cost_center != \"unassigned\" AND cost_center != \"not-allowlisted\"\n\n| makeTimeseries total_cost = sum(cost),\n    by: { ratecard.name, cost_center, entity_associated },\n    interval: 15m\n",
+            "querySettings": {
+                "defaultSamplingRatio": 10,
+                "defaultScanLimitGbytes": 500,
+                "enableSampling": false,
+                "maxResultMegaBytes": 1,
+                "maxResultRecords": 1000
+            },
+            "timeframe": {
+                "tileTimeframe": {
+                    "from": "now()-24h",
+                    "to": "now()"
+                },
+                "tileTimeframeEnabled": false
+            },
+            "title": "✅ costcenter 15min resolution ASSIGNED",
+            "type": "data",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "legend": {
+                    "ratio": 21
+                },
+                "thresholds": [
+                    {
+                        "field": "",
+                        "id": 1,
+                        "isEnabled": true,
+                        "rules": [
+                            {
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                                },
+                                "comparator": "≥",
+                                "id": 0,
+                                "label": ""
+                            },
+                            {
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                                },
+                                "comparator": "≥",
+                                "id": 1,
+                                "label": ""
+                            },
+                            {
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                                },
+                                "comparator": "≥",
+                                "id": 2,
+                                "label": ""
+                            }
+                        ],
+                        "title": ""
+                    }
+                ],
+                "unitsOverrides": [
+                    {
+                        "added": 1754648199722,
+                        "baseUnit": "usd",
+                        "decimals": 2,
+                        "delimiter": true,
+                        "displayUnit": null,
+                        "identifier": "total_cost",
+                        "suffix": "",
+                        "unitCategory": "currency"
+                    }
+                ]
+            }
+        },
+        "80": {
+            "content": "#### 4. Validate with last event if costcenter unallocation dissapear",
+            "type": "markdown"
+        },
+        "81": {
+            "content": "#### 3. Fix not-allowlisted by adding the (if applies) to account management",
+            "type": "markdown"
+        },
+        "82": {
+            "davis": {
+                "davisVisualization": {
+                    "isAvailable": true
+                },
+                "enabled": false
+            },
+            "query": "fetch dt.system.events\n| lookup [ data json:$ratecard_data ], sourceField:event.type, lookupField:name, prefix:\"ratecard.\"\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n\n// (recommended) do NOT dedup event.id for usage/cost over time\n\n| expand costcenter = dt.cost.costcenter\n| fieldsFlatten costcenter\n\n| fieldsAdd usage = coalesce(\n    billed_host_hours,\n    billed_gibibyte_hours,\n    billed_bytes / (1024*1024*1024),\n    billed_invocations,\n    ingested_bytes / (1024*1024*1024),\n    1\n  )\n| fieldsAdd cost = usage * toDouble(ratecard.price)\n| fieldsAdd cost_center = coalesce(costcenter.key, dt.cost.costcenter, \"unassigned\")\n| fieldsAdd entity_associated = coalesce(\n    dt.entity.host,\n    dt.entity.kubernetes_cluster,\n    dt.entity.application,\n    \"none\"\n  )\n\n// ✅ only show “unassigned” or “not-allowlisted”\n| filter cost_center == \"unassigned\" OR cost_center == \"not-allowlisted\"\n\n| makeTimeseries total_cost = sum(cost),\n    by: { ratecard.name, cost_center, entity_associated },\n    interval: 15m\n",
+            "querySettings": {
+                "defaultSamplingRatio": 10,
+                "defaultScanLimitGbytes": 500,
+                "enableSampling": false,
+                "maxResultMegaBytes": 1,
+                "maxResultRecords": 1000
+            },
+            "timeframe": {
+                "tileTimeframe": {
+                    "from": "now()-24h",
+                    "to": "now()"
+                },
+                "tileTimeframeEnabled": false
+            },
+            "title": "⚠️ costcenter 15min resolution “unassigned” or “not-allowlisted”",
+            "type": "data",
+            "visualization": "lineChart",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "legend": {
+                    "ratio": 21
+                },
+                "thresholds": [
+                    {
+                        "field": "",
+                        "id": 1,
+                        "isEnabled": true,
+                        "rules": [
+                            {
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-status-ideal-default, #2f6862)"
+                                },
+                                "comparator": "≥",
+                                "id": 0,
+                                "label": ""
+                            },
+                            {
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-status-warning-default, #eea53c)"
+                                },
+                                "comparator": "≥",
+                                "id": 1,
+                                "label": ""
+                            },
+                            {
+                                "color": {
+                                    "Default": "var(--dt-colors-charts-status-critical-default, #c62239)"
+                                },
+                                "comparator": "≥",
+                                "id": 2,
+                                "label": ""
+                            }
+                        ],
+                        "title": ""
+                    }
+                ],
+                "unitsOverrides": [
+                    {
+                        "added": 1754648199722,
+                        "baseUnit": "usd",
+                        "decimals": 2,
+                        "delimiter": true,
+                        "displayUnit": null,
+                        "identifier": "total_cost",
+                        "suffix": "",
+                        "unitCategory": "currency"
+                    }
+                ]
+            }
+        },
+        "84": {
+            "davis": {
+                "davisVisualization": {
+                    "isAvailable": true
+                },
+                "enabled": false
+            },
+            "query": "fetch dt.system.events\n| lookup [ data json:$ratecard_data ], sourceField:event.type, lookupField:name, prefix:\"ratecard.\"\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| dedup event.id\n\n// ✅ expand into a new field (don’t overwrite the original)\n| expand costcenter = dt.cost.costcenter\n\n// ✅ flatten the record so key becomes addressable\n| fieldsFlatten costcenter\n\n// calculate usage\n| fieldsAdd usage = coalesce(\n    billed_host_hours,\n    billed_gibibyte_hours,\n    billed_bytes / (1024*1024*1024),\n    billed_invocations,\n    ingested_bytes / (1024*1024*1024),\n    1\n  )\n  \n\n| fieldsAdd cost = usage * toDouble(ratecard.price)\n| fieldsAdd cost_center = coalesce(costcenter.key, dt.cost.costcenter, \"unassigned\")\n| fieldsAdd entity_associated = coalesce(\n    dt.entity.host,\n    dt.entity.kubernetes_cluster,\n    dt.entity.application,\n    \"none\"\n  )\n  \n| summarize\n    total_cost = sum(cost),    \n  by: {cost_center}\n| sort total_cost desc",
+            "querySettings": {
+                "defaultSamplingRatio": 10,
+                "defaultScanLimitGbytes": 500,
+                "enableSampling": false,
+                "maxResultMegaBytes": 1,
+                "maxResultRecords": 1000
+            },
+            "timeframe": {
+                "tileTimeframe": {
+                    "from": "now()-7d",
+                    "to": "now()"
+                },
+                "tileTimeframeEnabled": true
+            },
+            "title": "most expensive unallocated costcenter - last 7 days",
+            "type": "data",
+            "visualization": "pieChart",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "chartSettings": {
+                    "categoryOverrides": {
+                        "ecommerce-apps": {
+                            "added": 1402649.299999997,
+                            "color": {
+                                "Default": "var(--dt-colors-charts-categorical-color-09-default, #649438)"
+                            }
+                        },
+                        "not-allowlisted": {
+                            "added": 1398713.299999997,
+                            "color": {
+                                "Default": "var(--dt-colors-charts-apdex-fair-default, #a9780f)"
+                            }
+                        },
+                        "unassigned": {
+                            "added": 1137175.200000003,
+                            "color": {
+                                "Default": "var(--dt-colors-charts-apdex-poor-default, #d56b1a)"
+                            }
+                        }
+                    }
+                },
+                "legend": {
+                    "ratio": 24
+                },
+                "thresholds": [],
+                "unitsOverrides": [
+                    {
+                        "added": 1754648177039,
+                        "baseUnit": "one",
+                        "decimals": 0,
+                        "delimiter": false,
+                        "displayUnit": null,
+                        "identifier": "total_usage",
+                        "suffix": "",
+                        "unitCategory": "amount"
+                    },
+                    {
+                        "added": 1754648199722,
+                        "baseUnit": "usd",
+                        "decimals": 2,
+                        "delimiter": true,
+                        "displayUnit": null,
+                        "identifier": "total_cost",
+                        "suffix": "",
+                        "unitCategory": "currency"
+                    }
+                ]
+            }
+        },
+        "85": {
+            "davis": {
+                "davisVisualization": {
+                    "isAvailable": true
+                },
+                "enabled": false
+            },
+            "query": "fetch dt.system.events\n| lookup [ data json:$ratecard_data ], sourceField:event.type, lookupField:name, prefix:\"ratecard.\"\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| dedup event.id\n\n// ✅ expand into a new field (don’t overwrite the original)\n| expand costcenter = dt.cost.costcenter\n\n// ✅ flatten the record so key becomes addressable\n| fieldsFlatten costcenter\n\n// calculate usage\n| fieldsAdd usage = coalesce(\n    billed_host_hours,\n    billed_gibibyte_hours,\n    billed_bytes / (1024*1024*1024),\n    billed_invocations,\n    ingested_bytes / (1024*1024*1024),\n    1\n  )\n  \n\n| fieldsAdd cost = usage * toDouble(ratecard.price)\n| fieldsAdd cost_center = coalesce(costcenter.key, dt.cost.costcenter, \"unassigned\")\n| fieldsAdd entity_associated = coalesce(\n    dt.entity.host,\n    dt.entity.kubernetes_cluster,\n    dt.entity.application,\n    \"none\"\n  )\n  \n| summarize\n    total_cost = sum(cost),    \n  by: {ratecard.name, cost_center, entity_associated}\n| sort total_cost desc",
+            "querySettings": {
+                "defaultSamplingRatio": 10,
+                "defaultScanLimitGbytes": 500,
+                "enableSampling": false,
+                "maxResultMegaBytes": 1,
+                "maxResultRecords": 1000
+            },
+            "title": "most expensive unallocated costcenter",
+            "type": "data",
+            "visualization": "table",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "table": {
+                    "columnOrder": [
+                        "[\"ratecard.name\"]",
+                        "[\"cost_center\"]",
+                        "[\"entity_associated\"]",
+                        "[\"total_cost\"]"
+                    ],
+                    "columnWidths": {
+                        "[\"entity_associated\"]": 145.5,
+                        "[\"event.type\"]": 312,
+                        "[\"ratecard.name\"]": 298.9,
+                        "[\"total_cost\"]": 105
+                    },
+                    "sortBy": [
+                        {
+                            "columnId": "[\"total_cost\"]",
+                            "direction": "descending"
+                        }
+                    ]
+                },
+                "thresholds": [],
+                "unitsOverrides": [
+                    {
+                        "added": 1754648177039,
+                        "baseUnit": "one",
+                        "decimals": 0,
+                        "delimiter": false,
+                        "displayUnit": null,
+                        "identifier": "total_usage",
+                        "suffix": "",
+                        "unitCategory": "amount"
+                    },
+                    {
+                        "added": 1754648199722,
+                        "baseUnit": "usd",
+                        "decimals": 2,
+                        "delimiter": true,
+                        "displayUnit": null,
+                        "identifier": "total_cost",
+                        "suffix": "",
+                        "unitCategory": "currency"
+                    }
+                ]
+            }
+        },
+        "86": {
+            "davis": {
+                "davisVisualization": {
+                    "isAvailable": true
+                },
+                "enabled": false
+            },
+            "query": "fetch dt.system.events\n| lookup [ data json:$ratecard_data ], sourceField:event.type, lookupField:name, prefix:\"ratecard.\"\n| filter event.kind == \"BILLING_USAGE_EVENT\"\n| dedup event.id\n\n// ✅ expand into a new field (don’t overwrite the original)\n| expand costcenter = dt.cost.costcenter\n\n// ✅ flatten the record so key becomes addressable\n| fieldsFlatten costcenter\n\n// calculate usage\n| fieldsAdd usage = coalesce(\n    billed_host_hours,\n    billed_gibibyte_hours,\n    billed_bytes / (1024*1024*1024),\n    billed_invocations,\n    ingested_bytes / (1024*1024*1024),\n    1\n  )\n  \n\n| fieldsAdd cost = usage * toDouble(ratecard.price)\n| fieldsAdd cost_center = coalesce(costcenter.key, dt.cost.costcenter, \"unassigned\")\n| fieldsAdd entity_associated = coalesce(\n    dt.entity.host,\n    dt.entity.kubernetes_cluster,\n    dt.entity.application,\n    \"none\"\n  )\n  \n| summarize\n    total_cost = sum(cost),    \n  by: {cost_center}\n| sort total_cost desc",
+            "querySettings": {
+                "defaultSamplingRatio": 10,
+                "defaultScanLimitGbytes": 500,
+                "enableSampling": false,
+                "maxResultMegaBytes": 1,
+                "maxResultRecords": 1000
+            },
+            "timeframe": {
+                "tileTimeframe": {
+                    "from": "now()-30m",
+                    "to": "now()"
+                },
+                "tileTimeframeEnabled": true
+            },
+            "title": "allocation last 30min",
+            "type": "data",
+            "visualization": "pieChart",
+            "visualizationSettings": {
+                "autoSelectVisualization": false,
+                "chartSettings": {
+                    "categoryOverrides": {
+                        "ecommerce-apps": {
+                            "added": 1388168.799999997,
+                            "color": {
+                                "Default": "var(--dt-colors-charts-apdex-excellent-default, #2a7453)"
+                            }
+                        },
+                        "not-allowlisted": {
+                            "added": 1378721.200000003,
+                            "color": {
+                                "Default": "var(--dt-colors-charts-apdex-fair-default, #a9780f)"
+                            }
+                        },
+                        "unassigned": {
+                            "added": 1369094,
+                            "color": {
+                                "Default": "var(--dt-colors-charts-loglevel-severe-default, #d56b1a)"
+                            }
+                        }
+                    }
+                },
+                "legend": {
+                    "ratio": 24
+                },
+                "thresholds": [],
+                "unitsOverrides": [
+                    {
+                        "added": 1754648177039,
+                        "baseUnit": "one",
+                        "decimals": 0,
+                        "delimiter": false,
+                        "displayUnit": null,
+                        "identifier": "total_usage",
+                        "suffix": "",
+                        "unitCategory": "amount"
+                    },
+                    {
+                        "added": 1754648199722,
+                        "baseUnit": "usd",
+                        "decimals": 2,
+                        "delimiter": true,
+                        "displayUnit": null,
+                        "identifier": "total_cost",
+                        "suffix": "",
+                        "unitCategory": "currency"
+                    }
+                ]
+            }
+        }
+    },
+    "variables": [
+        {
+            "editable": true,
+            "input": "/*\n* This will run JavaScript in the DYNATRACE\n* serverless environment.\n* To generate variable options return string array.\n*/\nexport default async function () {\n  return `[\n  {\"key\":\"AUTOMATIONS\",\"name\":\"Automation Workflow\",\"price\":\"0.13\",\"currencyCode\":\"USD\"},\n  {\"key\":\"BUSINESS_EVENTS_ANALYZE\",\"name\":\"Events - Query\",\"price\":\"0.0035\",\"currencyCode\":\"USD\"},\n  {\"key\":\"BUSINESS_EVENTS_INGEST\",\"name\":\"Events - Ingest \u0026 Process\",\"price\":\"0.2\",\"currencyCode\":\"USD\"},\n  {\"key\":\"BUSINESS_EVENTS_RETAIN\",\"name\":\"Events - Retain\",\"price\":\"0.0007\",\"currencyCode\":\"USD\"},\n  {\"key\":\"COMPUTE\",\"name\":\"AppEngine Functions - Small\",\"price\":\"0.001\",\"currencyCode\":\"USD\"},\n  {\"key\":\"EVENTS\",\"name\":\"Custom Events Classic\",\"price\":\"0.000002\",\"currencyCode\":\"USD\"},\n  {\"key\":\"FOUNDATION_AND_DISCOVERY\",\"name\":\"Foundation \u0026 Discovery\",\"price\":\"0.01\",\"currencyCode\":\"USD\"},\n  {\"key\":\"FULLSTACK_MONITORING\",\"name\":\"Full-Stack Monitoring\",\"price\":\"0.01\",\"currencyCode\":\"USD\"},\n  {\"key\":\"INFRASTRUCTURE_MONITORING\",\"name\":\"Infrastructure Monitoring\",\"price\":\"0.04\",\"currencyCode\":\"USD\"},\n  {\"key\":\"KUBERNETES_OPERATIONS\",\"name\":\"Kubernetes Platform Monitoring\",\"price\":\"0.002\",\"currencyCode\":\"USD\"},\n  {\"key\":\"LOG_MANAGEMENT_ANALYZE\",\"name\":\"Log Management \u0026 Analytics - Query\",\"price\":\"0.0035\",\"currencyCode\":\"USD\"},\n  {\"key\":\"LOG_MANAGEMENT_INGEST\",\"name\":\"Log Management \u0026 Analytics - Ingest \u0026 Process\",\"price\":\"0.2\",\"currencyCode\":\"USD\"},\n  {\"key\":\"LOG_MANAGEMENT_RETAIN\",\"name\":\"Log Management \u0026 Analytics - Retain\",\"price\":\"0.0007\",\"currencyCode\":\"USD\"},\n  {\"key\":\"LOGS\",\"name\":\"Log Monitoring Classic\",\"price\":\"0.000001\",\"currencyCode\":\"USD\"},\n  {\"key\":\"MAINFRAME_MONITORING\",\"name\":\"Mainframe Monitoring\",\"price\":\"0.1\",\"currencyCode\":\"USD\"},\n  {\"key\":\"METRICS\",\"name\":\"Custom Metrics Classic\",\"price\":\"0.000002\",\"currencyCode\":\"USD\"},\n  {\"key\":\"RUNTIME_APPLICATION_PROTECTION\",\"name\":\"Runtime Application Protection\",\"price\":\"0.00225\",\"currencyCode\":\"USD\"},\n  {\"key\":\"RUNTIME_VULNERABILITY_ANALYTICS\",\"name\":\"Runtime Vulnerability Analytics\",\"price\":\"0.00225\",\"currencyCode\":\"USD\"},\n  {\"key\":\"SECURITY_POSTURE_MANAGEMENT\",\"name\":\"Security Posture Management\",\"price\":\"0\",\"currencyCode\":\"USD\"},\n  {\"key\":\"SERVERLESS\",\"name\":\"Serverless Functions Classic\",\"price\":\"0.000004\",\"currencyCode\":\"USD\"},\n  {\"key\":\"SYNTHETIC_MONITORING_BROWSER\",\"name\":\"Browser Monitor or Clickpath\",\"price\":\"0.009\",\"currencyCode\":\"USD\"},\n  {\"key\":\"SYNTHETIC_MONITORING_HTTP\",\"name\":\"HTTP Monitor\",\"price\":\"0.001\",\"currencyCode\":\"USD\"},\n  {\"key\":\"SYNTHETIC_MONITORING_THIRD_PARTY\",\"name\":\"Third-Party Synthetic API Ingestion\",\"price\":\"0.001\",\"currencyCode\":\"USD\"},\n  {\"key\":\"TRACE_INGEST\",\"name\":\"Traces - Ingest \\\u0026 Process\",\"price\":\"0.2\",\"currencyCode\":\"USD\"},\n  {\"key\":\"TRACE_QUERY\",\"name\":\"Traces - Query\",\"price\":\"0.0035\",\"currencyCode\":\"USD\"},\n  {\"key\":\"TRACE_RETAIN\",\"name\":\"Traces - Retain\",\"price\":\"0.0007\",\"currencyCode\":\"USD\"},\n  {\"key\":\"TRACES\",\"name\":\"Custom Traces Classic\",\"price\":\"0.0000014\",\"currencyCode\":\"USD\"},\n  {\"key\":\"USER_SESSION_PROPERTIES\",\"name\":\"Real User Monitoring Property\",\"price\":\"0.0001\",\"currencyCode\":\"USD\"},\n  {\"key\":\"USER_SESSION_REPLAYS\",\"name\":\"Real User Monitoring with Session Replay\",\"price\":\"0.009\",\"currencyCode\":\"USD\"},\n  {\"key\":\"USER_SESSIONS\",\"name\":\"Real User Monitoring\",\"price\":\"0.00225\",\"currencyCode\":\"USD\"}\n]`\n}",
+            "key": "ratecard_data",
+            "multiple": false,
+            "type": "code",
+            "version": 2,
+            "visible": false
+        },
+        {
+            "defaultValue": "100",
+            "editable": true,
+            "key": "budget",
+            "type": "text",
+            "version": 2,
+            "visible": false
+        }
+    ],
+    "version": 20
+}

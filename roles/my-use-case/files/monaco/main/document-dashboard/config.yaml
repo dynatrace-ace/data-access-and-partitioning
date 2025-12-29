@@ -1,4 +1,14 @@
 configs:
+- id: a9e02149-7822-4242-b2b3-07732bcbb86e
+  config:
+    name: dps-overview
+    template: a9e02149-7822-4242-b2b3-07732bcbb86e.json
+    skip: false
+    originObjectId: a9e02149-7822-4242-b2b3-07732bcbb86e
+  type:
+    document:
+      kind: dashboard
+      private: false
 - id: 086a574d-a6fe-4d8d-9506-1293305cc018
   config:
     name: DPS Cost Allocation Overview Dashboard
