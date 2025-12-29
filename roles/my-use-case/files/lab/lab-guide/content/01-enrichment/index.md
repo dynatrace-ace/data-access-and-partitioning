@@ -52,17 +52,22 @@ cd /opt/easytrade && docker compose restart
 
 ```shell
 fetch spans
-| fields trace.id, span.id, dt.security_context, dt.cost.costcenter, dt.cost.product
+| fields trace.id, span.id, dt.security_context, dt.cost.costcenter, dt.cost.product, primary_tags.application, primary_tags.environment, primary_tags.platform
 ```
 
 ![](../../assets/images/spansenriched.png)
 
+If you have hundred of host groups and you would like to automate the process, contact us and we can provide you some some scripts to help!
 
+### Shared Infrastructure
 
-You could easily start implementing this in your classic environments to slice & dice the data, to be ready for 3rd Gen.
+If you've shared infrastructure, and you need different properties for the apps running on the hosts, you can define them also as environment variables, or in a future release, Dynatrace will allow to configure source enrichment directly from the tenant
 
-If you need further granularity, e.g. at process level, you can define the properties as environment variables for the process running on it. E.g. for a container:
+Environment variables match with a declarative practice for whoever owns the resource, in order to find them in Dynatrace. The counterpart is the manual labor, in that case, you can rely on Dynatrace configs otherwise.
 
+Example: 
+
+```yaml
 broker-service:
     <<: *default-service
     image: ${REGISTRY}/broker-service:${TAG}
@@ -78,16 +83,17 @@ broker-service:
       <<: *feature-flag-service-env
       PROXY_PREFIX: broker-service
       MSSQL_CONNECTIONSTRING: *dotnet-connection-string
-      OTEL_RESOURCE_ATTRIBUTES: "dt.security_context=brokerservice,dt.cost.costcenter=brokerservice,dt.cost.product=brokerservice, primary_tags.team=beta, primary_tags.stage=prod"
       DT_TAGS: "dt.security_context=brokerservice,dt.cost.costcenter=brokerservice,dt.cost.product=brokerservice, primary_tags.team=beta, primary_tags.stage=prod"
+```
 
-If you have hundred of host groups and you would like to automate the process, contact us and we can provide you some some scripts to help!
+![](../../assets/images/envvar.png)
+
+### Other Technologies?
 
 If you're running in K8s or Cloud environments, there are special enrichment mechanisms that will grab the metadata directly from the source, which could reduce efforts!. 
-- https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/guides/metadata-automation/k8s-metadata-telemetry-enrichment
-- https://docs.dynatrace.com/docs/whats-new/preview-releases#new-cloud-aws
+- [K8s](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/guides/metadata-automation/k8s-metadata-telemetry-enrichment)
+- [Cloud](https://docs.dynatrace.com/docs/whats-new/preview-releases#new-cloud-aws)
 
+### Closing Up
 
-## Close Up
-
-Now that our data in enriched with the right fields, we can proceed to configure Segments. Segments will replace the Filtering capability of Management Zones
+Now that our data in enriched with the right fields, we can proceed to configure Segments. Segments will replace the filtering capability of Management Zones
