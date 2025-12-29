@@ -23,34 +23,41 @@ There are special "fields" we recommend to use in Segments that are called Prima
 
 ![](../../assets/images/addproperty.png)
 
-2. Defining host groups usually was a practice to slice and dice our environment based on certain criteria, let's adapt those properties for 3rd Gen, let's define the following host properties
-    - dt.security_context: easytrade
-    - dt.cost.costcenter: ecommerce-apps
-    - dt.cost.product: easytrade
-    - primary_tags.environment: staging
-    - primary_tags.team: alpha
-    - primary_tags.app: easytrade
-    - primary_tags.platform: onPremDedicated
+3. Fill the configuration with all properties, and apply changes
 
-3. Wait a few minutes
+![](../../assets/images/applychanges.png)
 
-SCREENSHOT
+4. Wait a few minutes
 
-4. See how works automatically for logs
+![](../../assets/images/waitminutes.png)
 
-SCREENSHOT
+5. Open a new Notebook, and run the following DQL in order to check if logs are enriched
+
+```shell
+fetch logs
+| fields timestamp, content, dt.security_context, dt.cost.costcenter, dt.cost.product, primary_tags.application, primary_tags.environment, primary_tags.platform
+```
+
+![](../../assets/images/logsenriched.png)
 
 5. For traces, we need to restart the app. Restart easytrade with the following command
 
-COMMAND
+```shell
+cd /opt/easytrade && docker compose restart
+```
 
-SCREENSHOT
+> Note: At the time of the lab, primary tags were not available. This capability is planned and will be introduced later.
 
 6. Check how Enrichment works for traces
 
-SCREENSHOT
+```shell
+fetch spans
+| fields trace.id, span.id, dt.security_context, dt.cost.costcenter, dt.cost.product
+```
 
-## Close Up
+![](../../assets/images/spansenriched.png)
+
+
 
 You could easily start implementing this in your classic environments to slice & dice the data, to be ready for 3rd Gen.
 
@@ -79,3 +86,8 @@ If you have hundred of host groups and you would like to automate the process, c
 If you're running in K8s or Cloud environments, there are special enrichment mechanisms that will grab the metadata directly from the source, which could reduce efforts!. 
 - https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/guides/metadata-automation/k8s-metadata-telemetry-enrichment
 - https://docs.dynatrace.com/docs/whats-new/preview-releases#new-cloud-aws
+
+
+## Close Up
+
+Now that our data in enriched with the right fields, we can proceed to configure Segments. Segments will replace the Filtering capability of Management Zones
