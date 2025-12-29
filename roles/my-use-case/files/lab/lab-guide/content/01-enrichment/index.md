@@ -94,6 +94,10 @@ If you're running in K8s or Cloud environments, there are special enrichment mec
 - [K8s](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/guides/metadata-automation/k8s-metadata-telemetry-enrichment)
 - [Cloud](https://docs.dynatrace.com/docs/whats-new/preview-releases#new-cloud-aws)
 
+### Reference
+
+Reference to Dynatrace public documentation [here](https://docs.dynatrace.com/docs/manage/segments/upgrade-guide-segments)
+
 ### Closing Up
 
 Now that our data in enriched with the right fields, we can proceed to configure Segments. Segments will replace the filtering capability of Management Zones
