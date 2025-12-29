@@ -1,18 +1,16 @@
 ## Intro
 
-During this lab, we will execute an upgrade for one of the teams, currently using Dynatrace classic, to the Dynatrace 3rd Generation Platform.
-
-The team was relying in the following classic features:
+During this lab, we will help a team to upgrade their Dynatrace Observability Solution. The team has configured their Dynatrace tenant with:
 - Auto-tags & management zones for filtering & access control
 - classic dashboard
 - alerting
 
-We will upgrade their features to their equivalent in the 3rd Gen Platform
+They were using the platoform to find bugs, improve user experience and detect anomalies in their applications & infrastructure.
+
+The team wants to be able to keep the funcionalities as in classic, and enhance it with Grail capabilities. We will upgrade their features to their equivalent in the 3rd Gen Platform
 - Segments
 - Dashboards
 - Alerting
-
-We will validate that the team is able to achieve the same functionalities as before, and on each exercise, we will demonstrate the added value of the 3rd Gen Platform
 
 Once validated and approved, we will demonstrate how classic apps can be disabled, to simplify the navigation for end users, and avoid for them to be using the old screens.
 

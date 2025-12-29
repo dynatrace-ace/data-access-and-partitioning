@@ -27,8 +27,8 @@
 - include_tasks:
     file: docker.yml
 
-- include_role:
-    name: dt-oneagent-classic
+- include_tasks:
+    file: oneagent.yml
 
 - include_tasks:
    file: easy-trade-docker.yml
