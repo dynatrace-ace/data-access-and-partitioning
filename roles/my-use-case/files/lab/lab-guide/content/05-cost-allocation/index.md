@@ -2,7 +2,9 @@
 
 ### What is Cost Allocation?
 
-_Dynatrace Cost Allocation lets you allocate Dynatrace DPS usage to customer-defined cost centers, products, or both. This gives you a transparent and detailed account of each cost center’s Dynatrace expenditures, helping your organization optimize its budgets._ - [Dynatrace Docs](https://docs.dynatrace.com/docs/license/cost-allocation)
+Dynatrace Cost Allocation lets you allocate Dynatrace DPS usage to customer-defined cost centers, products, or both by enriching telemetry with two Grail attributes: `dt.cost.costcenter` and `dt.cost.product`. This gives you a transparent and detailed account of each cost center’s Dynatrace expenditures, helping your organization optimize its budgets. 
+
+You first define the `Allow Lists` for valid values at Account Management(we'll see this later in the lab), then ensure these attributes are attached as data is captured (via OneAgent on hosts/pods, ingestion APIs, or OpenPipeline) so that billing usage events in Grail carry your allocations. [Dynatrace Docs](https://docs.dynatrace.com/docs/license/cost-allocation)
 
 However, before allocating costs, let's start by understanding them.
 
@@ -62,11 +64,10 @@ Now that we've checked this on the account level, we need to make sure that cost
 
 ![](../../assets/images/addecomm.png)
 
-
-4. The biggest portion of unallocation is because of Full-Stack monitoring. In our case, we are using a Kubernetes deployment in a [CloudNativeFullStack](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/how-it-works/cloud-native-fullstack) monitoring mode. 
+4. The biggest portion of unallocated costs is because of Full-Stack monitoring. In our case, we are using a Kubernetes deployment in a [CloudNativeFullStack](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/how-it-works/cloud-native-fullstack) monitoring mode. 
 Dynatrace CloudNativeFullStack licensing is based on Host-level RAM, so we need to ensure that host properties are correctly set at the Host level in order for them to show up correctly on your chargeback report. These properties also align with the enrichment you completed earlier for cost allocation.
 
-> Important: If you want a split on the namespace level, what you are looking for is Full-Stack Monitoring which combines [Kubernetes Platform Monitoring and Application-only monitoring](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/deployment/application-observability). Licensing here is calculated based on pod-hours, plus the enrichment you’ve already applied in previous exercises.
+> Important Note: If you want a split Full-Stack monitoring costs on the namespace level, what you are looking for is Full-Stack Monitoring which combines [Kubernetes Platform Monitoring and Application-only monitoring](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/deployment/application-observability). Licensing here is calculated based on pod-hours, plus the enrichment you’ve already applied in previous exercises - Lab 2a and 2b.
 
 ![](../../assets/images/oanocost.png)
 > Unassigned properties
@@ -82,3 +83,10 @@ Dynatrace CloudNativeFullStack licensing is based on Host-level RAM, so we need 
 We can start allocating costs for ecommerce-app department
 
 ![](../../assets/images/allocated.png)
+
+7. What about Logs/Metrics/Events? 
+
+Telemetry data will already be enriched by the work you've done in Lab 2a and 2b. You can check your enrichment by fetching logs/metrics/spans and filtering for a `dt.cost.costcenter` or `dt.cost.product` of your choice.
+
+That's the end of Part 1! Any questions?
+
