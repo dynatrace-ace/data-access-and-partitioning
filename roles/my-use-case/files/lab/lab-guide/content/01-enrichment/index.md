@@ -6,9 +6,22 @@ The team are using auto-tags & management zones for filtering & access control i
 
 There are special "fields" we recommend to use in Segments that are called Primary Grail Field, Host Group is one of them. We will show you how to add other relevant Primary Grail Fields (and Tags) directly from the Dynatrace Environment.
 
-1. Go to Deployment Status, filter by the host group of the team `onPrem_easytrade_staging`, click on all the hosts (just 1 for us), and modify host properties
+1. Go to the `Deployment Status` page within the Dynatrace tenant, filter by the host group of the team (`onPrem_easytrade_staging`), click on all the hosts (just 1 for us), modify host properties, and click on `Run action`
 
-SCREENSHOT
+![](../../assets/images/deploymentstatus.png)
+
+2. Let's define additional properties, depending the use case:
+
+| Primary Grail Field / Tag | Assigned Value | Purpose / Intended Use |
+|---------------------------|----------------|------------------------|
+| dt.security_context       | easytrade      | data access            |
+| dt.cost.costcenter        | ecommerce-apps | cost allocation        |
+| dt.cost.product           | easytrade      | cost allocation        |
+| primary_tags.environment  | staging        | filtering              |
+| primary_tags.application  | easytrade      | filtering              |
+| primary_tags.platform     | onPrem         | filtering              |
+
+![](../../assets/images/addproperty.png)
 
 2. Defining host groups usually was a practice to slice and dice our environment based on certain criteria, let's adapt those properties for 3rd Gen, let's define the following host properties
     - dt.security_context: easytrade
