@@ -4,43 +4,29 @@
 
 _Dynatrace Cost Allocation lets you allocate Dynatrace DPS usage to customer-defined cost centers, products, or both. This gives you a transparent and detailed account of each cost center’s Dynatrace expenditures, helping your organization optimize its budgets._ - [Dynatrace Docs](https://docs.dynatrace.com/docs/license/cost-allocation)
 
-Before Allocating Costs, let's start by understanding them.
+However, before allocating costs, let's start by understanding them.
 
-### How DPS works?
+### How does DPS work?
 
-Dynatrace’s model is predictable and volume-centric, which often results in lower total cost for large log volumes, compared to other observability tools.
+DPS empowers organizations to consume any Dynatrace capability, at any volume, at any time, under a single, transparent commitment. It’s designed to eliminate friction, simplify operations, and scale effortlessly with your business.
+
+#### Features and benefits:
+- **Simplicity**: One contract, one rate card, one platform. No SKU juggling. No surprises.
+- **Scalability**: DPS scales with your needs—across modules, teams, and geographies.
+- **Frictionless use**: No pre-allocation. No per-user costs. No overage penalties. Just use what you need, when you need it.
+- **Transparency**: Real-time usage and cost visibility via Account Management and DPS APIs.
+- **Flexibility**: Supports all deployments, trials, and evolving pricing models.
+
+Each platform capability has a price point defined in the rate card that's included with your agreement. You will be able to see your DPS rate card under `Account Management > Subscription > Pricing` with Account Management permissions (there is no access to this during this lab). Example [default rate card](https://www.dynatrace.com/pricing/rate-card/).
+
+#### How does DPS consumption work?
+
+Dynatrace will consume based on the capabilities your organization is using, allowing your teams flexibility to focus on their needs. [Link](https://docs.dynatrace.com/docs/license/capabilities) to our documentation page.
+
+![](../../assets/images/capabilities.png)
 
 
-In this particular example, we will assign this whole host to only 1 product and that is "easytrade".
-
-What to do:
-1. Run the following command that collects your current Dynakube with its configuration and exports it into a yaml manifest locally:
-```bash
-kubectl get dynakube dynakube -n dynatrace -o yaml > dynakube-export.yaml
-```
-2. Use vi/vim/nano to open the file and go to line where arguments are set for cloudNativeFullStack. Set the following arguments:
-
-![](../../assets/images/dynakube-update-args.png)
-
-3. Exit and Save the manifest. Lastly, apply the updated manifest
-```bash
-kubectl apply -f dynakube-export.yaml
-```
-4. Wait a few mins and go to Infrastructure and Operations App and check your Node
-
-![](../../assets/images/dynakube-update-ui.png)
-
-Each platform capability has a price point defined in the rate card that's included with your agreement. You will be able to see your DPS rate cards under `Account Management > Subscription > Pricing` (no access to this during this lab). Example default rate card:
-
-![](../../assets/images/defaultratecard.png)
-
-#### How consumption works?
-
-Dynatrace will consume based on the capabilities your organization is using, allowing your teams flexibility to focus on their needs. [Link](https://docs.dynatrace.com/docs/license/capabilities) to doc.
-
-![](../../assets/images/logs-enrichment.png)
-
-#### Cloud VM example
+#### Real world example
 
 Let’s assume our application is running on an AWS EC2 VM. By installing the Dynatrace OneAgent, you will consume Full-stack monitoring (or Infrastructure Monitoring only if you choose not to enable APM).
 
@@ -50,6 +36,8 @@ This model spreads the charge across the capabilities you actually use. The adva
 
 ### Understand Costs
 
+1. Let's have a look at the Dashboard "DPS Overview". What you'll find there is a breakdown of your DPS Consumption. Please note that you have a breakdown for the whole tenant as well as per capability.
+
 ![](../../assets/images/dps-dashboard.png)
 
 ![](../../assets/images/dpsoverview3.png)
@@ -58,35 +46,41 @@ This model spreads the charge across the capabilities you actually use. The adva
 
 ![](../../assets/images/bycapability.png)
 
+> Note: This view is available for everyone on Account Management. However, if you do not have Admin permissions within your company, you will not be able to see the breakdown. Therefore, here's a close example of how that would look like.
+
 ### Allocate Costs
 
-3. Check if there's any cost center that hasn't been "allowlisted"
+Now that we've checked this on the account level, we need to make sure that costs are allocated to all dedicated teams regardless of what capability they are using. To do that, let's follow the next steps below:
+
+1. Check if there's any cost center that hasn't been "allowlisted"
 
 ![](../../assets/images/ccnotallowlisted.png)
 
-4. ecommerce-apps seems that hasn't been allowlisted, add it under Account Management
+2. `ecommerce-apps` hasn't been allowlisted, let's add it in Account Management
 
 ![](../../assets/images/noecommerce.png)
 
-5. Add it, then you can use the following chart to validate, there's an event every hour
+3. After adding `dt.cost.costcenter`, you will be able to use the following chart to validate it. There's an event every hour that we can query.
 
 ![](../../assets/images/addecomm.png)
 
-SCREENSHOT MISSING LAST TICKLE
 
-6. The biggest portion of unallocation is because of Full-Stack monitoring. It is highly recommended to add those properties to your OA
+4. The biggest portion of unallocation is because of Full-Stack monitoring. In our case, we are using a Kubernetes deployment in a [CloudNativeFullStack](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/how-it-works/cloud-native-fullstack) monitoring mode. 
+Dynatrace CloudNativeFullStack licensing is based on Host-level RAM, so we need to ensure that host properties are correctly set at the Host level in order for them to show up correctly on your chargeback report. These properties also align with the enrichment you completed earlier for cost allocation.
+
+> Important: If you want a split on the namespace level, what you are looking for is Full-Stack Monitoring which combines [Kubernetes Platform Monitoring and Application-only monitoring](https://docs.dynatrace.com/docs/ingest-from/setup-on-k8s/deployment/application-observability). Licensing here is calculated based on pod-hours, plus the enrichment you’ve already applied in previous exercises.
 
 ![](../../assets/images/oanocost.png)
+> Unassigned properties
 
-7. We've ready for you a Dynakube with the relevant host properties to add. Run the following command to apply the dynakube with the costcenter value 
+5. We have already prepared a Dynakube with the relevant host properties for you to add. Run the following command to apply the Dynakube with the costcenter and cost product values.
 
-kubectl apply -f /home/ace/.ansible/collections/ansible_collections/ace_box/ace_box/roles/dt-operator/files/cloudNativeFullStack-properties.yaml
+`kubectl apply -f /home/ace/.ansible/collections/ansible_collections/ace_box/ace_box/roles/dt-operator/files/cloudNativeFullStack-properties.yaml`
 
-8. Wait a few minutes until the cost center info appears
+6. Wait a few minutes until the cost center info appears
 
 ![](../../assets/images/oacost.png)
 
 We can start allocating costs for ecommerce-app department
 
 ![](../../assets/images/allocated.png)
-

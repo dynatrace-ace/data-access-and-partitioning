@@ -5,13 +5,13 @@ We understood now the need of setting
 - `dt.cost.costcenter`
 - `dt.cost.product`
 
-1. In your Dynatrace environment, open the Notebooks app, and specifically the provided `Enrichment Overview` notebook. We will be using the notebook to track the enrichment status within our environment.
+1. In your Dynatrace environment, open the **Notebooks app**, and specifically the provided `Enrichment Overview` notebook. We will be using the notebook to track the enrichment status within our environment.
 
 ![](../../assets/images/enrichment_initial.png)
 
-If you are not a new to Dynatrace, you may face this scenario. Having a host group, but not the rest. 
+If you are not new to Dynatrace, you may face this scenario - having a host group, but not the rest. 
 
-2. Open K8s app, go to Namespaces, and check the existing labels & annotations for the easytrade namespace.
+2. Open K8s app, go to Namespaces, and check the existing labels & annotations for the **Easytrade** namespace.
 
 <div align="center">
 <img width="600" src="../../assets/images/labels_of_easytrade.png">
@@ -52,7 +52,7 @@ for d in $(kubectl -n easytrade get deploy -o name); do
 done
 ```
 
-8. Check the pod labels for accountservice
+8. Validate that the command worked after a few minutes and make sure the enrichment is there under the labels section (if it's not, please run the command above again).
 
 ```bash
 kubectl describe pod -n easytrade -l app=accountservice
@@ -60,24 +60,20 @@ kubectl describe pod -n easytrade -l app=accountservice
 
 ![](../../assets/images/enriched.png)
 
-9. Check once again your Enrichment Notebook
+9. Check once again your **Enrichment** Notebook
 
 ![](../../assets/images/enrichment_final.png)
 
 ## Close Up & Next Challenge
 
-Well Done, now we have enriched our 3rd Gen environment, based on how we want ot slice and dice our data.
+Well Done, now we have enriched our Dynatrace Platform environment, based on how we want to slice and dice our data.
 
-Now we will run into a New challenge.
+Now we will run into a new challenge.
 
-Easytrade doesn’t follow k8s standards, and has multiple teams working within the same namespace.
+Easytrade doesn’t follow k8s standards, and has multiple teams working within the same namespace. We need to provide data access, not at the app level (easytrade), but at the component level (e.g. BrokerService). We need lower granularity!
 
-We need to provide data access, not at the app level (easytrade), but at the component level (e.g. BrokerService)
-
-We need a lower granularity
-
-We will have to solve this by manual pod annotations.
+We will have to solve this by manual pod annotations in our next lab.
 
 ![](../../assets/images/enrichapproaches.png)
 
-Good job!, back to the slides
+Good job! Now, back to the slides.
