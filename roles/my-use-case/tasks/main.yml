@@ -1,31 +1,31 @@
 ---
-- include_role:
-    name: dt-access-token
-  vars:
-    access_token_var_name: "DT_TOKEN"
-    access_token_scope: ["DataExport", "InstallerDownload", "activeGateTokenManagement.create", "entities.read", "settings.read", "settings.write", "ReadConfig", "WriteConfig"]
+# - include_role:
+#     name: dt-access-token
+#   vars:
+#     access_token_var_name: "DT_TOKEN"
+#     access_token_scope: ["DataExport", "InstallerDownload", "activeGateTokenManagement.create", "entities.read", "settings.read", "settings.write", "ReadConfig", "WriteConfig"]
 
-- include_role:
-    name: monaco-v2
-  vars:
-    monaco_version: "v2.25.1"
+# - include_role:
+#     name: monaco-v2
+#   vars:
+#     monaco_version: "v2.25.1"
 
-- name: Monaco - Deploy configuration
-  include_role:
-    name: monaco-v2
-    tasks_from: apply-monaco
-  vars:
-    monaco_manifest_path: " /home/$USER/repos/data-access-and-partitioning/roles/my-use-case/files/monaco/main/manifest.yaml"
-    monaco_environment:
-      DT_PLATFORM_TENANT_URL: "{{ extra_vars.dt_environment_url_gen3 | default('', true) | regex_replace('/+$','') }}"
-      DT_CLASSIC_TENANT_URL: "{{ extra_vars.dt_environment_url_gen3 | regex_replace('\\.apps\\.', '.') | regex_replace('/+$','') }}"
-      DT_OAUTH_CLIENT_ID: "{{ extra_vars.dt_oauth_client_id }}"
-      DT_OAUTH_CLIENT_SECRET: "{{ extra_vars.dt_oauth_client_secret }}"
-      DT_OAUTH_SSO_ENDPOINT: "{{ extra_vars.dt_oauth_sso_endpoint.rstrip('/') }}"
-      DT_TOKEN: "{{ DT_TOKEN }}"
+# - name: Monaco - Deploy configuration
+#   include_role:
+#     name: monaco-v2
+#     tasks_from: apply-monaco
+#   vars:
+#     monaco_manifest_path: " /home/$USER/repos/data-access-and-partitioning/roles/my-use-case/files/monaco/main/manifest.yaml"
+#     monaco_environment:
+#       DT_PLATFORM_TENANT_URL: "{{ extra_vars.dt_environment_url_gen3 | default('', true) | regex_replace('/+$','') }}"
+#       DT_CLASSIC_TENANT_URL: "{{ extra_vars.dt_environment_url_gen3 | regex_replace('\\.apps\\.', '.') | regex_replace('/+$','') }}"
+#       DT_OAUTH_CLIENT_ID: "{{ extra_vars.dt_oauth_client_id }}"
+#       DT_OAUTH_CLIENT_SECRET: "{{ extra_vars.dt_oauth_client_secret }}"
+#       DT_OAUTH_SSO_ENDPOINT: "{{ extra_vars.dt_oauth_sso_endpoint.rstrip('/') }}"
+#       DT_TOKEN: "{{ DT_TOKEN }}"
 
-- include_tasks:
-    file: docker.yml
+# - include_tasks:
+#     file: docker.yml
 
 - include_tasks:
     file: oneagent.yml
