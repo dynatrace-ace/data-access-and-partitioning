@@ -5,27 +5,30 @@ Dynatrace Classic alerting relied on:
 - **Problem Notifications**: Defined where notifications were sent (channels, integrations).
 - **Alerting Profiles**: Defined what problems triggered notifications using reusable filters.
 
-However, there are certain limitations of Classic Alerting:
-- **Rigid integrations**: Hardcoded, lacked flexibility.
-- **Only for problems**: Couldn’t trigger on specific events.
-- **Confusing notifications**: Limited context.
-- **No execution transparency**: No way to inspect delivery status or debug failures.
+#### How Dynatrace Platform Alerting Improves on Classic Alerting: 
+- **Classic Alerting**
+    - **Rigid integrations**: Hardcoded, lacked flexibility.
+    - **Only for problems**: Couldn’t trigger on specific events.
+    - **Limited context in notifications**: Messages lacked detailed insights that Dynatrace Platform alerting offers now.
+    - **No execution transparency**: No way to inspect delivery status or debug failures.
 
+- **Dynatrace Platform**
+    - **Flexible, Event-Driven Triggers** - Alert on any event stored in Grail—not just problems. Includes Davis events, custom events, and metric anomalies.
+    - **Workflows for Intelligent Automation** - Replace rigid notifications with customizable workflows that define how, when, and where actions occur—trigger remediation scripts, create tickets, or send alerts.
+    - **Execution Transparency** - Full visibility into workflow runs with logs, status, and outcomes for simplified troubleshooting and validation.
+    - **User-Level Ownership** - Configure workflows without impacting others. Each user/team can manage their own automation safely.
+    - **Automation-Ready Architecture** - Designed for proactive, event-driven responses—move beyond notifications to intelligent remediation and governance.
 
 ### Why Davis Anomaly Detection?
 Dynatrace Gen3 introduces Davis Anomaly Detection powered by Grail:
-- **Dynamic, AI-driven detection**: Automatically adapts to metric behavior.
-- **Improved accuracy**: Reduces false positives and manual threshold tuning.
-- **Event-driven automation**: Works with Workflows for intelligent responses.
-- **Transparency**: Full visibility into execution logs and outcomes.
+- **Advanced flexibility with DQL**: Define anomaly conditions using powerful queries that combine multiple metrics, dimensions, and filters. This enables richer context and smarter alerting compared to static metric events in Classic.
+- **Cross-domain correlation**: Detect anomalies across logs, metrics, and traces in a single detector, leveraging Grail’s unified data model—something Classic alerting could not achieve.
+- **Event-driven automation**: Seamlessly integrate with Workflows for intelligent responses, moving beyond static notifications.
+- **Transparency and control**: Full visibility into execution logs, outcomes, and workflow runs for simplified troubleshooting.
 
 
 ### Why Workflows?
-Move beyond static alerting to **dynamic, customizable automation.**
-Define **how, when, and where** actions should happen.
-Trigger notifications, remediation scripts, ticket creation, and more.
-Works for **any event stored in Grail** (problems, Davis events, generic events).
-Provides **execution transparency** for troubleshooting and validation.
+Dynatrace Workflows alerting moves beyond static notifications and introduces **dynamic, customizable automation**. Instead of simply sending alerts, you can define exactly **how, when, and where** actions should occur. Workflows allow you to **trigger notifications, execute remediation scripts, create tickets, and more**, all based on any event stored in Grail, including problems, Davis events, or generic events. With full **execution transparency**, you can easily view logs, monitor status, and validate outcomes, making troubleshooting and automation simpler and more **reliable**.
 
 
 ### Lab Objectives
@@ -69,27 +72,25 @@ By the end of this lab, you will:
 #### Step 4: Create a Workflow for Email Notification
 
 - Navigate to Workflows → + Create Workflow.
+![](../../assets/images/createworkflow.png)
+- Name your workflow "Test Workflow"
 - Select Trigger: Davis Problem Event (dt.davis.problem).
+![](../../assets/images/davisproblemtrigger.png)
+- Add the config:
+    - Event state: Active
+    - Event category: Custom
+    - Affected entities: Include entities with all defined tags below
+        - Entity tags: application: easytrade
+![](../../assets/images/davisproblemtriggerconfig.png)
 - Add an Action: Send Email.
-
-Configure recipient email (provided in lab instructions).
-Add subject and body placeholders (e.g., problem details).
-
-Save and activate the workflow.
-
-Screenshot Placeholder:
-
-Workflow builder showing trigger and email action.
-Email configuration panel.
-
+![](../../assets/images/addemailaction.png)
+- Configure your email action the way you like it and click "Deploy" then "Save and Deploy".
+![](../../assets/images/emailconfig.png)
 
 #### Step 5: Test the Workflow
 
-- Simulate a Davis problem or use an existing anomaly.
-- Verify that the email notification is sent successfully.
-- Check workflow execution logs for transparency.
-- Screenshot Placeholder: Workflow execution log and email received.
-
+- Check the Problems App and the alert we've already generated.
+- Run the workflow, click on "Allow & Run" and verify that the email notification is successfully sent to your email address.
 
 Key takeaway: Alerting in Gen3 is not just about notifications—it’s about intelligent, event-driven automation that adapts to your environment.
 
