@@ -13,16 +13,16 @@ Dynatrace Classic alerting relied on:
     - **No execution transparency**: No way to inspect delivery status or debug failures.
 
 - **Dynatrace Platform**
-    - **Flexible, Event-Driven Triggers** - Alert on any event stored in Grail—not just problems. Includes Davis events, custom events, and metric anomalies.
+    - **Flexible, Event-Driven Triggers** - Alert on any event stored in Grail, not just problems. Includes Davis events, custom events, and metric anomalies.
     - **Workflows for Intelligent Automation** - Replace rigid notifications with customizable workflows that define how, when, and where actions occur—trigger remediation scripts, create tickets, or send alerts.
     - **Execution Transparency** - Full visibility into workflow runs with logs, status, and outcomes for simplified troubleshooting and validation.
     - **User-Level Ownership** - Configure workflows without impacting others. Each user/team can manage their own automation safely.
-    - **Automation-Ready Architecture** - Designed for proactive, event-driven responses—move beyond notifications to intelligent remediation and governance.
+    - **Automation-Ready Architecture** - Designed for proactive, event-driven responses, move beyond notifications to intelligent remediation and governance.
 
 ### Why Davis Anomaly Detection?
 Dynatrace Gen3 introduces Davis Anomaly Detection powered by Grail:
 - **Advanced flexibility with DQL**: Define anomaly conditions using powerful queries that combine multiple metrics, dimensions, and filters. This enables richer context and smarter alerting compared to static metric events in Classic.
-- **Cross-domain correlation**: Detect anomalies across logs, metrics, and traces in a single detector, leveraging Grail’s unified data model—something Classic alerting could not achieve.
+- **Cross-domain correlation**: Detect anomalies across logs, metrics, and traces in a single detector, leveraging Grail’s unified data model, something Classic alerting could not achieve.
 - **Event-driven automation**: Seamlessly integrate with Workflows for intelligent responses, moving beyond static notifications.
 - **Transparency and control**: Full visibility into execution logs, outcomes, and workflow runs for simplified troubleshooting.
 
