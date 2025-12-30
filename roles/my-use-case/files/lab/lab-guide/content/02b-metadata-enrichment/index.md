@@ -2,7 +2,7 @@
 
 ### New Challenge
 
-Easytrade doesn’t follow k8s standards, and has multiple teams working within the same namespace. We need to provide data access, not at the app level (easytrade), but at the component level (e.g. BrokerService). We need a finer level of granularity!
+Easytrade application doesn’t follow Kubernetes standards and has multiple teams working within the same namespace. We need to provide data access, not at the application level (easytrade), but at the component level (e.g. BrokerService). We need a finer level of granularity!
 
 ### Exercises
 
@@ -36,13 +36,13 @@ kubectl describe pod -n easytrade -l app=frontend
 
 ![](../../assets/images/frontend.png)
 
-5. Check the **Enrichment** Notebook one more time
+5. Review the **Enrichment** Notebook one last time
 
 ![](../../assets/images/workloadgranularity.png)
 
-Well done, you were successful at achieving a finer level of granularity.
+Well done! You were successful in achieving a finer level of granularity.
 
-Discuss with your class how to enrich a regular OA deployment as well as a Cloud one!
+Discuss with your class how to enrich a regular OneAgent deployment as well as a Cloud one!
 
-That was easy. What's next? Back to slides.
+That was easy. What's next? Back to the slides.
 
