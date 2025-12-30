@@ -54,7 +54,7 @@ for d in $(kubectl -n easytrade get deploy -o name); do
 done
 ```
 
-8. Validate that the command worked after a few minutes and make sure the enrichment is there under the labels section we checked in the Kubernetes App (if it's not, please run the command above again).
+9. Validate that the command worked after a few minutes and make sure the enrichment is there under the labels section we checked in the Kubernetes App (if it's not, please run the command above again).
 
 ```bash
 kubectl describe pod -n easytrade -l app=accountservice
