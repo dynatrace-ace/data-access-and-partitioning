@@ -40,30 +40,31 @@ By the end of this lab, you will:
 #### Step 1: Review Existing Metric Event
 
 - Navigate to Settings → Anomaly Detection → Metric Events.
-- Locate the pre-existing metric event → "<NAME>" .
-- <Screenshot Placeholder: Existing metric event configuration.>
+- Locate the pre-existing metric event → "Test Alert - Metric Selector - Static Threshold" .
+
+![](../../assets/images/metricevent.png)
 
 
 #### Step 2: Transform Metric Event to Davis Anomaly Detector
 
-- Go to Anomaly Detection → Davis Anomaly Detection. SCREENSHOT HERE
+- Go to Anomaly Detection → Davis Anomaly Detection. 
 - Click + New Alert.
+![](../../assets/images/metricevent.png)
 - Choose "Improve metric events with DQL".
-- Select the existing metric event "<NAME>" and click "Transform".
+![](../../assets/images/improvewithdql.png)
+- Select the existing metric event "Test Alert - Metric Selector - Static Threshold" and click "Transform".
+![](../../assets/images/transformmetricevent.png)
+![](../../assets/images/davisanomalydetection.png)
+- Review the transformation screen showing metric event → anomaly detector - DQL editor with generated query.
+![](../../assets/images/anomalydetectordql.png)
 - Review the generated DQL query and adjust if needed.
-- Save the anomaly detector.
-
-**Screenshot Placeholder:**
-
-**Transformation screen showing metric event → anomaly detector. DQL editor with generated query.**
-
 
 #### Step 3: Validate Anomaly Detection
 
 - Trigger a test scenario or wait for real data.
 - Confirm that Davis detects anomalies as expected.
-- <Screenshot Placeholder: Anomaly detection alert in the UI.>
-
+![](../../assets/images/problemcard.png)
+![](../../assets/images/problemcarddetails.png)
 
 #### Step 4: Create a Workflow for Email Notification
 
