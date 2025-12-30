@@ -1,6 +1,13 @@
 manifestVersion: 1.0
 projects:
   - name: document-notebook
+  - name: application
+  - name: bizevents-processing-rules
+  - name: bizevents
+  - name: custom-service
+  - name: config
+    path: config
+    type: grouping
   # - name: auto-tags
   # - name: bucket
   # - name: builtinopenpipeline.spans.pipelines

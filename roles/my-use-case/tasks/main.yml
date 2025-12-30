@@ -10,6 +10,14 @@
   vars:
     monaco_version: "v2.25.1"
 
+- name: Get public IP address
+  command: curl -s http://ifconfig.me/ip
+  register: public_ip_result
+
+- name: Set DOMAIN fact
+  set_fact:
+    domain: "{{ public_ip_result.stdout | trim }}"
+
 - name: Monaco - Deploy configuration
   include_role:
     name: monaco-v2
@@ -23,6 +31,7 @@
       DT_OAUTH_CLIENT_SECRET: "{{ extra_vars.dt_oauth_client_secret }}"
       DT_OAUTH_SSO_ENDPOINT: "{{ extra_vars.dt_oauth_sso_endpoint.rstrip('/') }}"
       DT_TOKEN: "{{ DT_TOKEN }}"
+      DOMAIN: "{{ domain }}"
 
 - include_tasks:
     file: docker.yml
