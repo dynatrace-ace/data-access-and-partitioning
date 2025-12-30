@@ -6,7 +6,7 @@ The team are using auto-tags & management zones for filtering & access control i
 
 There are special "fields" we recommend to use in Segments that are called Primary Grail Field, Host Group is one of them. We will show you how to add other relevant Primary Grail Fields (and Tags) directly from the Dynatrace Environment.
 
-1. Go to the `Deployment Status` page within the Dynatrace tenant, filter by the host group of the team (`onPrem_easytrade_staging`), click on all the hosts (just 1 for us), modify host properties, and click on `Run action`
+1. Go to the `Deployment Status` page within the Dynatrace tenant, filter by the host group of the team (`easytrade`), click on all the hosts (just 1 for us), modify host properties, and click on `Run action`
 
 ![](../../assets/images/deploymentstatus.png)
 
@@ -17,9 +17,6 @@ There are special "fields" we recommend to use in Segments that are called Prima
 | dt.security_context       | easytrade      | data access            |
 | dt.cost.costcenter        | ecommerce-apps | cost allocation        |
 | dt.cost.product           | easytrade      | cost allocation        |
-| primary_tags.environment  | staging        | filtering              |
-| primary_tags.application  | easytrade      | filtering              |
-| primary_tags.platform     | onPrem         | filtering              |
 
 ![](../../assets/images/addproperty.png)
 
@@ -35,7 +32,7 @@ There are special "fields" we recommend to use in Segments that are called Prima
 
 ```shell
 fetch logs
-| fields timestamp, content, dt.security_context, dt.cost.costcenter, dt.cost.product, primary_tags.application, primary_tags.environment, primary_tags.platform
+| fields timestamp, content, dt.security_context, dt.cost.costcenter, dt.cost.product
 ```
 
 ![](../../assets/images/logsenriched.png)
@@ -52,12 +49,12 @@ cd /opt/easytrade && docker compose restart
 
 ```shell
 fetch spans
-| fields trace.id, span.id, dt.security_context, dt.cost.costcenter, dt.cost.product, primary_tags.application, primary_tags.environment, primary_tags.platform
+| fields trace.id, span.id, dt.security_context, dt.cost.costcenter, dt.cost.product
 ```
 
 ![](../../assets/images/spansenriched.png)
 
-If you have hundred of host groups and you would like to automate the process, contact us and we can provide you some some scripts to help!
+If you have hundred of host groups and you would like to automate the process, contact us and we can provide you a script that could help!
 
 ### Shared Infrastructure
 

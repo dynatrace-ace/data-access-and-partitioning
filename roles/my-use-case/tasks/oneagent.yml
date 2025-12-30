@@ -40,6 +40,6 @@
   become: true
   become_user: root
   shell:
-    cmd: "/bin/sh {{ dt_oneagent_classic_download_location }} --set-host-group=onPrem_easytrade_staging"
+    cmd: "/bin/sh {{ dt_oneagent_classic_download_location }} --set-host-group=easytrade"
   args:
     creates: "/etc/systemd/system/oneagent.service"
