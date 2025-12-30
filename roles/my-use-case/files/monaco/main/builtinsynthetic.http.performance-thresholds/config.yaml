@@ -1,0 +1,11 @@
+configs:
+- id: 4aa6b53a-2fe2-3bb1-b20c-9e5c846a2fd7
+  config:
+    template: 4aa6b53a-2fe2-3bb1-b20c-9e5c846a2fd7.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAC1idWlsdGluOnN5bnRoZXRpYy5odHRwLnBlcmZvcm1hbmNlLXRocmVzaG9sZHMACkhUVFBfQ0hFQ0sAEDJBMkRDNDY2QzQwNEJDQ0EAJGEyY2RjZTk5LTk4NmYtM2RjOS1iMjQwLTJmMjRhZDMwZTc2Y77vVN4V2t6t
+  type:
+    settings:
+      schema: builtin:synthetic.http.performance-thresholds
+      schemaVersion: 1.6.2
+      scope: HTTP_CHECK-2A2DC466C404BCCA

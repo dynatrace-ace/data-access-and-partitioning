@@ -1,0 +1,11 @@
+configs:
+- id: 0c808271-b186-3527-9f64-bc178cf1f511
+  config:
+    template: 0c808271-b186-3527-9f64-bc178cf1f511.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABACxidWlsdGluOnN5bnRoZXRpYy5odHRwLmFzc2lnbmVkLWFwcGxpY2F0aW9ucwAKSFRUUF9DSEVDSwAQMkEyREM0NjZDNDA0QkNDQQAkMmJiZGRiYTctNmQ4Yy0zYzY3LWJiMzUtZTE4YzA4NmQ2ZjE5vu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:synthetic.http.assigned-applications
+      schemaVersion: 1.1.2
+      scope: HTTP_CHECK-2A2DC466C404BCCA

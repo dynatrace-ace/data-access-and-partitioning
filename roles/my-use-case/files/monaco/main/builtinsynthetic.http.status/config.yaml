@@ -1,0 +1,11 @@
+configs:
+- id: 0a9798e9-d220-3520-91b0-f06efe137d6b
+  config:
+    template: 0a9798e9-d220-3520-91b0-f06efe137d6b.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABAB1idWlsdGluOnN5bnRoZXRpYy5odHRwLnN0YXR1cwAKSFRUUF9DSEVDSwAQMkEyREM0NjZDNDA0QkNDQQAkOGNkYzUyMGUtNDI0NC0zODcxLThmNDQtYTViYzQyNTY2Mzcyvu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:synthetic.http.status
+      schemaVersion: 1.0.1
+      scope: HTTP_CHECK-2A2DC466C404BCCA

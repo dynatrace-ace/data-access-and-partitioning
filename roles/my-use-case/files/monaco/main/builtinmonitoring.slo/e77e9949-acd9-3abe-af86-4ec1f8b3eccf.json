@@ -1,0 +1,15 @@
+{
+  "enabled": true,
+  "name": "part2_service_performance",
+  "metricName": "part2_service_performance",
+  "metricExpression": "((builtin:service.response.time:avg:partition(\"latency\",value(\"good\",lt(10000))):splitBy():count:default(0))/(builtin:service.response.time:avg:splitBy():count)*(100)):default(100,always)",
+  "evaluationType": "AGGREGATE",
+  "filter": "",
+  "evaluationWindow": "-1w",
+  "targetSuccess": 99.98,
+  "targetWarning": 99.99,
+  "errorBudgetBurnRate": {
+    "burnRateVisualizationEnabled": true,
+    "fastBurnThreshold": 10.0
+  }
+}

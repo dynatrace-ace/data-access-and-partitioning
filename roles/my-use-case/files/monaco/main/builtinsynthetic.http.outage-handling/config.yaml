@@ -1,0 +1,11 @@
+configs:
+- id: c245c21e-d5bc-3d04-9bda-c6ef2924fb10
+  config:
+    template: c245c21e-d5bc-3d04-9bda-c6ef2924fb10.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABACZidWlsdGluOnN5bnRoZXRpYy5odHRwLm91dGFnZS1oYW5kbGluZwAKSFRUUF9DSEVDSwAQMkEyREM0NjZDNDA0QkNDQQAkNmY2YjY5YTMtOTZhMi0zZmJkLWE1NzktNmE4YmZlMTA3MzMxvu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:synthetic.http.outage-handling
+      schemaVersion: 1.3.3
+      scope: HTTP_CHECK-2A2DC466C404BCCA

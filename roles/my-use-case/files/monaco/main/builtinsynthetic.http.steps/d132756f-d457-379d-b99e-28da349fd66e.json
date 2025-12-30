@@ -1,0 +1,30 @@
+{
+  "steps": [
+    {
+      "name": "Access competitor trating",
+      "url": "https://google.com",
+      "method": "GET",
+      "constraints": [
+        {
+          "type": "HTTP_STATUSES",
+          "properties": [
+            {
+              "key": "operator",
+              "value": "\u003c"
+            },
+            {
+              "key": "value",
+              "value": "400"
+            }
+          ]
+        }
+      ],
+      "configuration": {
+        "headers": [],
+        "acceptAnyCertificate": false,
+        "followRedirects": true,
+        "doNotPersistSensitiveData": false
+      }
+    }
+  ]
+}

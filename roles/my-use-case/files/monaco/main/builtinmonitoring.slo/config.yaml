@@ -1,0 +1,21 @@
+configs:
+- id: 608a4998-68c9-3a18-bd45-33451fe5d4d4
+  config:
+    template: 608a4998-68c9-3a18-bd45-33451fe5d4d4.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABABZidWlsdGluOm1vbml0b3Jpbmcuc2xvAAZ0ZW5hbnQABnRlbmFudAAkOGU3MjJjMGUtMWVmZC0zZmE4LWE3ODQtNTE5NDUxYzA2MDE1vu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:monitoring.slo
+      schemaVersion: 6.0.14
+      scope: environment
+- id: e77e9949-acd9-3abe-af86-4ec1f8b3eccf
+  config:
+    template: e77e9949-acd9-3abe-af86-4ec1f8b3eccf.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABABZidWlsdGluOm1vbml0b3Jpbmcuc2xvAAZ0ZW5hbnQABnRlbmFudAAkOGU0MGRjYjQtMzkwNy0zM2FhLWFmMWYtZTJhMmU1ZmIyYmIyvu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:monitoring.slo
+      schemaVersion: 6.0.14
+      scope: environment

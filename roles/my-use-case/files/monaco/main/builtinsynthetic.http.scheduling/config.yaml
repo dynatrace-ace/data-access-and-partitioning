@@ -1,0 +1,16 @@
+configs:
+- id: af318a6d-5e02-34e8-9b1b-46500347bf8d
+  config:
+    parameters:
+      extractedIDs:
+        type: value
+        value:
+          id_SYNTHETIC_LOCATION_0000000000000008: SYNTHETIC_LOCATION-0000000000000008
+    template: af318a6d-5e02-34e8-9b1b-46500347bf8d.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABACFidWlsdGluOnN5bnRoZXRpYy5odHRwLnNjaGVkdWxpbmcACkhUVFBfQ0hFQ0sAEDJBMkRDNDY2QzQwNEJDQ0EAJGJjOWYxNTVhLWE3MDUtMzg5Ny05NGY4LTIxYTI1NDM0ZTZmZr7vVN4V2t6t
+  type:
+    settings:
+      schema: builtin:synthetic.http.scheduling
+      schemaVersion: 1.4.3
+      scope: HTTP_CHECK-2A2DC466C404BCCA
