@@ -35,7 +35,7 @@ Existing customers may face the following scenario: having a host group id, but 
 <img width="600" src="../../assets/images/dtcostproduct.png">
 </div>
 
-5. Click **Save changes**
+6. Click **Save changes**
 
 7. The following step is not necessary in a real-life scenario: The Dynatrace Operator queries the settings API once every 45 minutes. After creating or modifying rules, if you want to ensure immediate effect, you can restart it. To restart the operator to grab latest configuration changes:
 
@@ -46,7 +46,7 @@ kubectl -n dynatrace rollout restart deployment dynatrace-operator
 ![](../../assets/images/enrichement45min.png)
 
 
-7. Restart all deployments in the easytrade namespace:
+8. Restart all deployments in the easytrade namespace:
 
 ```bash
 for d in $(kubectl -n easytrade get deploy -o name); do
@@ -62,7 +62,7 @@ kubectl describe pod -n easytrade -l app=accountservice
 
 ![](../../assets/images/enriched.png)
 
-9. Review your **Enrichment** Notebook with the updated values
+10. Review your **Enrichment** Notebook with the updated values
 
 ![](../../assets/images/enrichment_final.png)
 
