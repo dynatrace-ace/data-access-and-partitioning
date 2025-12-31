@@ -33,6 +33,7 @@ There are special "fields" we recommend to use in Segments that are called Prima
 ```shell
 fetch logs
 | fields timestamp, content, dt.security_context, dt.cost.costcenter, dt.cost.product
+| limit 5
 ```
 
 ![](../../assets/images/logsenriched.png)
@@ -50,6 +51,7 @@ cd /opt/easytrade && docker compose restart
 ```shell
 fetch spans
 | fields trace.id, span.id, dt.security_context, dt.cost.costcenter, dt.cost.product
+| limit 5
 ```
 
 ![](../../assets/images/spansenriched.png)

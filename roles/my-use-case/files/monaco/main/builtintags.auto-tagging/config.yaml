@@ -1,0 +1,11 @@
+configs:
+- id: 72080896-4181-3134-a356-6f56b9619636
+  config:
+    template: 72080896-4181-3134-a356-6f56b9619636.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABABlidWlsdGluOnRhZ3MuYXV0by10YWdnaW5nAAZ0ZW5hbnQABnRlbmFudAAkYTBlMWY0MDctYmNmZS0zNDg3LTkwYjAtNGQyN2UwMGFiOGQ4vu9U3hXa3q0
+  type:
+    settings:
+      schema: builtin:tags.auto-tagging
+      schemaVersion: 1.0.18
+      scope: environment

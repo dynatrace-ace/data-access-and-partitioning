@@ -1,9 +1,9 @@
 ## Intro
 
 During this lab, we will help the Easytrade team to upgrade their Dynatrace Observability Solution. The team has configured their tenant with:
-- auto-tags & management zones for filtering & access control
-- classic dashboard
-- alerting
+- Auto-tags & management zones for filtering & access control
+- Classic dashboard
+- Alerting
 
 They are using the platform to find bugs, improve user experience and detect anomalies in their applications & infrastructure.
 
