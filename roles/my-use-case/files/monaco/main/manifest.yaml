@@ -13,14 +13,11 @@ projects:
   - name: builtinsynthetic.http.status
   - name: builtinsynthetic.http.steps
   - name: builtinmonitoring.slo
+  - name: auto-tags
+  - name: management-zone
   - name: config
     path: config
     type: grouping
-  # - name: auto-tags
-  # - name: bucket
-  # - name: builtinopenpipeline.spans.pipelines
-  # - name: management-zone
-  # - name: k8s-telemetry-enrichment
 environmentGroups:
   - name: development
     environments:

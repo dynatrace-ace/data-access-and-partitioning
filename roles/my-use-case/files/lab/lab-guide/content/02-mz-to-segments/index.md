@@ -1,38 +1,75 @@
 ## Management Zones to Segments
 
-The team has an "Easytrade" Management zone that they are using to navigate across views
+The team uses an `Easytrade` Management Zone to move across the environment and find their relevant entities. For example the team is using the Management Zone to find their relevant services, to spot performance degradations
 
-SCREENSHOT SHOW HOW THEY WHERE FILTERING THE SERVICES APP
+![](../../assets/images/serviceclassicfilter.png)
 
-SCREENSHOT SHOW HOW THEY WHERE FILTERING THE HOSTS APP
+The distributed traces view is another interesting one for the team, to find relevant failed requests & exceptions, and later convert them into metrics & alerts in case necessarely
 
-In order to do the same in 3rd Gen, we need to configure Segments. 
+![](../../assets/images/ppclassic.png)
 
-1. Go to the Segments setting, create a new Segment called App
+Segments are the equivalent capability in 3rd Gen, and along with Enrichment at Source, they bring some key benefits that we will discover during the lab
 
-SCREENSHOT
+1. Within your Dynatrace tenant, search for the `Segments` settings 
 
-2. Add the following to the variable, in order to search for the primary_tags
+![](../../assets/images/searchsegment.png)
 
-DQL CODE
+2. Create a new Segment, name it `app`, and enter a variable
 
-SCREENSHOT
+![](../../assets/images/segmentvariable.png)
 
-3. Filter "All Data" using the variable
+Management Zones used to be each a single configuration object. E.g. there was an `Easytrade` management zone with their respective rules, and many others for others apps, environments & bu. Segments is a `key:value` configuration types, then we have the define the key (that is the name), and the values that are going to be the variables.
 
-SCREENSHOT
+3. Add the following as the variable definition, click on run to test, and save the changes
 
-Notice how previously, the admin team needed to create a Management Zone for every app that was onboarded into Dynatrace, now with 3rd Gen we don't have to do this anymore. If a new team is onboarded with a primary_tags.app = hisptershop, this value will populate automatically
+```sql
+fetch spans
+| dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service
 
-4. Validate if the user could potentially navigate through their 3rd Gen screens
+// extract primary grail fileds & tags defined
+| fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,
+         dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service, span.id
 
-SCREENSHOT
+// filter for classic entities
+| fieldsAdd tags = concat("application:", dt.security_context)
+| summarize count = count(), by:{dt.security_context, tags}
+```
 
-5. If the new apps satisfies the requirements of the team, you can remove the classic views to ensure consistency
+![](../../assets/images/addvariablesave.png)
 
-SCREENSHOT IAM SETTING TO REMOVE APP
+4. Filter `All Data` with the Primary Grail Field, in our case, the dt.security_context, value where we're extracting the app name. Then click in Preview.
 
-SCREENSHOT CLASSIC APP NOT SHOWING IN 3RD GEN
+![](../../assets/images/filteralldata.png)
+
+See how all datapoints are getting enriched with the previously configured Primary Grail Field. And also notice how dt.security_context doesn't work for `Classic Entities`. This is meant to be like this, since it is a pure 3rd Gen configuration, and applies just to the "New" entities. And this is the reason why we've created the 2nd variable
+
+```sql
+| fieldsAdd tags = concat("application:", dt.security_context)
+```
+
+![](../../assets/images/classicentities.png)
+
+5. Click in More, and add Host
+
+![](../../assets/images/morehost.png)
+
+6. Filter by tags, use the "tag" variable value, and preview the results
+
+![](../../assets/images/hostappear.png)
+
+7. Click in related entity, add process group
+
+![](../../assets/images/relatedpg.png)
+
+8. Do the same for process & service
+
+![](../../assets/images/sameforservice.png)
+
+9. Click on preview to check if it works
+
+![](../../assets/images/validate.png)
+
+
 
 ### Close Up
 

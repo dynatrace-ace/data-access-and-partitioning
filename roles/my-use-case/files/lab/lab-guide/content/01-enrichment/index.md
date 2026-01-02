@@ -20,6 +20,8 @@ There are special "fields" we recommend to use in Segments that are called Prima
 
 ![](../../assets/images/addproperty.png)
 
+> Note: you can also add filtering Primary Grail Tags with the following format: `primary_tags.<key>`, for a filtering purpose. E.g. primary_tags.environment=staging
+
 3. Fill the configuration with all properties, and apply changes
 
 ![](../../assets/images/applychanges.png)
@@ -43,8 +45,6 @@ fetch logs
 ```shell
 cd /opt/easytrade && docker compose restart
 ```
-
-> Note: At the time of the lab, primary tags were not available. This capability is planned and will be introduced later.
 
 6. Check how Enrichment works for traces
 

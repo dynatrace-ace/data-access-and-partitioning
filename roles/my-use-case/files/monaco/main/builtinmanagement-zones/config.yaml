@@ -1,0 +1,11 @@
+configs:
+- id: e25ca159-1f3c-3f44-bf6d-586151a2a463
+  config:
+    template: e25ca159-1f3c-3f44-bf6d-586151a2a463.json
+    skip: false
+    originObjectId: vu9U3hXa3q0AAAABABhidWlsdGluOm1hbmFnZW1lbnQtem9uZXMABnRlbmFudAAGdGVuYW50ACRhZjU4YTA4NC0xYjc5LTMzYTEtODQ0Ni02MDZiOGEzMTcyNDi-71TeFdrerQ
+  type:
+    settings:
+      schema: builtin:management-zones
+      schemaVersion: 1.0.13
+      scope: environment
