@@ -69,10 +69,46 @@ See how all datapoints are getting enriched with the previously configured Prima
 
 ![](../../assets/images/validate.png)
 
+10. Save your Segment!
 
+11. Go to the New Services app, and check if the Segment is working as expected
+
+![](../../assets/images/segmentnewserviceapp.png)
+
+12. Apply and see how all our entities remain when filtering. We just met on of the team's requirements! About filtering across different screens
+
+13. Go to the Distributed Traces app, and filter using the Segment
+
+![](../../assets/images/filtertracessegment.png)
 
 ### Close Up
 
-Now our users can navigate across 3rd Gen apps as they did in classic, and removed some of the classic apps to ensure consistency.
+Well done, you just replicated Management Zones functionality using Segments. Now users still achieve their exploration as they were doing it in classic, but unleash powerful new capabilities thanks to Grail and other 3rd Gen capabilities
 
-If the 3rd Gen app doesn't satisfy yet the requirements of the team as the classic was, please reach out to us for feedback!
+As an example, you can now filter by any attribute of the spans (e.g. exception message), and pin it to a Dashboard, or to a Notebook to have a ready-made DQL to use in a workflow automation
+
+![](../../assets/images/exceptionstodash.png)
+
+![](../../assets/images/metricandalert2.png)
+
+For those teams that are comfortable with using the 3rd Gen apps, you could "close" the access to the classic views, with boundaries at IAM level.
+
+Let's suppose the Easytrade team is happy with the new platform, then you could configure their group at IAM level, using boundaries to exclude the classic distributed traces app as follows
+
+![](../../assets/images/easytradegroup.png)
+
+Check boundaries here
+
+![](../../assets/images/boundariestoapps.png)
+
+This is how you exclude an app
+
+```sql
+shared:app-id not in ("dynatrace.classic.distributed.traces");
+```
+
+![](../../assets/images/excludeapp.png)
+
+Then the easytrade team will not be able to access the "classic" Distributed traces app, but the new & enhanced experience!
+
+![](../../assets/images/notracesclassic.png)
