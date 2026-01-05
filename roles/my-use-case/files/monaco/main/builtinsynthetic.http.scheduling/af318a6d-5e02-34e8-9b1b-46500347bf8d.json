@@ -2,7 +2,7 @@
   "frequency": 1,
   "locations": [
     {
-      "location": "{{ .extractedIDs.id_SYNTHETIC_LOCATION_0000000000000008 }}"
+      "location": "{{ .dublin_id }}"
     }
   ]
 }

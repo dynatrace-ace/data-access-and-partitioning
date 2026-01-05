@@ -5,19 +5,19 @@ projects:
   - name: bizevents-processing-rules
   - name: bizevents
   - name: custom-service
-  - name: builtinsynthetic.http.assigned-applications
-  - name: builtinsynthetic.http.name
-  - name: builtinsynthetic.http.outage-handling
-  - name: builtinsynthetic.http.performance-thresholds
-  - name: builtinsynthetic.http.scheduling
-  - name: builtinsynthetic.http.status
-  - name: builtinsynthetic.http.steps
   - name: builtinmonitoring.slo
   - name: auto-tags
   - name: management-zone
   - name: config
     path: config
     type: grouping
+  # - name: builtinsynthetic.http.assigned-applications
+  # - name: builtinsynthetic.http.name
+  # - name: builtinsynthetic.http.outage-handling
+  # - name: builtinsynthetic.http.performance-thresholds
+  # - name: builtinsynthetic.http.scheduling
+  # - name: builtinsynthetic.http.status
+  # - name: builtinsynthetic.http.steps
 environmentGroups:
   - name: development
     environments:
