@@ -14,9 +14,9 @@
   command: curl -s http://ifconfig.me/ip
   register: public_ip_result
 
-# - name: Set DOMAIN fact
-#   set_fact:
-#     domain: "{{ public_ip_result.stdout | trim }}"
+- name: Set DOMAIN fact
+  set_fact:
+    domain: "{{ public_ip_result.stdout | trim }}"
 
 # - name: Build live URL from apps URL
 #   ansible.builtin.set_fact:
