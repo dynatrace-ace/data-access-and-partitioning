@@ -1,16 +1,16 @@
 manifestVersion: 1.0
 projects:
-  - name: document-notebook
   - name: application
-  - name: bizevents-processing-rules
-  - name: bizevents
-  - name: custom-service
-  - name: builtinmonitoring.slo
   - name: auto-tags
-  - name: management-zone
+  - name: bizevents
+  - name: bizevents-processing-rules
   - name: config
     path: config
     type: grouping
+  - name: document-notebook
+  - name: custom-service
+  - name: builtinmonitoring.slo
+  - name: builtinmanagement-zones
   # - name: builtinsynthetic.http.assigned-applications
   # - name: builtinsynthetic.http.name
   # - name: builtinsynthetic.http.outage-handling

@@ -2,7 +2,7 @@ configs:
   - id: easytrade_tag
     config:
       template: easytrade_tag.json
-      skip: true
+      skip: false
     type:
       settings:
         schema: builtin:tags.auto-tagging
@@ -10,7 +10,7 @@ configs:
   - id: component_tag
     config:
       template: component_tag.json
-      skip: true
+      skip: false
     type:
       settings:
         schema: builtin:tags.auto-tagging
@@ -18,7 +18,7 @@ configs:
   - id: environment_tag
     config:
       template: environment_tag.json
-      skip: true
+      skip: false
     type:
       settings:
         schema: builtin:tags.auto-tagging
@@ -26,7 +26,7 @@ configs:
   - id: platform_tag
     config:
       template: platform_tag.json
-      skip: true
+      skip: false
     type:
       settings:
         schema: builtin:tags.auto-tagging
