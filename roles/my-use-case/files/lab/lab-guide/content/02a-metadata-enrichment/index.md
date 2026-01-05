@@ -11,13 +11,13 @@ We now understand the need for setting the following:
 
 Existing customers may face the following scenario: having a host group id, but not dt.security_context, dt.cost.costcenter, or dt.cost.product. 
 
-2. Open the Kubernetes app, go to Namespaces, click on the Metadata tab, and review the existing labels and annotations for the **easytrade** namespace by clicking on the number. You will notice annotations are present but there are no labels.
+2. Open the Kubernetes app, go to Namespaces, click on the Metadata tab, and review the existing labels for the **easytrade** namespace by clicking on the number. You will notice labels are present but there are no dt.security_context, dt.cost.costcenter, or dt.cost.product.
 
 <div align="center">
 <img width="600" src="../../assets/images/labels_of_easytrade.png">
 </div>
 
-3. In **Settings -> Cloud and virtualization -> Kubernetes telemetry enrichment** configure `dt.security_context` based on the `kubernetes.io/metadata.name` label by clicking Add rule
+3. In **Settings -> Cloud and virtualization -> Kubernetes metadata/telemetry enrichment** configure `dt.security_context` based on the `kubernetes.io/metadata.name` label by clicking Add rule
 
 <div align="center">
 <img width="600" src="../../assets/images/dt_sec_context.png">
