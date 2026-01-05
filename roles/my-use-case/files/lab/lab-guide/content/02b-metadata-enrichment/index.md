@@ -10,25 +10,25 @@ Easytrade application doesn’t follow Kubernetes standards and has multiple tea
 
 ![](../../assets/images/addanotationsbroker.png)
 
-2. The screenshot shows you how this would look like in an IDE. However, since you don't have access to one, we have prepared a one stop shop for you. Just run the command below and you'll see the results shown in the screenshot.
+2. The screenshot shows you how this would look like in an IDE. However, since you don't have access to one, we have prepared a one stop shop for you. Run the next two commands below and after the validation command you'll see similar results to what is shown in the above screenshot.
 
 ```bash
 kubectl apply -k "/home/$USER/repos/data-access-and-partitioning/roles/app-easytrade/files/kustomize/base" -n easytrade
 ```
 
-2. Validate that the command worked after a few minutes and make sure the enrichment is there under the labels section (if it's not, please run the command above again).
+2. Validate that the command worked after a few minutes and make sure the enrichment is there under the `Annotations` section (if it's not, please run the command above again).
 
 ```bash
 kubectl describe pod -n easytrade -l app=broker-service
 ```
 
-3. Run command to re-deploy all pods with the custom values (not just the BrokerService).
+3. Now run the command to re-deploy all pods with the new custom values (not just the BrokerService).
 
 ```bash
 kubectl apply -k "/home/$USER/repos/data-access-and-partitioning/roles/app-easytrade/files/kustomize/overlays/with-annotations" -n easytrade
 ```
 
-4. Validate that the command worked after a few minutes and make sure the enrichment is there under the labels section of another workload (if it's not, please run the command above again).
+4. Validate that the command worked after a few minutes and make sure the enrichment is there under the labels section of another workload such as `frontend` (if it's not, please run the command above again).
 
 ```bash
 kubectl describe pod -n easytrade -l app=frontend
@@ -36,7 +36,7 @@ kubectl describe pod -n easytrade -l app=frontend
 
 ![](../../assets/images/frontend.png)
 
-5. Review the **Enrichment** Notebook one last time
+5. Review the **Enrichment** Notebook and click "Run" under the section labeled `All values for dt.security_context`
 
 ![](../../assets/images/workloadgranularity.png)
 
