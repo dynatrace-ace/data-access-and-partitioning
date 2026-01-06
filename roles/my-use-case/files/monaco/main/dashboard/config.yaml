@@ -1,0 +1,13 @@
+configs:
+- id: 84442662-e923-482d-9961-4c8a285be90f
+  config:
+    name: EasyTrade
+    parameters:
+      extractedIDs:
+        type: value
+        value:
+          id_8e40dcb4_3907_33aa_af1f_e2a2e5fb2bb2: 8e40dcb4-3907-33aa-af1f-e2a2e5fb2bb2
+    template: 84442662-e923-482d-9961-4c8a285be90f.json
+    skip: false
+  type:
+    api: dashboard
