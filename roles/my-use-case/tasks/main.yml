@@ -2,8 +2,8 @@
 - include_role:
     name: dt-access-token
   vars:
-    access_token_var_name: "DT_TOKEN_monaco"
-    access_token_scope: ["DataExport", "InstallerDownload", "activeGateTokenManagement.create", "entities.read", "settings.read", "settings.write", "ReadConfig", "WriteConfig", "syntheticLocations.read"]
+    access_token_var_name: "DT_TOKEN_monaco2"
+    access_token_scope: ["DataExport", "InstallerDownload", "activeGateTokenManagement.create", "entities.read", "settings.read", "settings.write", "ReadConfig", "WriteConfig", "syntheticLocations.read", "ExternalSyntheticIntegration"]
 
 - include_role:
     name: monaco-v2
@@ -18,40 +18,8 @@
   set_fact:
     domain: "{{ public_ip_result.stdout | trim }}"
 
-# - name: Build live URL from apps URL
-#   ansible.builtin.set_fact:
-#     dt_live_url: "{{ extra_vars.dt_environment_url_gen3 | regex_replace('/+$','') | regex_replace('\\.apps\\.', '.live.') }}"
-
-# - name: Show the URL being called
-#   ansible.builtin.debug:
-#     msg: "Calling: {{ dt_live_url }}/api/v2/synthetic/locations?cloudPlatform=AWS&type=PUBLIC&capability=HTTP"
-
-# - name: Get public synthetic locations (LIVE)
-#   ansible.builtin.uri:
-#     url: "{{ dt_live_url }}/api/v2/synthetic/locations?cloudPlatform=AWS&type=PUBLIC&capability=HTTP"
-#     method: GET
-#     headers:
-#       Accept: "application/json; charset=utf-8"
-#       Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
-#     return_content: true
-#     status_code: 200
-#   register: synthetic_locations
-
-# - name: Pick Dublin synthetic location entityId
-#   ansible.builtin.set_fact:
-#     dublin_synthetic_location_id: >-
-#       {{
-#         (synthetic_locations.json.locations
-#           | selectattr('name', 'equalto', 'Dublin')
-#           | selectattr('status', 'equalto', 'ENABLED')
-#           | map(attribute='entityId')
-#           | first)
-#       }}
-
-# - name: Show Dublin synthetic location entityId
-#   ansible.builtin.debug:
-#     msg: "Dublin synthetic location entityId: {{ dublin_synthetic_location_id }}"
-
+- include_tasks:
+   file: create-synthetic.yml
 
 - name: Monaco - Deploy configuration
   include_role:
@@ -67,7 +35,6 @@
       DT_OAUTH_SSO_ENDPOINT: "{{ extra_vars.dt_oauth_sso_endpoint.rstrip('/') }}"
       DT_TOKEN: "{{ DT_TOKEN_monaco }}"
       DOMAIN: "{{ domain }}"
-      # DUBLIN_ID: "{{ dublin_synthetic_location_id }}"
 
 - include_tasks:
     file: docker.yml

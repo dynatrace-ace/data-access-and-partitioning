@@ -1,0 +1,65 @@
+- name: Get public synthetic locations (LIVE)
+  ansible.builtin.uri:
+    url: "{{ dynatrace_tenant_url }}/api/v2/synthetic/locations?cloudPlatform=AWS&type=PUBLIC&capability=HTTP"
+    method: GET
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco2 }}"
+    return_content: true
+    status_code: 200
+  register: synthetic_locations
+
+- name: Pick Dublin synthetic location entityId
+  ansible.builtin.set_fact:
+    dublin_synthetic_location_id: >-
+      {{
+        (synthetic_locations.json.locations
+          | selectattr('name', 'equalto', 'Dublin')
+          | selectattr('status', 'equalto', 'ENABLED')
+          | map(attribute='entityId')
+          | first)
+      }}
+
+- name: Show Dublin synthetic location entityId
+  ansible.builtin.debug:
+    msg: "Dublin synthetic location entityId: {{ dublin_synthetic_location_id }}"
+
+- name: Create synthetic browser monitor (LIVE)
+  ansible.builtin.uri:
+    url: "{{ dynatrace_tenant_url }}/api/v1/synthetic/monitors"
+    method: POST
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Content-Type: "application/json"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco2 }}"
+    body_format: json
+    body:
+      name: "google.com"
+      type: "BROWSER"
+      enabled: true
+      frequencyMin: 10
+      locations:
+        - "{{ dublin_synthetic_location_id }}"
+      # ✅ REQUIRED for BROWSER monitors in many tenants
+      keyPerformanceMetrics:
+        loadActionKpm: "VISUALLY_COMPLETE"
+        xhrActionKpm: "VISUALLY_COMPLETE"
+      script:
+        type: "availability"
+        version: "1.0"
+        configuration:
+          device:
+            deviceName: "Desktop"
+            orientation: "landscape"
+        events:
+          - type: "navigate"
+            description: 'Loading of "google.com"'
+            url: "https://google.com"
+            wait:
+              waitFor: "page_complete"
+      tags:
+        - "ansible"
+        - "synthetic"
+    return_content: true
+    status_code: [200, 201]
+  register: created_monitor
