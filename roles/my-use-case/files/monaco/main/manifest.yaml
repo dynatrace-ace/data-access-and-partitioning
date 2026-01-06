@@ -1,7 +1,7 @@
 manifestVersion: 1.0
 projects:
   - name: application
-  - name: auto-tags
+  - name: builtintags.auto-tagging
   - name: bizevents
   - name: bizevents-processing-rules
   - name: config
