@@ -1,9 +1,9 @@
 ## Data Partitioning
 
-So far we have enrichement in place, data access & segmentation all sorted out. Now let's focus on the query performance & costs. For that, we will implement a **Bucket Strategy**.
+We have completed enrichment, data access, and segmentation. Now, let's focus on the query performance and costs. For that, we will implement a **Bucket Strategy**.
 
 
-1. Go to the Notebook app, and open the `Data Partitioning Helper`. Run the `Spans Tb/day` & `Logs Tb/day` tiles and check the avg volume per day for both.
+1. Go to the `Notebooks` application and open `Data Partitioning Helper`. Click **Run** on the `Spans Tb/day` & `Logs Tb/day` tiles and check the avg volume per day for both.
 
 ![](../../assets/images/logsspansvolume.png)
 
@@ -11,11 +11,11 @@ So far we have enrichement in place, data access & segmentation all sorted out. 
 
 ![](../../assets/images/lessthan5tbday.png)
 
-2. We need to now calculate the `spans` traffic per application. Check the query below and notice how every single span has a `dt.ingest.size` attribute.
+2. We need to now calculate the `spans` traffic per application. Run the query in the tile labeled **1. Spans have a dt.ingest.size attribute** and notice how every single span has a `dt.ingest.size` attribute.
 
 ![](../../assets/images/dtingestsize.png)
 
-3. We will use this attribute to create a metric in Openpipeline, with the `dt.security_context` as dimensions. Go to the Spans OpenPipeline - **Settings > Process and contextualize > Spans**:
+3. We will use this attribute to create a metric in OpenPipeline with the `dt.security_context` as our dimension. Go to the **Settings -> Process and contextualize -> OpenPipeline -> Spans** as shown below:
 
 ![](../../assets/images/spansop.png)
 
@@ -23,7 +23,7 @@ So far we have enrichement in place, data access & segmentation all sorted out. 
 
 ![](../../assets/images/newop.png)
 
-5. Call it `General Pipeline` and create a metric extraction rule that grabs the `dt.ingest.size` field, and has the `dt.security_context` as a dimension. Please see the screenshot below:
+5. Call it `General Pipeline` and click on `Metric Extraction` tab to create a metric extraction rule that grabs the `dt.ingest.size` field and has `dt.security_context` as a dimension. Click `Save`. Please see the screenshot below:
 
 ![](../../assets/images/opmetric.png)
 
@@ -31,7 +31,7 @@ So far we have enrichement in place, data access & segmentation all sorted out. 
 
 ![](../../assets/images/dynamicroute.png)
 
-7. Route all the traffic to the respective pipeline
+7. Route all the traffic to the respective pipeline by following below screenshot and pressing `Add`
 
 <div align="center">
 <img width="400" src="../../assets/images/routetopipeline.png">
