@@ -39,17 +39,20 @@
 # Wait for easytrade services to be ready
 - name: Wait for easytrade to stabilize
   pause:
-    seconds: 30
+    seconds: 60
 
-# Enable a problem pattern (e.g., DbNotRespondingPlugin)
-- name: Enable high_cpu_usage problem pattern
+- name: Enable high_cpu_usage problem pattern (retry until ready)
   uri:
     url: http://localhost/feature-flag-service/v1/flags/high_cpu_usage
     method: PUT
     body: '{"enabled": true}'
     body_format: json
     status_code: 200
+    return_content: true
   register: enable_pattern_result
+  retries: 60
+  delay: 2
+  until: enable_pattern_result.status == 200
 
 # Display enable result
 - name: Display enable pattern result
