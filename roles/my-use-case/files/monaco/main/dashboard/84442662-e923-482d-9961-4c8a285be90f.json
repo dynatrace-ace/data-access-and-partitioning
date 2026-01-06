@@ -6,6 +6,7 @@
     "owner": "sinisa.zubic@dynatrace.com",
     "popularity": 10,
     "shared": true,
+    "preset": true,
     "tilesNameSize": null
   },
   "tiles": [
