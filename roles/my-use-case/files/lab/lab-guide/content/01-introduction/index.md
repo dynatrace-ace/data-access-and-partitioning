@@ -18,15 +18,14 @@ For our example today, you're responsible for executing the Proof-of-Concept for
 
 ```sql
 fetch spans
-| limit 1
+| limit 10
 ```
 
-Change the view to "Record list" to have a nice overview of all fields. You can do this by clicking on Options->Record List on the DQL tile.
+Change the view to "Record list" to have a nice overview of all fields. You can do this by clicking on `Options->Record list` on the DQL tile.
 
 ![](../../assets/images/fetch_spans.png)
 
-
-2. Copy the value of the `java.jar.path` property.
+2. Copy the value of the `java.jar.path` property for a record that contains one, you can increase the `limit 10` if you can't find one.
 
 3. Open the Segments settings by searching for Segments using the search bar in the top left menu bar
 

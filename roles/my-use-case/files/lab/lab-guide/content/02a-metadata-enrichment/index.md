@@ -9,7 +9,7 @@ We now understand the need for setting the following:
 
 ![](../../assets/images/enrichment_initial.png)
 
-Existing customers may face the following scenario: having a host group id, but not dt.security_context, dt.cost.costcenter, or dt.cost.product. 
+Existing customers may face the following scenario: having a host group id, but not `dt.security_context`, `dt.cost.costcenter`, or `dt.cost.product`. 
 
 2. Open the Kubernetes app, go to Namespaces, click on the Metadata tab, and review the existing labels for the **easytrade** namespace by clicking on the number.
 
@@ -40,13 +40,18 @@ Existing customers may face the following scenario: having a host group id, but 
 7. The following step is not necessary in a real-life scenario: The Dynatrace Operator queries the settings API once every 45 minutes. After creating or modifying rules, if you want to ensure immediate effect, you can restart it. To restart the operator to grab latest configuration changes:
 
 ```bash
-kubectl -n dynatrace rollout restart deployment dynatrace-operator
+export ACE_ACTION=redeploy && ace enable https://github.com/dynatrace-ace/data-access-and-partitioning.git@perform_3rdgen_part_1 --local
 ```
 
 ![](../../assets/images/enrichement45min.png)
 
+8. You can check the Enrichment rules in the dynakube with the following command
 
-8. Restart all deployments in the easytrade namespace:
+```bash
+kubectl get dynakube dynakube -n dynatrace   -o jsonpath='{.status.metadataEnrichment}'
+```
+
+9. Restart all deployments in the easytrade namespace:
 
 ```bash
 for d in $(kubectl -n easytrade get deploy -o name); do
@@ -54,7 +59,7 @@ for d in $(kubectl -n easytrade get deploy -o name); do
 done
 ```
 
-9. Validate that the command worked after a few minutes and make sure the enrichment is there under the labels section we checked in the Kubernetes App (if it's not, please run the command above again).
+10. Validate that the command worked after a few minutes and make sure the enrichment is there under the labels section we checked in the Kubernetes App (if it's not, please run the command above again).
 
 ```bash
 kubectl describe pod -n easytrade -l app=accountservice
@@ -62,7 +67,7 @@ kubectl describe pod -n easytrade -l app=accountservice
 
 ![](../../assets/images/enriched.png)
 
-10. Review your **Enrichment** Notebook with the updated values by pressing "Run" on the percentage table under the Spans section.
+11. Review your **Enrichment** Notebook with the updated values by pressing "Run" on the percentage table under the Spans section.
 
 ![](../../assets/images/enrichment_final.png)
 
