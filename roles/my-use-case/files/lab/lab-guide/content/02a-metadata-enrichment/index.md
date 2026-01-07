@@ -37,7 +37,7 @@ Existing customers may face the following scenario: having a host group id, but 
 
 6. Click **Save changes**
 
-7. The following step is not necessary in a real-life scenario: The Dynatrace Operator queries the settings API once every 45 minutes. After creating or modifying rules, if you want to ensure immediate effect, you can restart it. To restart the operator to grab latest configuration changes:
+7. The following step is not necessary in a real-life scenario. The Dynatrace Operator queries the settings API once every 45 minutes, so instead of waiting, we're going to uninstall and install the operator with this script:
 
 ```bash
 export ACE_ACTION=redeploy && ace enable https://github.com/dynatrace-ace/data-access-and-partitioning.git@perform_3rdgen_part_1 --local
