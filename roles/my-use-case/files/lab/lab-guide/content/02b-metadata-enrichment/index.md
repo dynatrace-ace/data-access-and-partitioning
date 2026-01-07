@@ -2,33 +2,43 @@
 
 ### New Challenge
 
-Easytrade application doesn’t follow Kubernetes standards and has multiple teams working within the same namespace. We need to provide data access, not at the application level (easytrade), but at the component level (e.g. BrokerService). We need a finer level of granularity!
+Easytrade application has multiple teams working within the same namespace. We need to provide data access, not at the application level (easytrade), but at the component level (e.g. BrokerService). We need a finer level of granularity!
 
 ### Exercises
 
-1. Modify pod definition for BrokerService, adding its own `dt.security context`, `dt.cost.costcenter` & `dt.cost.product`.
-
-![](../../assets/images/addanotationsbroker.png)
-
-2. The screenshot shows you how this would look like in an IDE. However, since you don't have access to one, we have prepared a one stop shop for you. Run the next two commands below and after the validation command you'll see similar results to what is shown in the above screenshot.
+1. Within the VM, edit the `broker-service` resource, Easier if you're using an IDE, otherwise access the file edition with vi:
 
 ```bash
-kubectl apply -k "/home/$USER/repos/data-access-and-partitioning/roles/app-easytrade/files/kustomize/base" -n easytrade
+vi /home/$USER/repos/data-access-and-partitioning/roles/app-easytrade/files/easytrade/kubernetes-manifests/broker-service.yaml
 ```
 
-2. Validate that the command worked after a few minutes and make sure the enrichment is there under the `Annotations` section (if it's not, please run the command above again).
+2. Modify pod definition for BrokerService, adding its own `dt.security_context`, `dt.cost.costcenter` & `dt.cost.product`.
+
+![](../../assets/images/customannotations.png)
+
+Need help? If you are having issues with the editor, you can just run this command. It will automatically enrich broker-service with its own dynatrace fields as the screenshot above!
+
+```bash
+kubectl apply -k /home/$USER/repos/data-access-and-partitioning/roles/app-easytrade/files/broker-service-dt-annotations.yaml
+```
+
+3. Validate that the command worked after a few minutes and make sure the enrichment is there under the `Annotations` section (if it's not, please run the command above again).
 
 ```bash
 kubectl describe pod -n easytrade -l app=broker-service
 ```
 
-3. Now run the command to re-deploy all pods with the new custom values (not just the BrokerService).
+4. Validate within the Enrichment Overview Notebook, is broker-service dt.security_context being populated in Dynatrace?
+
+5. Now run the command to re-deploy all pods with the new custom values (not just for broker-service).
 
 ```bash
 kubectl apply -k "/home/$USER/repos/data-access-and-partitioning/roles/app-easytrade/files/kustomize/overlays/with-annotations" -n easytrade
 ```
 
-4. Validate that the command worked after a few minutes and make sure the enrichment is there under the labels section of another workload such as `frontend` (if it's not, please run the command above again).
+> Note: this command is applying a kustomize patch where all resources gets added the dynatrace annotations automatically. Feel free to explore the file, the idea behind it was to avoid making you change the resources one by one
+
+6. Validate that the command worked after a few minutes and make sure the enrichment is there under the labels section of another workload such as `frontend` (if it's not, please run the command above again).
 
 ```bash
 kubectl describe pod -n easytrade -l app=frontend
@@ -36,7 +46,7 @@ kubectl describe pod -n easytrade -l app=frontend
 
 ![](../../assets/images/frontend.png)
 
-5. Review the **Enrichment** Notebook and click "Run" under the section labeled `All values for dt.security_context`
+7. Review the **Enrichment** Notebook and click "Run" under the section labeled `All values for dt.security_context`
 
 ![](../../assets/images/workloadgranularity.png)
 
