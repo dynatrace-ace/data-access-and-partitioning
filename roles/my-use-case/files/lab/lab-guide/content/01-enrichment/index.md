@@ -18,7 +18,7 @@ There are special fields that we recommend using in segments, called Primary Gra
 | dt.cost.costcenter        | ecommerce-apps | cost allocation        |
 | dt.cost.product           | easytrade      | cost allocation        |
 
-<div align="center">
+<div align="left">
 <img width="600" src="../../assets/images/addproperty.png">
 </div>
 
