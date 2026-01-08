@@ -1,12 +1,12 @@
 ## Enrichment at Source
 
-The team are using auto-tags & management zones for filtering & access control in their Dynatrace classic platform. A very common setup was to rely on the values provided with the host group, to configure auto-tags, and Management Zones based on them.
+The team is using auto-tags and management zones for filtering and access control in their Dynatrace Classic platform. A very common setup was to rely on the values provided by the host group to configure auto-tags and management zones.
 
 ![](../../assets/images/tagssetup.png)
 
-There are special "fields" we recommend to use in Segments that are called Primary Grail Field, Host Group is one of them. We will show you how to add other relevant Primary Grail Fields (and Tags) directly from the Dynatrace Environment.
+There are special fields that we recommend using in segments, called Primary Grail Fields; Host Group is one of them. We will show you how to add other relevant Primary Grail Fields (and tags) directly from the Dynatrace environment.
 
-1. Go to the `Deployment Status` page within the Dynatrace tenant, filter by the host group of the team (`easytrade`), click on all the hosts (just 1 for us), modify host properties, and click on `Run action`
+1. Go to the `Deployment Status` page within the Dynatrace tenant, filter by the team’s host group (`easytrade`), select all hosts (only one in our case), choose **Modify host properties**, and click `Run action`.
 
 ![](../../assets/images/deploymentstatus.png)
 
@@ -18,7 +18,9 @@ There are special "fields" we recommend to use in Segments that are called Prima
 | dt.cost.costcenter        | ecommerce-apps | cost allocation        |
 | dt.cost.product           | easytrade      | cost allocation        |
 
-![](../../assets/images/addproperty.png)
+<div align="center">
+<img width="600" src="../../assets/images/addproperty.png">
+</div>
 
 > Note: you can also add filtering Primary Grail Tags with the following format: `primary_tags.<key>`, for a filtering purpose. E.g. primary_tags.environment=staging
 
