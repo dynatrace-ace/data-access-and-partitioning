@@ -2,7 +2,7 @@
 - include_role:
     name: dt-access-token
   vars:
-    access_token_var_name: "DT_TOKEN_monaco2"
+    access_token_var_name: "DT_TOKEN_monaco"
     access_token_scope: ["DataExport", "InstallerDownload", "activeGateTokenManagement.create", "entities.read", "settings.read", "settings.write", "ReadConfig", "WriteConfig", "syntheticLocations.read", "ExternalSyntheticIntegration"]
 
 - include_role:
