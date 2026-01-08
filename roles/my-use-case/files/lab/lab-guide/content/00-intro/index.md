@@ -1,6 +1,6 @@
 ## Intro
 
-During this lab, we will help the Easytrade team upgrade their Dynatrace Observability solution. The team has configured their tenant with the following features:
+During this lab, we will help the Easytrade application team upgrade their Dynatrace Observability solution. The team has previously configured their tenant with the following features:
 - Auto-tags and management zones for filtering and access control
 - Classic dashboards
 - Alerting
@@ -12,6 +12,6 @@ To meet their requirements, we will upgrade these features to their equivalents 
 - Dashboards
 - Alerting
 
-This lab goes beyond a one-to-one feature mapping. In addition to migrating existing capabilities, we will demonstrate the added value of the Dynatrace 3rd Gen Platform—showing how these new features enable deeper insights, greater flexibility, and more efficient workflows compared to the legacy approach.
+This lab goes beyond a one-to-one feature mapping. In addition to migrating existing capabilities, we will demonstrate the added value of the Dynatrace 3rd Gen Platform—showing how these new features enable deeper insights, greater flexibility, and more efficient workflows compared to the classic approach.
 
 Let’s get started!
