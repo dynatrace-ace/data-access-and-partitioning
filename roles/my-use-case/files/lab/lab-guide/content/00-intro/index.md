@@ -12,4 +12,6 @@ To meet their requirements, we will upgrade these features to their equivalents 
 - Dashboards
 - Alerting
 
+This lab goes beyond a one-to-one feature mapping. In addition to migrating existing capabilities, we will demonstrate the added value of the Dynatrace 3rd Gen Platform—showing how these new features enable deeper insights, greater flexibility, and more efficient workflows compared to the legacy approach.
+
 Let’s get started!
