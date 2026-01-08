@@ -4,13 +4,13 @@ The team is using auto-tags and management zones for filtering and access contro
 
 ![](../../assets/images/tagssetup.png)
 
-There are special fields that we recommend using in segments, called Primary Grail Fields; Host Group is one of them. We will show you how to add other relevant Primary Grail Fields (and tags) directly from the Dynatrace environment.
+In our new approach, Segments, there are special fields that we recommend using: Primary Grail Fields. Host Group is one of these fields. We will show you how to add other relevant Primary Grail Fields (and tags) directly from the Dynatrace environment.
 
-1. Go to the `Deployment Status` page within the Dynatrace tenant, filter by the team’s host group (`easytrade`), select all hosts (only one in our case), choose **Modify host properties**, and click `Run action`.
+1. Go to the `Deployment Status` application within the Dynatrace tenant, filter by the team’s host group (`easytrade`), select all hosts (only one in our case), choose **Modify host properties**, and click `Run action`.
 
 ![](../../assets/images/deploymentstatus.png)
 
-2. Let's define additional properties, depending the use case:
+2. Let's define additional properties, depending on the use case:
 
 | Primary Grail Field / Tag | Assigned Value | Purpose / Intended Use |
 |---------------------------|----------------|------------------------|
@@ -32,7 +32,7 @@ There are special fields that we recommend using in segments, called Primary Gra
 
 ![](../../assets/images/waitminutes.png)
 
-5. Open a new Notebook, and run the following DQL in order to check if logs are enriched
+5. Go to the Notebooks application and create a new Notebook by clicking ** + Notebook **. Run the following DQL in a new tile in order to check if the logs are enriched:
 
 ```shell
 fetch logs
@@ -42,13 +42,19 @@ fetch logs
 
 ![](../../assets/images/logsenriched.png)
 
-5. For traces, we need to restart the app. Restart easytrade with the following command
+5. For traces, we need to restart the app. Navigate to the correct directory: Restart easytrade with the following commands in the terminal provided in Dynatrace University.
 
 ```shell
-cd /opt/easytrade && docker compose restart
+cd /opt/easytrade
 ```
 
-6. Check how Enrichment works for traces
+6. Restart easytrade with the following commands in the terminal provided in Dynatrace University. When password for the box is requested, you can find that on this page as well. 
+
+```shell
+sudo docker compose restart
+```
+
+7. Check how Enrichment works for traces using the below DQL in a new tile on the same Notebook
 
 ```shell
 fetch spans
@@ -58,11 +64,11 @@ fetch spans
 
 ![](../../assets/images/spansenriched.png)
 
-If you have hundred of host groups and you would like to automate the process, contact us and we can provide you a script that could help!
+If you have hundreds of host groups and you would like to automate the process, contact us and we can provide you with a script that you can leverage!
 
 ### Shared Infrastructure
 
-If you've shared infrastructure, and you need different properties for the apps running on the hosts, you can define them also as environment variables, or in a future release, Dynatrace will allow to configure source enrichment directly from the tenant
+If you have shared infrastructure and you need different properties for the apps running on the hosts, you can define them as environment variables, or in a future release, Dynatrace will allow to configure source enrichment directly from the tenant.
 
 Environment variables match with a declarative practice for whoever owns the resource, in order to find them in Dynatrace. The counterpart is the manual labor, in that case, you can rely on Dynatrace configs otherwise.
 
