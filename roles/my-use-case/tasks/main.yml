@@ -27,7 +27,7 @@
         name: monaco-v2
         tasks_from: apply-monaco
       vars:
-        monaco_manifest_path: "/home/{{ lookup('env','USER') }}/repos/data-access-and-partitioning/roles/my-use-case/files/monaco/main/manifest.yaml"
+        monaco_manifest_path: "/home/$USER/repos/data-access-and-partitioning/roles/my-use-case/files/monaco/main/manifest.yaml"
         monaco_environment:
           DT_PLATFORM_TENANT_URL: "{{ extra_vars.dt_environment_url_gen3 | default('', true) | regex_replace('/+$','') }}"
           DT_CLASSIC_TENANT_URL: "{{ extra_vars.dt_environment_url_gen3 | regex_replace('\\.apps\\.', '.') | regex_replace('/+$','') }}"
