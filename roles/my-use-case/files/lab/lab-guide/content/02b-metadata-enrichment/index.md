@@ -19,7 +19,21 @@ vi /home/$USER/repos/data-access-and-partitioning/roles/app-easytrade/files/easy
 Need help? If you are having issues with the editor, you can just run this command. It will automatically enrich broker-service with its own dynatrace fields as the screenshot above!
 
 ```bash
-kubectl apply -k /home/$USER/repos/data-access-and-partitioning/roles/app-easytrade/files/broker-service-dt-annotations.yaml
+kubectl patch deployment broker-service -n easytrade \
+  --type='merge' \
+  -p '{
+    "spec": {
+      "template": {
+        "metadata": {
+          "annotations": {
+            "metadata.dynatrace.com/dt.cost.costcenter": "ecommerce-apps",
+            "metadata.dynatrace.com/dt.cost.product": "broker-service",
+            "metadata.dynatrace.com/dt.security_context": "broker-service"
+          }
+        }
+      }
+    }
+  }'
 ```
 
 3. Validate that the command worked after a few minutes and make sure the enrichment is there under the `Annotations` section (if it's not, please run the command above again).
