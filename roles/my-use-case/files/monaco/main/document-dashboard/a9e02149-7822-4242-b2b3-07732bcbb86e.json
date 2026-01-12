@@ -136,9 +136,9 @@
     },
     "settings": {
         "defaultTimeframe": {
-            "enabled": false,
+            "enabled": true,
             "value": {
-                "from": "now()-35d",
+                "from": "now()-24h",
                 "to": "now()"
             }
         }
