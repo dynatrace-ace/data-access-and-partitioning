@@ -1,0 +1,68 @@
+- name: Define metric metadata target
+  ansible.builtin.set_fact:
+    metric_metadata_schema: "builtin:metric.metadata"
+    metric_metadata_scope: "metric-calc:service.part2.mostcommonexceptions"
+
+- name: Get existing metric metadata object (LIVE)
+  ansible.legacy.uri:
+    url: "{{ dynatrace_tenant_url }}/api/v2/settings/objects?schemaIds={{ metric_metadata_schema | urlencode }}&scopes={{ metric_metadata_scope | urlencode }}&fields=objectId,value"
+    method: GET
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
+    return_content: true
+    status_code: 200
+  register: metric_meta_lookup
+
+- name: Extract existing metric metadata objectId (if any)
+  ansible.builtin.set_fact:
+    metric_meta_object_id: >-
+      {{
+        (
+          (metric_meta_lookup.json['items'] | default([]))
+          | first
+          | default({})
+        ).get('objectId', '')
+      }}
+
+- name: Create metric metadata object if missing (LIVE)
+  ansible.legacy.uri:
+    url: "{{ dynatrace_tenant_url }}/api/v2/settings/objects"
+    method: POST
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Content-Type: "application/json"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
+    body_format: json
+    body:
+      - schemaId: "builtin:metric.metadata"
+        scope: "{{ metric_metadata_scope }}"
+        value:
+          displayName: "Most common exceptions"
+          unit: "Count"
+          dimensions: []
+          tags: []
+    return_content: true
+    status_code: [200, 207]
+  when: metric_meta_object_id == ""
+  register: metric_meta_create
+
+- name: Update metric metadata object if it exists (LIVE)
+  ansible.legacy.uri:
+    url: "{{ dynatrace_tenant_url }}/api/v2/settings/objects/{{ metric_meta_object_id }}"
+    method: PUT
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Content-Type: "application/json"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
+    body_format: json
+    body:
+      value:
+        displayName: "Most common exceptions"
+        unit: "Count"
+        dimensions: []
+        tags: []
+    return_content: true
+    status_code: 200
+  when: metric_meta_object_id != ""
+  register: metric_meta_update

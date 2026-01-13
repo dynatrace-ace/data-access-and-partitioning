@@ -1,0 +1,63 @@
+- name: Get all SLOs (LIVE)
+  ansible.builtin.uri:
+    url: "{{ dynatrace_tenant_url }}/api/v2/slo"
+    method: GET
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
+    return_content: true
+    status_code: 200
+  register: slo_list
+
+- name: Find existing SLO id by name (part2_service_performance)
+  ansible.builtin.set_fact:
+    existing_slo_id: >-
+      {{
+        (slo_list.json.slo
+          | selectattr('name', 'equalto', 'part2_service_performance')
+          | map(attribute='id')
+          | first) | default('', true)
+      }}
+
+
+- name: Create SLO if missing (LIVE)
+  ansible.builtin.uri:
+    url: "{{ dynatrace_tenant_url }}/api/v2/slo"
+    method: POST
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Content-Type: "application/json"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
+    body_format: json
+    body:
+      enabled: true
+      name: "part2_service_performance"
+      metricName: "part2_service_performance"
+      metricExpression: "((builtin:service.response.time:avg:partition(\"latency\",value(\"good\",lt(10000))):splitBy():count:default(0))/(builtin:service.response.time:avg:splitBy():count)*(100)):default(100,always)"
+      evaluationType: "AGGREGATE"
+      filter: ""
+      timeframe: "-1w"          # <-- classic field name
+      target: 99.98            # <-- classic field name
+      warning: 99.99           # <-- classic field name
+      errorBudgetBurnRate:
+        burnRateVisualizationEnabled: true
+        fastBurnThreshold: 10.0
+    return_content: false
+    status_code: [201, 409]
+  when: existing_slo_id == ""
+  register: slo_create
+
+- name: Resolve SLO id (existing or newly created)
+  ansible.builtin.set_fact:
+    part2_slo_id: >-
+      {{
+        (existing_slo_id | length > 0)
+          | ternary(
+              existing_slo_id,
+              (slo_create.location | regex_replace('^.*/', ''))
+            )
+      }}
+
+- name: Show SLO id to use in dashboard tile assignedEntities
+  ansible.builtin.debug:
+    msg: "part2_service_performance SLO id: {{ part2_slo_id }}"

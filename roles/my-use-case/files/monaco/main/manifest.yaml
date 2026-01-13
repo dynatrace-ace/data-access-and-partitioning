@@ -9,9 +9,10 @@ projects:
     type: grouping
   - name: document-notebook
   - name: custom-service
-  - name: builtinmonitoring.slo
   - name: builtinmanagement-zones
   - name: dashboard
+  # - name: builtinmetric.metadata
+  # - name: builtinmonitoring.slo
   # - name: builtinsynthetic.http.assigned-applications
   # - name: builtinsynthetic.http.name
   # - name: builtinsynthetic.http.outage-handling

@@ -39,11 +39,11 @@ fetch spans, from:now()-2m
 
 ![](../../assets/images/addvariablesave.png)
 
-5. Filter `Data (allt types)` with the Primary Grail Field. In our case, the dt.security_context value where we're extracting the app name. Then click on Preview.
+5. Filter `Data (all types)` with the Primary Grail Field. In our case, the `dt.security_context` value where we're extracting the app name. Then click on Preview.
 
 ![](../../assets/images/filteralldata.png)
 
-See how all datapoints are getting enriched with the previously configured Primary Grail Field. And also notice how dt.security_context doesn't work for `Classic Entities`. This is meant to be like this, since it is a pure 3rd Gen configuration, and applies just to the "New" entities. And this is the reason why we created the below variable:
+See how all datapoints are getting enriched with the previously configured Primary Grail Field. And also notice how `dt.security_context` doesn't work for `Classic Entities`. This is meant to be like this, since it is a pure 3rd Gen configuration, and applies just to the "New" entities. And this is the reason why we created the below variable:
 
 ```sql
 | fieldsAdd tags = concat("application:", dt.security_context)

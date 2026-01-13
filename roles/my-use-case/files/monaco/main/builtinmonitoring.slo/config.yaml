@@ -9,9 +9,9 @@ configs:
       schema: builtin:monitoring.slo
       schemaVersion: 6.0.14
       scope: environment
-- id: e77e9949-acd9-3abe-af86-4ec1f8b3eccf
+- id: 8e40dcb4-3907-33aa-af1f-e2a2e5fb2bb2
   config:
-    template: e77e9949-acd9-3abe-af86-4ec1f8b3eccf.json
+    template: 8e40dcb4-3907-33aa-af1f-e2a2e5fb2bb2.json
     skip: false
     originObjectId: vu9U3hXa3q0AAAABABZidWlsdGluOm1vbml0b3Jpbmcuc2xvAAZ0ZW5hbnQABnRlbmFudAAkOGU0MGRjYjQtMzkwNy0zM2FhLWFmMWYtZTJhMmU1ZmIyYmIyvu9U3hXa3q0
   type:

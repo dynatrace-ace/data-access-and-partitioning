@@ -1,0 +1,11 @@
+configs:
+  - id: c93664c0-d149-3c7b-bf38-95c376612abd
+    config:
+      template: c93664c0-d149-3c7b-bf38-95c376612abd.json
+      skip: false
+      originObjectId: vu9U3hXa3q0AAAABABdidWlsdGluOm1ldHJpYy5tZXRhZGF0YQAGbWV0cmljACdjYWxjOnNlcnZpY2UucGFydDIubW9zdGNvbW1vbmV4Y2VwdGlvbnMAJGQzODVkZDVmLTgyMzQtMzlmMy05YTFhLWQ1NjUwZTRmNDg1Ob7vVN4V2t6t
+    type:
+      settings:
+        schema: builtin:metric.metadata
+        schemaVersion: "4.29"
+        scope: metric-calc:service.part2.mostcommonexceptions
