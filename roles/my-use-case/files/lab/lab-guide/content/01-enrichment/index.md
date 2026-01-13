@@ -64,11 +64,11 @@ fetch spans
 
 ![](../../assets/images/spansenriched.png)
 
-If you have hundreds of host groups and you would like to automate the process, contact us and we can provide you with a script that you can leverage!
+If you have hundreds of host groups and you would like to automate the process, contact us!
 
 ### Shared Infrastructure
 
-If you have shared infrastructure and you need different properties for the apps running on the hosts, you can define them as environment variables, or in a future release, Dynatrace will allow to configure source enrichment directly from the tenant.
+If you have shared infrastructure and you need different properties for the apps running on the hosts, you can define them as environment variables.
 
 Environment variables match with a declarative practice for whoever owns the resource, in order to find them in Dynatrace. The counterpart is the manual labor, in that case, you can rely on Dynatrace configs otherwise.
 

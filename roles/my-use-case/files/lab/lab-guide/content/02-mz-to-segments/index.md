@@ -23,7 +23,7 @@ Management Zones used to be each a single configuration object. E.g. there was a
 3. Add the following as the variable definition, click on Preview to test, and Done to save the changes. 
 
 ```sql
-fetch spans
+fetch spans, from:now()-2m
 | dedup dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service
 
 // extract primary grail fileds & tags defined
