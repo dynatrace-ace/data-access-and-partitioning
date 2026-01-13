@@ -1,4 +1,4 @@
-## Intro
+## Objective
 
 During this lab, we will help the Easytrade application team upgrade their Dynatrace Observability solution. The team has previously configured their tenant with the following features:
 - Auto-tags and management zones for filtering and access control
@@ -27,9 +27,9 @@ fetch spans
 
 Change the view to "Record list" to have a nice overview of all fields. You can do this by clicking on `Options->Record list` on the DQL tile.
 
-![](../../assets/images/fetch_spans.png)
+![](../../assets/images/fetch_spans_2.png)
 
-2. Copy the value of the `java.jar.path` property for a record that contains one, you can increase the `limit 10` if you can't find one.
+2. Copy the value of the `process.executable.path` property for a record that contains one, you can increase the `limit 10` if you can't find one.
 
 3. Open the Segments settings by searching for Segments using the search bar in the top left menu bar
 
@@ -40,22 +40,22 @@ Dynatrace segments are a way to organize and manage groups of monitored entities
 4. Create a new Segment, and filter Data (all types) with the java.jar.path. E.g.
 
 ```bash
-java.jar.path = "/home/easytrade/app.jar" 
+process.executable.path = "/usr/sbin/nginx"
 ```
 
-![](../../assets/images/segment_java.png)
+![](../../assets/images/segment_java_2.png)
 
-See how `java.jar.path` is just available for spans? not quite a good fit for a tenant-wise configuration
+See how `process.executable.path` is just available for spans? not quite a good fit for a tenant-wise configuration
 
-5. Now let's use HOST GROUP to filter Data (all types). E.g.
+5. Now let's use `dt.host_group.id` to filter Data (all types). E.g.
 
 ```bash
-HOST GROUP FILTER
+dt.host_group.id = easytrade
 ```
 
 Click on the Metrics/Logs/Events tab. Notice how the metadata is available on all signals, hence it's a very good fit for a tenant-wise configuration.
 
-![](../../assets/images/pgfallsignals.png)
+![](../../assets/images/hostgroupallsignals.png)
 
 ## Close Up & Next Challenge
 
