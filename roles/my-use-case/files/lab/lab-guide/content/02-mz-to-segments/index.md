@@ -128,3 +128,10 @@ shared:app-id not in ("dynatrace.classic.distributed.traces");
 Then the easytrade team will not be able to access the "classic" Distributed traces app, but the new & enhanced experience!
 
 ![](../../assets/images/notracesclassic.png)
+
+### Resources
+
+The following Dynatrace documentation pages are good reads if you're intending to learn more about migrating Management Zones to Segments:
+- [Best practices for upgrading to the latest Dynatrace](https://docs.dynatrace.com/docs/manage/upgrade-guide-landing-page)
+- [Management Zones to Segments](https://docs.dynatrace.com/docs/manage/segments/upgrade-guide-segments)
+
