@@ -17,6 +17,40 @@
         "pgToHostPropagation": true,
         "pgToServicePropagation": true
       }
+    },
+    {
+      "enabled":true,
+      "valueFormat":"easytrade",
+      "valueNormalization":"Leave text as-is",
+      "type":"ME",
+      "attributeRule":{
+          "entityType":"APPLICATION",
+          "conditions":[
+            {
+                "key":"WEB_APPLICATION_NAME",
+                "operator":"EQUALS",
+                "stringValue":"EasyTrade",
+                "caseSensitive":true
+            }
+          ]
+      }
+    },
+    {
+      "enabled":true,
+      "valueFormat":"easytrade",
+      "valueNormalization":"Leave text as-is",
+      "type":"ME",
+      "attributeRule":{
+          "entityType":"SYNTHETIC_TEST",
+          "conditions":[
+            {
+                "key":"BROWSER_MONITOR_NAME",
+                "operator":"EQUALS",
+                "stringValue":"google.com",
+                "caseSensitive":true
+            }
+          ]
+      }
     }
   ]
 }
