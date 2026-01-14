@@ -73,15 +73,27 @@ See how all datapoints are getting enriched with the previously configured Prima
 
 ![](../../assets/images/validate.png)
 
-12. Save your Segment!
+12. Click one more time in + More to add the Synthetics monitors
 
-13. Go to the new Services app to validate the Segment is working. Apply the segment using the cube icon near the filter bar as shown below
+![](../../assets/images/synthinsegment2.png)
+
+13. Filter with the tag and preview
+
+![](../../assets/images/synthinsegment.png)
+
+14. Do the same for Web Application
+
+![](../../assets/images/ruminsegment.png)
+
+15. Save your Segment!
+
+16. Go to the new Services app to validate the Segment is working. Apply the segment using the cube icon near the filter bar as shown below
 
 ![](../../assets/images/segmentnewserviceapp.png)
 
-14. After applying the Segment, see how all our entities remain when filtering. We just accomplished one of the team's requirements about filtering across different screens!
+17. After applying the Segment, see how all our entities remain when filtering. We just accomplished one of the team's requirements about filtering across different screens!
 
-15. Go to the Distributed Tracing app, and filter using the Segment to validate the same
+18. Go to the Distributed Tracing app, and filter using the Segment to validate the same
 
 ![](../../assets/images/filtertracessegment.png)
 
