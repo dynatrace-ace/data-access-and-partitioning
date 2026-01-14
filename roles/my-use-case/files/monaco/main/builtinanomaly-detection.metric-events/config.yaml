@@ -1,0 +1,10 @@
+configs:
+- id: metric-event
+  config:
+    template: test-alert.json
+    skip: false
+  type:
+    settings:
+      schema: builtin:anomaly-detection.metric-events
+      schemaVersion: 1.0.19
+      scope: environment
