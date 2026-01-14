@@ -42,13 +42,13 @@ fetch logs
 
 ![](../../assets/images/logsenriched.png)
 
-5. For traces, we need to restart the app. Navigate to the correct directory: Restart easytrade with the following commands in the terminal provided in Dynatrace University.
+5. For traces, we need to restart the app. Navigate to the correct directory
 
 ```shell
 cd /opt/easytrade
 ```
 
-6. Restart easytrade with the following commands in the terminal provided in Dynatrace University. When password for the box is requested, you can find that on this page as well. 
+6. Restart easytrade with the following command:
 
 ```shell
 sudo docker compose restart
