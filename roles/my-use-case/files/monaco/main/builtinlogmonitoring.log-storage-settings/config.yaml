@@ -1,0 +1,10 @@
+configs:
+  - id: 71bfef63-2c8c-3966-bd01-624ddf64b317
+    config:
+      template: 71bfef63-2c8c-3966-bd01-624ddf64b317.json
+      skip: false
+      originObjectId: vu9U3hXa3q0AAAABACpidWlsdGluOmxvZ21vbml0b3JpbmcubG9nLXN0b3JhZ2Utc2V0dGluZ3MABnRlbmFudAAGdGVuYW50ACQ1MDZlYjRhNC04MjAyLTExZWUtYjk2Mi0wMjQyYWMxMjAwMDK-71TeFdrerQ
+    type:
+      settings:
+        schema: builtin:logmonitoring.log-storage-settings
+        scope: environment

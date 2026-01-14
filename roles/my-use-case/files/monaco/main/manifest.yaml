@@ -11,6 +11,7 @@ projects:
   - name: custom-service
   - name: builtinmanagement-zones
   - name: dashboard
+  - name: builtinlogmonitoring.log-storage-settings
   # - name: builtinmetric.metadata
   # - name: builtinmonitoring.slo
   # - name: builtinsynthetic.http.assigned-applications
