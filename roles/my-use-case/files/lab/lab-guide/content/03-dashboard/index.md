@@ -39,22 +39,60 @@ fetch dt.davis.problems
 
 ![](../../assets/images/runproblemsdql.png)
 
-#### Upgrade SLOs (Optional)
+6. Delete the placeholder for problems, and add the just created DQL in the respective section
 
-6. Go to classic SLOs and open the metric in metric explorer
+![](../../assets/images/formattedproblemtile.png)
 
-7. In metric explorer open the advanced expression in notebooks
+#### Upgrade SLO
 
-8. In the DQL statement, replace in the last line the field `expression` with sli
+7. Go to the `classic Service-level objectives app`, and open the metric in metric explorer
 
-9. Copy the DQL statement and open the SLO app
+![](../../assets/images/slometricinexplorer.png)
 
-10. In the SLO app add a new custom SLO
+8. Click on `Open with...`, and add it to a Notebook
 
-11. Pin the SLO to dashboard
+![](../../assets/images/addslotonotebook.png)
 
-#### Enhance
+9. Replace in the last line the field `expression` with `sli`, and copy the entire command
 
-12. Improve dashboard with tiles & views that were not possible before. E.g. Exceptions? Logs? Business events?​. Pin top database queries on dashboard from services
+![](../../assets/images/changetosli.png)
 
-![alt text](dashboard-enhanced.png)
+10. Go to the new SLO app, click on `+ Service-level objective`, and `+ Custom SLO`
+
+![](../../assets/images/addcustomslo.png)
+
+11. Paste the expression, then click in refresh, and save the SLO
+
+![](../../assets/images/pasteexpression.png)
+
+12. Finish configuring the SLO, and Pin it to your dashboard
+
+![](../../assets/images/pintodash.png)
+
+Well done, you should have upgraded your dashboard to 3rd Gen
+
+![](../../assets/images/dashready.png)
+
+#### Unleash the Power!
+
+Let's discover how easy we can get huge value from 3rd Gen, by improving the dashboard with tiles & views that were not possible before (or limited).
+
+13. Click on +, add top db statements
+
+![](../../assets/images/adddb.png)
+
+14. Add tiles for logs with error, and the bizevents with the information of Easytrade's user deposits
+
+fetch logs
+| filter status == "ERROR"
+| makeTimeseries count(), interval: 1m
+
+fetch logs
+| filter status == "ERROR"
+| fields content, timestamp
+
+fetch bizevents
+| filter event.type == "com.easytrade.deposit"
+| fields name, balance, amount, event.type
+
+![](../../assets/images/finaldash.png)
