@@ -1,0 +1,108 @@
+- name: Define Key Requests target
+  ansible.builtin.set_fact:
+    keyreq_schema: "builtin:settings.subscriptions.service"
+    target_service_name: "easyTradeLoginService"
+    target_key_request: "/api/Login"
+
+- name: Lookup service entityId by name
+  ansible.legacy.uri:
+    url: "{{ dynatrace_tenant_url }}/api/v2/entities?entitySelector={{ ('type(service),entityName.equals(\"' ~ target_service_name ~ '\")') | urlencode }}"
+    method: GET
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
+    return_content: true
+    status_code: 200
+  register: service_lookup
+
+- name: Extract service entityId
+  ansible.builtin.set_fact:
+    service_entity_id: "{{ ((service_lookup.json.entities | default([])) | first | default({})).get('entityId','') }}"
+
+- name: Fail if service not found
+  ansible.builtin.fail:
+    msg: "Service '{{ target_service_name }}' not found via /api/v2/entities."
+  when: service_entity_id == ""
+
+
+# 2) Find existing Key Requests settings object for that service
+- name: Get existing Key Requests settings object for service
+  ansible.legacy.uri:
+    url: "{{ dynatrace_tenant_url }}/api/v2/settings/objects?schemaIds={{ keyreq_schema | urlencode }}&scopes={{ service_entity_id | urlencode }}&fields=items(objectId,value)"
+    method: GET
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
+    return_content: true
+    status_code: 200
+  register: keyreq_lookup
+
+- name: Extract Key Requests objectId + existing names (if any)
+  ansible.builtin.set_fact:
+    keyreq_object_id: >-
+      {{
+        (
+          (keyreq_lookup.json['items'] | default([]))
+          | first
+          | default({})
+        ).get('objectId', '')
+      }}
+    existing_key_requests: >-
+      {{
+        (
+          (
+            (
+              (keyreq_lookup.json['items'] | default([]))
+              | first
+              | default({})
+            ).get('value', {})
+          ).get('keyRequestNames', [])
+        ) | default([])
+      }}
+
+# 3) Desired list (keep existing + ensure /api/Login present)
+- name: Build desired Key Requests list
+  ansible.builtin.set_fact:
+    desired_key_requests: "{{ (existing_key_requests + [target_key_request]) | unique }}"
+
+- name: Detect whether update is needed
+  ansible.builtin.set_fact:
+    keyreq_needs_update: "{{ (keyreq_object_id != '') and (existing_key_requests | sort != desired_key_requests | sort) }}"
+
+# 4) Create if missing
+- name: Create Key Requests settings object (if missing)
+  ansible.legacy.uri:
+    url: "{{ dynatrace_tenant_url }}/api/v2/settings/objects"
+    method: POST
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Content-Type: "application/json"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
+    body_format: json
+    body:
+      - schemaId: "{{ keyreq_schema }}"
+        scope: "{{ service_entity_id }}"
+        value:
+          keyRequestNames: "{{ desired_key_requests }}"
+    return_content: true
+    status_code: [200, 207]
+  when: keyreq_object_id == ""
+  register: keyreq_create
+
+# 5) Update if exists and changed
+- name: Update Key Requests settings object (if exists and changed)
+  ansible.legacy.uri:
+    url: "{{ dynatrace_tenant_url }}/api/v2/settings/objects/{{ keyreq_object_id }}"
+    method: PUT
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Content-Type: "application/json"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
+    body_format: json
+    body:
+      value:
+        keyRequestNames: "{{ desired_key_requests }}"
+    return_content: true
+    status_code: 200
+  when: keyreq_needs_update
+  register: keyreq_update

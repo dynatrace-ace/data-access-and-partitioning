@@ -24,6 +24,12 @@
 - include_tasks:
    file: create-slo.yml
 
+- include_tasks:
+   file: create-calc-serv-metric.yml
+
+- include_tasks:
+   file: create-key-request.yml
+
 - name: Monaco - Deploy configuration
   include_role:
     name: monaco-v2

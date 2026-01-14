@@ -1,0 +1,40 @@
+- name: Define calculated service metric target (part2)
+  ansible.builtin.set_fact:
+    csm_display_name: "Easytrade Common Exceptions"
+    csm_full_key: "calc:service.easytrademostcommonexceptions"
+    csm_unit: "COUNT"
+    csm_mz_name: "Easytrade"
+
+- name: Create/Update calculated service metric (Exception count, part2, split top 10 by exception class)
+  ansible.legacy.uri:
+    url: "{{ dynatrace_tenant_url }}/api/config/v1/calculatedMetrics/service/{{ csm_full_key | urlencode }}"
+    method: PUT
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Content-Type: "application/json"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
+    body_format: json
+    body:
+      enabled: true
+      name: "{{ csm_display_name }}"
+      tsmMetricKey: "{{ csm_full_key }}"
+      unit: "{{ csm_unit }}"
+
+      managementZones:
+        - "{{ csm_mz_name }}"
+
+      metricDefinition:
+        metric: "EXCEPTION_COUNT"
+
+      # Split by: Exception class (Top 10)
+      dimensionDefinition:
+        name: "Exception class"
+        dimension: "{Exception:Class}"
+        placeholders: []
+        topX: 10
+        topXAggregation: "SUM"
+        topXDirection: "DESCENDING"
+
+    return_content: true
+    status_code: [201, 204]
+  register: csm_put
