@@ -32,6 +32,34 @@
         "pgToHostPropagation": true,
         "pgToServicePropagation": true
       }
+    },
+    {
+      "enabled":true,
+      "type":"ME",
+      "attributeRule":{
+          "entityType":"BROWSER_MONITOR",
+          "conditions":[
+            {
+                "key":"BROWSER_MONITOR_TAGS",
+                "operator":"EQUALS",
+                "tag":"application:easytrade"
+            }
+          ]
+      }
+    },
+    {
+      "enabled":true,
+      "type":"ME",
+      "attributeRule":{
+          "entityType":"WEB_APPLICATION",
+          "conditions":[
+            {
+                "key":"WEB_APPLICATION_TAGS",
+                "operator":"EQUALS",
+                "tag":"application:easytrade"
+            }
+          ]
+      }
     }
   ]
 }
