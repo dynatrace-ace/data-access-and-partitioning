@@ -1,0 +1,36 @@
+- name: Define management zone name
+  ansible.builtin.set_fact:
+    target_mz_name: "Easytrade"
+
+- name: Get all management zones
+  ansible.legacy.uri:
+    url: "{{ dynatrace_tenant_url }}/api/config/v1/managementZones"
+    method: GET
+    headers:
+      Accept: "application/json; charset=utf-8"
+      Authorization: "Api-Token {{ DT_TOKEN_monaco }}"
+    return_content: true
+    status_code: 200
+  register: mz_lookup
+
+- name: Extract management zone ID
+  ansible.builtin.set_fact:
+    management_zone_id: >-
+      {{
+        (
+          (mz_lookup.json['values'] | default([]))
+          | selectattr('name', 'equalto', target_mz_name)
+          | list
+          | first
+          | default({})
+        ).get('id', '')
+      }}
+
+- name: Fail if management zone not found
+  ansible.builtin.fail:
+    msg: "Management Zone '{{ target_mz_name }}' not found."
+  when: management_zone_id == ""
+
+- name: Debug management zone ID
+  ansible.builtin.debug:
+    msg: "Management Zone '{{ target_mz_name }}' has ID {{ management_zone_id }}"

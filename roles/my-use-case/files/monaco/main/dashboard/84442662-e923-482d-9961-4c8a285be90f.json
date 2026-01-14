@@ -9,6 +9,12 @@
     "name": "EasyTrade",
     "shared": true,
     "owner": "easytrade-dev1@dynatrace.com",
+    "dashboardFilter": {
+      "managementZone": {
+        "id": "{{ .mz_id }}",
+        "name": "Easytrade"
+      }
+    },
     "preset": true,
     "popularity": 10,
     "hasConsistentColors": false

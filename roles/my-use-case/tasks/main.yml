@@ -30,6 +30,9 @@
 - include_tasks:
    file: create-key-request.yml
 
+- include_tasks:
+   file: get-mz.yml
+
 - name: Monaco - Deploy configuration
   include_role:
     name: monaco-v2
@@ -45,6 +48,7 @@
       DT_TOKEN: "{{ DT_TOKEN_monaco }}"
       DOMAIN: "{{ domain }}"
       SLO_ID: "{{ part2_slo_id }}"
+      MZ_ID: "{{ management_zone_id }}"
 
 - include_tasks:
     file: docker.yml
