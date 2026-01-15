@@ -72,9 +72,15 @@ Dynatrace CloudNativeFullStack licensing is based on Host-level RAM, so we need 
 ![](../../assets/images/oanocost.png)
 > Unassigned properties
 
-5. We have already prepared a Dynakube with the relevant host properties for you to add. Run the following command to apply the Dynakube with the costcenter and cost product values.
+5. We have already prepared a command with the relevant host properties for you to add. Run the following command to apply the Dynakube with the security context, costcenter and cost product values.
 
-`kubectl apply -f /home/ace/.ansible/collections/ansible_collections/ace_box/ace_box/roles/dt-operator/files/cloudNativeFullStack-properties.yaml`
+```bash
+kubectl -n dynatrace patch dynakube dynakube --type='json' -p='[
+  {"op":"add","path":"/spec/oneAgent/cloudNativeFullStack/args/-","value":"--set-host-property=dt.security_context=k8s_multi_prod"},
+  {"op":"add","path":"/spec/oneAgent/cloudNativeFullStack/args/-","value":"--set-host-property=dt.cost.costcenter=ecommerce-apps"},
+  {"op":"add","path":"/spec/oneAgent/cloudNativeFullStack/args/-","value":"--set-host-property=dt.cost.product=k8s_multi_prod"}
+]'
+```
 
 6. Wait a few minutes until the cost center info appears
 
