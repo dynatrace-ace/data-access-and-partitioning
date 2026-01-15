@@ -20,6 +20,7 @@ fetch spans
 | fields dt.host_group.id, dt.security_context, dt.cost.costcenter, dt.cost.product,
          dt.entity.host, dt.entity.process_group_instance, dt.smartscape.service, span.id
 | summarize count = count(), by:{dt.security_context}
+| fieldsRemove count
 ```
 
 ![](../../assets/images/variablesegmentconfig.png)
