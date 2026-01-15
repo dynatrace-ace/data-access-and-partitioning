@@ -1,0 +1,24 @@
+{
+  "enabled": true,
+  "summary": "Test Alert - Metric Selector - Static Threshold",
+  "queryDefinition": {
+    "type": "METRIC_SELECTOR",
+    "metricSelector": "builtin:host.cpu.usage:filter(and(or(in(\"dt.entity.host\",entitySelector(\"type(host),tag(~\"application:easytrade~\")\"))))):splitBy(\"dt.entity.host\"):sort(value(auto,descending)):limit(20)"
+  },
+  "modelProperties": {
+    "type": "STATIC_THRESHOLD",
+    "threshold": 10.0,
+    "alertOnNoData": false,
+    "alertCondition": "ABOVE",
+    "violatingSamples": 3,
+    "samples": 5,
+    "dealertingSamples": 5
+  },
+  "eventTemplate": {
+    "title": "Test Alert",
+    "description": "The {metricname} value was {alert_condition} normal behavior.",
+    "eventType": "CUSTOM_ALERT",
+    "davisMerge": true,
+    "metadata": []
+  }
+}

@@ -12,6 +12,7 @@ projects:
   - name: builtinmanagement-zones
   - name: dashboard
   - name: builtinlogmonitoring.log-storage-settings
+  - name: builtinanomaly-detection.metric-events
   # - name: builtinmetric.metadata
   # - name: builtinmonitoring.slo
   # - name: builtinsynthetic.http.assigned-applications
