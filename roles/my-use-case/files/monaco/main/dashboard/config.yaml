@@ -11,8 +11,11 @@ configs:
         type: environment
         name: SLO_ID
       mz_id:
-        type: environment
-        name: MZ_ID
+        type: reference
+        project: management-zone
+        configType: management-zone
+        configId: easytrade-mz
+        property: id
     template: 84442662-e923-482d-9961-4c8a285be90f.json
     skip: false
   type:

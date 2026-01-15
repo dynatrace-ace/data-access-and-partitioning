@@ -9,7 +9,7 @@ projects:
     type: grouping
   - name: document-notebook
   - name: custom-service
-  - name: builtinmanagement-zones
+  - name: management-zone
   - name: dashboard
   - name: builtinlogmonitoring.log-storage-settings
   - name: builtinanomaly-detection.metric-events

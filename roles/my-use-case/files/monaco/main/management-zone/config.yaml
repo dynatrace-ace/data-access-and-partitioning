@@ -1,9 +1,9 @@
 configs:
-  - id: app_easytrade
-    config:
-      template: app_easytrade.json
-      skip: true
-    type:
-      settings:
-        schema: builtin:management-zones
-        scope: environment
+- id: easytrade-mz
+  config:
+    name: Easytrade
+    template: easytrade-mz.json
+    skip: false
+  type:
+    api: management-zone
+

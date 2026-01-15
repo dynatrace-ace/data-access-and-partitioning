@@ -5,10 +5,10 @@
     access_token_var_name: "DT_TOKEN_monaco"
     access_token_scope: ["DataExport", "InstallerDownload", "activeGateTokenManagement.create", "entities.read", "settings.read", "settings.write", "ReadConfig", "WriteConfig", "syntheticLocations.read", "ExternalSyntheticIntegration", "slo.read", "slo.write"]
 
-- include_role:
-    name: monaco-v2
-  vars:
-    monaco_version: "v2.28.0"
+# - include_role:
+#     name: monaco-v2
+#   vars:
+#     monaco_version: "v2.28.0"
 
 - name: Get public IP address
   command: curl -s http://ifconfig.me/ip
@@ -23,15 +23,6 @@
 
 - include_tasks:
    file: create-slo.yml
-
-- include_tasks:
-   file: create-calc-serv-metric.yml
-
-- include_tasks:
-   file: create-key-request.yml
-
-- include_tasks:
-   file: get-mz.yml
 
 - name: Monaco - Deploy configuration
   include_role:
@@ -48,7 +39,6 @@
       DT_TOKEN: "{{ DT_TOKEN_monaco }}"
       DOMAIN: "{{ domain }}"
       SLO_ID: "{{ part2_slo_id }}"
-      MZ_ID: "{{ management_zone_id }}"
 
 - include_tasks:
     file: docker.yml
@@ -58,3 +48,9 @@
 
 - include_tasks:
    file: easy-trade-docker.yml
+
+- include_tasks:
+   file: create-calc-serv-metric.yml
+
+- include_tasks:
+   file: create-key-request.yml

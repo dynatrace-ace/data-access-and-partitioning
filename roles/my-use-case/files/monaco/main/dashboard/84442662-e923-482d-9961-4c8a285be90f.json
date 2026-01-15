@@ -1,4 +1,4 @@
- {
+{
   "metadata": {
     "configurationVersions": [
       7
@@ -11,7 +11,7 @@
     "owner": "easytrade-dev1@dynatrace.com",
     "dashboardFilter": {
       "managementZone": {
-        "id": "{{ .mz_id }}",
+        "id": "{{.mz_id}}",
         "name": "Easytrade"
       }
     },

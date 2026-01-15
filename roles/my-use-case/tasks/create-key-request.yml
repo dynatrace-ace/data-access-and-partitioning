@@ -14,6 +14,9 @@
     return_content: true
     status_code: 200
   register: service_lookup
+  until: service_lookup.json.totalCount | default(0) | int > 0
+  retries: 10        # number of attempts
+  delay: 30         # seconds between attempts
 
 - name: Extract service entityId
   ansible.builtin.set_fact:
