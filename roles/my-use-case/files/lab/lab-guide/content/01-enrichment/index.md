@@ -4,7 +4,7 @@ The team is using auto-tags and management zones for filtering and access contro
 
 ![](../../assets/images/tagssetup.png)
 
-In our new approach, Segments, there are special fields that we recommend using: Primary Grail Fields. Host Group is one of these fields. We will show you how to add other relevant Primary Grail Fields (and tags) directly from the Dynatrace environment.
+In our new approach, there are special fields that we recommend using: Primary Grail Fields. Host Group is one of these fields. We will show you how to add other relevant Primary Grail Fields (and tags) directly from the Dynatrace environment.
 
 1. Go to the `Deployment Status` application within the Dynatrace tenant, filter by the team’s host group (`easytrade`), select all hosts (only one in our case), choose **Modify host properties**, and click `Run action`.
 
